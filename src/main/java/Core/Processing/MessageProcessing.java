@@ -6,13 +6,18 @@ import Core.Commands.ServerCommand;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
+import java.util.Locale;
 
 
 public class MessageProcessing extends ListenerAdapter {
 	private static final CommandPackage[] commandPackages = {new ManagementPackage()};
-	private static HashMap<String, ServerCommand> commandMap = new HashMap<>();
+	private static final HashMap<String, ServerCommand> commandMap = new HashMap<>();
+
+	private static final Logger logger = LoggerFactory.getLogger(MessageProcessing.class);
 
 	static {
 		for(CommandPackage commandPackage : commandPackages){
@@ -24,10 +29,19 @@ public class MessageProcessing extends ListenerAdapter {
 
 	@Override
 	public void onMessageReceived(@NotNull MessageReceivedEvent event) {
-		String prefix = "$";
-		ServerCommand command = commandMap.get(event.getMessage().getContentRaw().toLowerCase().split(" ")[0].replace(prefix, ""));
+		String prefix = "$"; // TODO: Get as server preference
+		String msg = event.getMessage().getContentRaw();
+
+		// Reject if not aimed at us
+		if (!msg.startsWith(prefix)) return;
+
+		String[] args = msg.split(" ");
+		String commandString = args[0].toLowerCase().replace(prefix, "");
+		ServerCommand command = commandMap.get(commandString);
+
 		if(command != null){
-			command.runCommand(event);
+			logger.debug("Command ({}) Called With {} Args", commandString, args.length);
+			command.runCommand(event, args);
 		}
 	}
 }

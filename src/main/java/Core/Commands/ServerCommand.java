@@ -47,5 +47,5 @@ public abstract class ServerCommand {
 		return (perm == null || event.getMember().hasPermission(perm));
 	}
 
-	abstract public void runCommand(MessageReceivedEvent event);
+	abstract public void runCommand(MessageReceivedEvent event, String[] args);
 }

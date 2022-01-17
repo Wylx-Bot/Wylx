@@ -31,8 +31,8 @@ public abstract class ThreadedCommand extends ServerCommand{
 	}
 
 	@Override
-	public final void runCommand(MessageReceivedEvent event) {
-		Thread thread = new Thread(() -> runCommandThread(event));
+	public final void runCommand(MessageReceivedEvent event, String[] args) {
+		Thread thread = new Thread(() -> runCommandThread(event, args));
 		Timer timer = new Timer();
 		timer.schedule(new TimerTask() {
 			@Override
@@ -45,5 +45,5 @@ public abstract class ThreadedCommand extends ServerCommand{
 		}, timeout);
 	}
 
-	protected abstract void runCommandThread(MessageReceivedEvent event);
+	protected abstract void runCommandThread(MessageReceivedEvent event, String[] args);
 }
