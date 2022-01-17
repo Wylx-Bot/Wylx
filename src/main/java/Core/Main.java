@@ -27,7 +27,7 @@ public class Main {
 
 	public static void main(String[] args) throws LoginException, InterruptedException {
 		jda = JDABuilder.createDefault(token)
-				.setActivity(Activity.of(Activity.ActivityType.DEFAULT, "with half a ship"))
+				.setActivity(Activity.of(Activity.ActivityType.PLAYING, "with half a ship"))
 				.addEventListeners(messageProcessor)
 				.enableIntents(GatewayIntent.GUILD_MEMBERS)
 				.build();

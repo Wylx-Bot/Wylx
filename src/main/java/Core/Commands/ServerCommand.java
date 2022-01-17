@@ -2,7 +2,7 @@ package Core.Commands;
 
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
-import util.LogFormatter;
+import Core.Util.LogFormatter;
 
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
