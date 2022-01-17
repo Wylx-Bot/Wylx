@@ -43,9 +43,8 @@ public abstract class ServerCommand {
 		return keyword;
 	}
 
-	public boolean permissionsCheck(MessageReceivedEvent event){
-		return (perm == null || event.getMember().hasPermission(perm)) &&
-				(!beta || !Main.isRelease());
+	public boolean permissionsCheck(MessageReceivedEvent event) {
+		return (perm == null || event.getMember().hasPermission(perm));
 	}
 
 	abstract public void runCommand(MessageReceivedEvent event);
