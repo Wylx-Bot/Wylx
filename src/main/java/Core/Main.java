@@ -1,38 +1,28 @@
 package Core;
 
 import Core.Processing.MessageProcessing;
+import io.github.cdimascio.dotenv.Dotenv;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 
 import javax.security.auth.login.LoginException;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.util.Scanner;
 
 public class Main {
-	private static JDA jda;
-	private static String token = "";
+	private static final MessageProcessing messageProcessor = new MessageProcessing();
 
 	private static boolean isRelease = false;
 
-	static {
-		try {
-			Scanner scan = new Scanner(new File("src/main/resources/token.txt"));
-			token = scan.nextLine();
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-			System.exit(1);
-		}
-	}
-	private static final MessageProcessing messageProcessor = new MessageProcessing();
-
 	public static void main(String[] args) throws LoginException, InterruptedException {
-		jda = JDABuilder.createDefault(token)
+		Dotenv env = Dotenv.configure()
+				.ignoreIfMissing()
+				.load();
+
+		JDA jda = JDABuilder.createDefault(env.get("DISCORD_TOKEN"))
 				.setActivity(Activity.of(Activity.ActivityType.PLAYING, "with half a ship"))
 				.addEventListeners(messageProcessor)
-//				.enableIntents(GatewayIntent.GUILD_MEMBERS)
+				.enableIntents(GatewayIntent.GUILD_MEMBERS)
 				.build();
 		jda.awaitReady();
 	}
