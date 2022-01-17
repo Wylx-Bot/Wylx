@@ -1,5 +1,6 @@
-package Commands;
+package Core.Commands;
 
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import java.util.Timer;
@@ -17,15 +18,15 @@ public abstract class ThreadedCommand extends ServerCommand{
 	}
 
 	public ThreadedCommand(String keyword, long timeout){
-		this(keyword, false, timeout);
+		this(keyword, null, timeout);
 	}
 
-	public ThreadedCommand(String keyword, boolean admin, long timeout) {
-		this(keyword, admin, false, timeout);
+	public ThreadedCommand(String keyword, Permission perm, long timeout) {
+		this(keyword, perm, false, timeout);
 	}
 
-	public ThreadedCommand(String keyword, boolean admin, boolean beta, long timeout) {
-		super(keyword, admin, beta);
+	public ThreadedCommand(String keyword, Permission perm, boolean beta, long timeout) {
+		super(keyword, perm, beta);
 		this.timeout = timeout;
 	}
 
