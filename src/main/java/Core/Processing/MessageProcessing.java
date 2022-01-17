@@ -37,11 +37,10 @@ public class MessageProcessing extends ListenerAdapter {
 
 		String[] args = msg.split(" ");
 		String commandString = args[0].toLowerCase().replace(prefix, "");
-
-		logger.debug("Command ({}) Called With {} Args", commandString, args.length);
-
 		ServerCommand command = commandMap.get(commandString);
+
 		if(command != null){
+			logger.debug("Command ({}) Called With {} Args", commandString, args.length);
 			command.runCommand(event, args);
 		}
 	}
