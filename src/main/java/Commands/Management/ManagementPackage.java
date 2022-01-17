@@ -5,7 +5,7 @@ import Core.Commands.CommandPackage;
 public class ManagementPackage extends CommandPackage {
 
 	public ManagementPackage(){
-		this.commands = new Core.Commands.ServerCommand[]{};
+		this.commands = new Core.Commands.ServerCommand[]{new SystemCommand("system")};
 	}
 
 	@Override
