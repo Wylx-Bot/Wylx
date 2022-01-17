@@ -26,7 +26,6 @@ public class MessageProcessing extends ListenerAdapter {
 	public void onMessageReceived(@NotNull MessageReceivedEvent event) {
 		String prefix = "$";
 		ServerCommand command = commandMap.get(event.getMessage().getContentRaw().toLowerCase().split(" ")[0].replace(prefix, ""));
-		System.out.println(command);
 		if(command != null){
 			command.runCommand(event);
 		}
