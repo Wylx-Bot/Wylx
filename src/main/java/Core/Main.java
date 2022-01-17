@@ -14,6 +14,9 @@ import java.util.Scanner;
 public class Main {
 	private static JDA jda;
 	private static String token = "";
+
+	private static boolean isRelease = false;
+
 	static {
 		try {
 			Scanner scan = new Scanner(new File("src/main/resources/token.txt"));
@@ -27,10 +30,13 @@ public class Main {
 
 	public static void main(String[] args) throws LoginException, InterruptedException {
 		jda = JDABuilder.createDefault(token)
-				.setActivity(Activity.of(Activity.ActivityType.DEFAULT, "with half a ship"))
 				.addEventListeners(messageProcessor)
 				.enableIntents(GatewayIntent.GUILD_MEMBERS)
 				.build();
 		jda.awaitReady();
+	}
+
+	public static boolean isRelease(){
+		return isRelease;
 	}
 }

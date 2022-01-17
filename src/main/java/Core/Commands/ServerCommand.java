@@ -1,16 +1,15 @@
 package Core.Commands;
 
+import Core.Main;
+import Core.Util.LogFormatter;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
-import util.LogFormatter;
 
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public abstract class ServerCommand {
-	//TODO: Get ID of beta server
-	private final long betaServerID = 0L;
 
 	private final Permission perm;
 	private final boolean beta;
@@ -46,7 +45,7 @@ public abstract class ServerCommand {
 
 	public boolean permissionsCheck(MessageReceivedEvent event){
 		return (perm == null || event.getMember().hasPermission(perm)) &&
-				(!beta || event.getGuild().getIdLong() == betaServerID);
+				(!beta || !Main.isRelease());
 	}
 
 	abstract public void runCommand(MessageReceivedEvent event);
