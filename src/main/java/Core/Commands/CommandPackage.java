@@ -1,9 +1,9 @@
 package Core.Commands;
 
 public abstract class CommandPackage {
-	private final ServerCommand[] commands;
+	protected ServerCommand[] commands;
 
-	private CommandPackage(){
+	protected CommandPackage(){
 		commands = null;
 	}
 

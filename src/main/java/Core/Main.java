@@ -32,7 +32,7 @@ public class Main {
 		jda = JDABuilder.createDefault(token)
 				.setActivity(Activity.of(Activity.ActivityType.PLAYING, "with half a ship"))
 				.addEventListeners(messageProcessor)
-				.enableIntents(GatewayIntent.GUILD_MEMBERS)
+//				.enableIntents(GatewayIntent.GUILD_MEMBERS)
 				.build();
 		jda.awaitReady();
 	}
