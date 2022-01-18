@@ -2,6 +2,7 @@ package Core.Processing;
 
 import Commands.DND.DNDPackage;
 import Commands.Management.ManagementPackage;
+import Commands.Music.MusicPackage;
 import Core.Commands.CommandPackage;
 import Core.Commands.ServerCommand;
 import Core.Events.SilentEvent;
@@ -17,9 +18,15 @@ import java.util.Arrays;
 import java.util.HashMap;
 
 public class MessageProcessing extends ListenerAdapter {
-	private static final CommandPackage[] commandPackages = {new ManagementPackage(), new DNDPackage()};
 	private static final HashMap<String, ServerCommand> commandMap = new HashMap<>();
 	private static final ArrayList<SilentEvent> events = new ArrayList<>();
+
+	private static final CommandPackage[] commandPackages = {
+			new ManagementPackage(),
+			new DNDPackage(),
+			new MusicPackage(),
+	};
+
 
 	private static final Logger logger = LoggerFactory.getLogger(MessageProcessing.class);
 
