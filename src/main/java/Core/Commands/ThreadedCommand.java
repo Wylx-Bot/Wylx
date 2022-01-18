@@ -32,8 +32,11 @@ public abstract class ThreadedCommand extends ServerCommand{
 
 	@Override
 	public final void runCommand(MessageReceivedEvent event, String[] args) {
-		Thread thread = new Thread(() -> runCommandThread(event, args));
 		Timer timer = new Timer();
+		Thread thread = new Thread(() -> {
+			runCommandThread(event, args);
+			timer.cancel();
+		});
 		timer.schedule(new TimerTask() {
 			@Override
 			public void run() {
