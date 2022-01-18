@@ -14,8 +14,6 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Locale;
-
 
 public class MessageProcessing extends ListenerAdapter {
 	private static final CommandPackage[] commandPackages = {new ManagementPackage(), new DNDPackage()};
@@ -38,6 +36,7 @@ public class MessageProcessing extends ListenerAdapter {
 		String prefix = "$"; // TODO: Get as server preference
 		String msg = event.getMessage().getContentRaw();
 
+		if(!event.isFromGuild()) return;
 		// Check Commands if aimed at bot
 		if (msg.startsWith(prefix)) {
 			String[] args = msg.split(" ");
@@ -45,13 +44,15 @@ public class MessageProcessing extends ListenerAdapter {
 			ServerCommand command = commandMap.get(commandString);
 
 			if (command != null) {
-				logger.debug("Command ({}) Called With {} Args", commandString, args.length);
-				command.runCommand(event, args);
-				return;
+				if(command.checkPermission(event)) {
+					logger.debug("Command ({}) Called With {} Args", commandString, args.length);
+					command.runCommand(event, args);
+					return;
+				} else {
+					event.getMessage().reply("You don't have permission to use this command!").queue();
+				}
 			}
 		}
-
-		// Check events for a match if none was found in commands
 		for(SilentEvent silentEvent : events){
 			if(silentEvent.check(event)){
 				silentEvent.runEvent(event);

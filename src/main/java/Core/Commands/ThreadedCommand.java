@@ -9,24 +9,21 @@ import java.util.TimerTask;
 public abstract class ThreadedCommand extends ServerCommand{
 	private final long timeout;
 
-	public ThreadedCommand(){
-		this(null);
+	public ThreadedCommand(String keyword, CommandPermission cmdPerm) {
+		this(keyword, cmdPerm, 300000);
 	}
 
-	public ThreadedCommand(String keyword){
-		this(keyword, 300000);
+	public ThreadedCommand(String keyword, CommandPermission cmdPerm, long timeout) {
+		super (keyword, cmdPerm);
+		this.timeout = timeout;
 	}
 
-	public ThreadedCommand(String keyword, long timeout){
-		this(keyword, null, timeout);
+	public ThreadedCommand(String keyword, CommandPermission cmdPerm, Permission perm) {
+		this(keyword, cmdPerm, perm, 300000);
 	}
 
-	public ThreadedCommand(String keyword, Permission perm, long timeout) {
-		this(keyword, perm, false, timeout);
-	}
-
-	public ThreadedCommand(String keyword, Permission perm, boolean beta, long timeout) {
-		super(keyword, perm, beta);
+	public ThreadedCommand(String keyword, CommandPermission cmdPerm, Permission perm, long timeout) {
+		super(keyword, cmdPerm, perm);
 		this.timeout = timeout;
 	}
 
@@ -37,6 +34,7 @@ public abstract class ThreadedCommand extends ServerCommand{
 			runCommandThread(event, args);
 			timer.cancel();
 		});
+		thread.start();
 		timer.schedule(new TimerTask() {
 			@Override
 			public void run() {
