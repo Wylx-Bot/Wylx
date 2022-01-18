@@ -2,6 +2,7 @@ package Commands.Management;
 
 import Core.Commands.ServerCommand;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import java.io.BufferedReader;
@@ -19,8 +20,8 @@ public class SystemCommand extends ServerCommand {
     private static final long MILLI_PER_HOURS = MILLI_PER_MINUTES * 60;
     private static final long MILLI_PER_DAYS = MILLI_PER_HOURS * 24;
 
-    public SystemCommand(String keyword) {
-        super(keyword);
+    public SystemCommand() {
+        super("system", CommandPermission.EVERYONE);
     }
 
     private String getCommitID() {

@@ -10,8 +10,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
-import java.util.Locale;
-
 
 public class MessageProcessing extends ListenerAdapter {
 	private static final CommandPackage[] commandPackages = {new ManagementPackage()};
@@ -33,15 +31,20 @@ public class MessageProcessing extends ListenerAdapter {
 		String msg = event.getMessage().getContentRaw();
 
 		// Reject if not aimed at us
-		if (!msg.startsWith(prefix)) return;
+		if (!msg.startsWith(prefix) ||
+			!event.isFromGuild()) return;
 
 		String[] args = msg.split(" ");
 		String commandString = args[0].toLowerCase().replace(prefix, "");
 		ServerCommand command = commandMap.get(commandString);
 
-		if(command != null){
-			logger.debug("Command ({}) Called With {} Args", commandString, args.length);
-			command.runCommand(event, args);
+		if (command == null) return;
+		if (!command.checkPermission(event)) {
+			event.getMessage().reply("You don't have permission to use this command!").queue();
+			return;
 		}
+
+		logger.debug("Command ({}) Called With {} Args", commandString, args.length);
+		command.runCommand(event, args);
 	}
 }
