@@ -23,6 +23,7 @@ public abstract class ThreadedSilentEvent implements SilentEvent{
 			runEventThread(event);
 			timer.cancel();
 		});
+		thread.start();
 		timer.schedule(new TimerTask() {
 			@Override
 			public void run() {
