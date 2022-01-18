@@ -22,6 +22,11 @@ public class DiceRoll extends ThreadedSilentEvent {
 	}
 
 	@Override
+	public String getDescription() {
+		return "Roll <x>d<y> dice, can separate arguments with spaces to roll multiple dice";
+	}
+
+	@Override
 	protected void runEventThread(MessageReceivedEvent event) {
 		event.getMessage().getChannel().sendTyping().queue();
 		String message = event.getMessage().getContentRaw().toLowerCase().replace("$", "");

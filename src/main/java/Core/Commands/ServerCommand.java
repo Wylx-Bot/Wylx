@@ -86,4 +86,8 @@ public abstract class ServerCommand {
 	}
 
 	abstract public void runCommand(MessageReceivedEvent event, String[] args);
+
+	public String getName(){
+		return this.getClass().getSimpleName();
+	}
 }

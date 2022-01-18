@@ -1,11 +1,13 @@
 package Core.Processing;
 
-import Commands.DND.DNDPackage;
+import Commands.DND.TTRPGPackage;
+import Commands.Help;
 import Commands.Management.ManagementPackage;
 import Core.Commands.CommandPackage;
 import Core.Commands.ServerCommand;
 import Core.Events.SilentEvent;
 import Core.Main;
+import Core.ProcessPackage.ProcessPackage;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
@@ -17,18 +19,19 @@ import java.util.Arrays;
 import java.util.HashMap;
 
 public class MessageProcessing extends ListenerAdapter {
-	private static final CommandPackage[] commandPackages = {new ManagementPackage(), new DNDPackage()};
+	public static final ProcessPackage[] processPackages = {new ManagementPackage(), new TTRPGPackage()};
 	private static final HashMap<String, ServerCommand> commandMap = new HashMap<>();
 	private static final ArrayList<SilentEvent> events = new ArrayList<>();
 
 	private static final Logger logger = LoggerFactory.getLogger(MessageProcessing.class);
 
 	static {
-		for(CommandPackage commandPackage : commandPackages){
-			for(ServerCommand command : commandPackage.getCommands()){
+		commandMap.put("help", new Help());
+		for(ProcessPackage processPackage : processPackages){
+			for(ServerCommand command : processPackage.getCommands()){
 				commandMap.put(command.getKeyword(), command);
 			}
-			events.addAll(Arrays.asList(commandPackage.getEvents()));
+			events.addAll(Arrays.asList(processPackage.getEvents()));
 		}
 	}
 

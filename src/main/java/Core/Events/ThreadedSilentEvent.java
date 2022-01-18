@@ -5,7 +5,7 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public abstract class ThreadedSilentEvent implements SilentEvent{
+public abstract class ThreadedSilentEvent extends SilentEvent {
 	private final long timeout;
 
 	public ThreadedSilentEvent(){

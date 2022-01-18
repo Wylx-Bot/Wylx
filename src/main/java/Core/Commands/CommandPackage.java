@@ -2,6 +2,8 @@ package Core.Commands;
 
 import Core.Events.SilentEvent;
 
+@Deprecated
+// Switch Over To ProcessPackage
 public abstract class CommandPackage {
 	protected ServerCommand[] commands;
 	protected SilentEvent[] events;
