@@ -1,14 +1,16 @@
 package Commands.Management;
 
 import Core.Commands.CommandPackage;
+import Core.Events.SilentEvent;
+import Core.Commands.ServerCommand;
 
 public class ManagementPackage extends CommandPackage {
 
 	public ManagementPackage() {
-		this.commands = new Core.Commands.ServerCommand[]{
+		super(new ServerCommand[]{
 				new SystemCommand(),
-				new PingCommand(),
-		};
+				new PingCommand(),},
+				new SilentEvent[]{});
 	}
 
 	@Override
