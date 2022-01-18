@@ -18,7 +18,7 @@ public class DiceRoll extends ThreadedSilentEvent {
 		String msg = event.getMessage().getContentRaw();
 		String prefix = "$";
 		if(!msg.startsWith(prefix)) return false;
-		return Pattern.matches("\\d*+d\\d.*", msg.substring(1));
+		return Pattern.matches("\\d*d\\d.*", msg.substring(prefix.length()));
 	}
 
 	@Override
