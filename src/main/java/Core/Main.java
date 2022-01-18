@@ -13,6 +13,7 @@ public class Main {
 	private static final MessageProcessing messageProcessor = new MessageProcessing();
 
 	private static boolean isRelease;
+	private static long botID;
 
 	public static void main(String[] args) throws LoginException, InterruptedException {
 		Dotenv env = Dotenv.configure()
@@ -26,9 +27,14 @@ public class Main {
 				.enableIntents(GatewayIntent.GUILD_MEMBERS)
 				.build();
 		jda.awaitReady();
+		botID = jda.getSelfUser().getIdLong();
 	}
 
 	public static boolean isRelease(){
 		return isRelease;
+	}
+
+	public static long getBotID(){
+		return botID;
 	}
 }

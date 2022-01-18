@@ -5,6 +5,7 @@ import Commands.Management.ManagementPackage;
 import Core.Commands.CommandPackage;
 import Core.Commands.ServerCommand;
 import Core.Events.SilentEvent;
+import Core.Main;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
@@ -33,6 +34,9 @@ public class MessageProcessing extends ListenerAdapter {
 
 	@Override
 	public void onMessageReceived(@NotNull MessageReceivedEvent event) {
+		//Ignore messages from the bot
+		if(event.getAuthor().getIdLong() == Main.getBotID()) return;
+
 		String prefix = "$"; // TODO: Get as server preference
 		String msg = event.getMessage().getContentRaw();
 
