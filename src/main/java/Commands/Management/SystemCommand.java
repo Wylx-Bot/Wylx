@@ -21,7 +21,7 @@ public class SystemCommand extends ServerCommand {
     private static final long MILLI_PER_DAYS = MILLI_PER_HOURS * 24;
 
     public SystemCommand() {
-        super("system", CommandPermission.BOT_ADMIN);
+        super("system", CommandPermission.EVERYONE);
     }
 
     private String getCommitID() {

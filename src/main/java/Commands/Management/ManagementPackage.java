@@ -6,7 +6,8 @@ public class ManagementPackage extends CommandPackage {
 
 	public ManagementPackage() {
 		this.commands = new Core.Commands.ServerCommand[]{
-				new SystemCommand()
+				new SystemCommand(),
+				new PingCommand(),
 		};
 	}
 
