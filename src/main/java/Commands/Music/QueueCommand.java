@@ -5,11 +5,16 @@ import Core.Music.GuildMusicManager;
 import Core.Music.MusicUtils;
 import Core.Music.WylxPlayerManager;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
+import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.components.Button;
-import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
+import org.jetbrains.annotations.NotNull;
 
 import java.time.Duration;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class QueueCommand extends ServerCommand {
     private static final int PAGE_COUNT = 10;
@@ -20,21 +25,59 @@ public class QueueCommand extends ServerCommand {
 
     @Override
     public void runCommand(MessageReceivedEvent event, String[] args) {
-        var manager = WylxPlayerManager.getInstance().getGuildManager(event.getGuild().getIdLong());
+        GuildMusicManager manager = WylxPlayerManager.getInstance().getGuildManager(event.getGuild().getIdLong());
 
         if (manager.isNotPlaying()) {
             event.getChannel().sendMessage("Wylx is not playing anything!").queue();
             return;
         }
 
+        AtomicLong msgId = new AtomicLong();
+
+        ListenerAdapter adapter = new ListenerAdapter() {
+            int page = 0;
+
+            @Override
+            public void onButtonClick(@NotNull ButtonClickEvent event) {
+                if (event.getMessage().getIdLong() != msgId.longValue()) {
+                    return;
+                }
+
+                // Not playing anymore, remove buttons and empty message
+                if (manager.isNotPlaying()) {
+                    event.editMessage("Wylx is not playing anymore!")
+                            .flatMap(InteractionHook::editOriginalComponents).queue();
+                    return;
+                }
+
+                String id = event.getComponentId();
+                String[] args = id.split(":");
+                if (!args[0].equals("queue")) return;
+
+                switch (args[1]) {
+                    case "first" -> page = 0;
+                    case "previous" -> --page;
+                    case "next" -> ++page;
+                    case "last" -> page = Integer.MAX_VALUE;
+                }
+
+                event.editMessage(QueueCommand.getQueuePage(page, manager)).queue();
+            }
+        };
+
         event.getChannel().sendMessage(getQueuePage(0, manager)).setActionRow(
                 Button.secondary("queue:first", "\u23EA"),
                 Button.secondary("queue:previous", "\u25C0"),
                 Button.secondary("queue:next", "\u25B6"),
                 Button.secondary("queue:last", "\u23E9")
-        ).delay(Duration.ofSeconds(120)).queue(message -> {
-            message.editMessageComponents().queue();
+        ).queue(message -> {
+            message.editMessageComponents().queueAfter(30, TimeUnit.SECONDS, msg -> {
+                event.getJDA().removeEventListener(adapter);
+            });
+            msgId.set(message.getIdLong());
         });
+
+        event.getJDA().addEventListener(adapter);
     }
 
     public static String getQueuePage(int page, GuildMusicManager manager) {
