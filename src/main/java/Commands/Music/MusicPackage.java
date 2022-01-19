@@ -11,6 +11,9 @@ public class MusicPackage extends CommandPackage {
             new SkipCommand(),
             new ClearPlaylistCommand(),
             new VolumeCommand(),
+            new PauseCommand(),
+            new ResumeCommand(),
+            new QueueCommand(),
         }, new SilentEvent[]{});
     }
 

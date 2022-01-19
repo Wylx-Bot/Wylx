@@ -13,6 +13,9 @@ import net.dv8tion.jda.api.entities.Message;
 import java.time.Duration;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.BlockingQueue;
+
+import static Core.Music.MusicUtils.joinVoice;
 
 public class GuildMusicManager extends AudioEventAdapter {
     private Timer discTimer;
@@ -68,24 +71,6 @@ public class GuildMusicManager extends AudioEventAdapter {
         player.setVolume(vol);
     }
 
-    private boolean joinVoice(TrackContext ctx) {
-        var wylx = Wylx.getInstance();
-        var audioManager = wylx.getGuildAudioManager(ctx.guildID);
-        var member = wylx.getMemberInGuild(ctx.guildID, ctx.requesterID);
-
-        // Bot already in voice
-        if (audioManager.isConnected())
-            return false;
-
-        // Get channel that requester is in to join
-        var voiceState = member.getVoiceState();
-        if (voiceState == null || !voiceState.inAudioChannel())
-            return true; // User not in voice channel
-
-        audioManager.openAudioConnection(voiceState.getChannel());
-        return false;
-    }
-
     private void playNextTrack() {
         if (player.startTrack(playlist.getNextTrack(), false))
             return;
@@ -99,6 +84,22 @@ public class GuildMusicManager extends AudioEventAdapter {
                 audioManager.closeAudioConnection();
             }
         }, 60000);
+    }
+
+    public boolean isNotPlaying() {
+        return player.getPlayingTrack() == null;
+    }
+
+    public void pause(boolean pause) {
+        player.setPaused(pause);
+    }
+
+    public Object[] getQueue() {
+        return playlist.getQueue();
+    }
+
+    public AudioTrack getCurrentTrack() {
+        return player.getPlayingTrack();
     }
 
     @Override
@@ -117,7 +118,7 @@ public class GuildMusicManager extends AudioEventAdapter {
         var channel = wylx.getTextChannel(ctx.channelID);
 
         if (channel == null) return;
-        channel.sendMessage("Playing **" + track.getInfo().title + "**")
+        channel.sendMessageEmbeds(MusicUtils.createPlayingEmbed(track.getInfo()))
                 .delay(Duration.ofSeconds(60))
                 .flatMap(Message::delete)
                 .queue();

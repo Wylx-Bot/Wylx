@@ -1,5 +1,6 @@
 package Core;
 
+import Core.Processing.ButtonProcessing;
 import Core.Processing.MessageProcessing;
 import io.github.cdimascio.dotenv.Dotenv;
 import net.dv8tion.jda.api.JDA;
@@ -28,7 +29,6 @@ public class Wylx {
 	}
 
 	private Wylx() {
-		MessageProcessing messageProcessor = new MessageProcessing();
 		Dotenv env = Dotenv.configure()
 				.ignoreIfMissing()
 				.load();
@@ -38,7 +38,7 @@ public class Wylx {
 		try {
 			jda = JDABuilder.createDefault(env.get("DISCORD_TOKEN"))
 					.setActivity(Activity.of(Activity.ActivityType.PLAYING, "with half a ship"))
-					.addEventListeners(messageProcessor)
+					.addEventListeners(new MessageProcessing(), new ButtonProcessing())
 					.enableIntents(GatewayIntent.GUILD_MEMBERS)
 					.build();
 		} catch (LoginException e) {

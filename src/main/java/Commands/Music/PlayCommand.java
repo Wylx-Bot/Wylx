@@ -2,6 +2,7 @@ package Commands.Music;
 
 import Core.Commands.ServerCommand;
 import Core.Music.GuildMusicManager;
+import Core.Music.MusicUtils;
 import Core.Music.TrackContext;
 import Core.Music.WylxPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
@@ -27,6 +28,11 @@ public class PlayCommand extends ServerCommand {
 
         if (args.length != 2) {
             event.getChannel().sendMessage("Usage: $play <link>").queue();
+            return;
+        }
+
+        if (!MusicUtils.canUseVoiceCommand(guildID, event.getAuthor().getIdLong())) {
+            event.getChannel().sendMessage("You are not in the same channel as the bot!").queue();
             return;
         }
 

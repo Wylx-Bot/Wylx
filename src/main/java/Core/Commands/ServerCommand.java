@@ -17,7 +17,7 @@ public abstract class ServerCommand {
 	private final CommandPermission cmdPerm;
 	private final Permission discPerm;
 	private final String keyword;
-	protected final Logger logger = LoggerFactory.getLogger(this.getClass());;
+	protected final Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	public ServerCommand(String keyword, CommandPermission cmdPerm) {
 		this.keyword = keyword;

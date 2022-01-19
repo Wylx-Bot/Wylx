@@ -5,9 +5,9 @@ import Core.Music.MusicUtils;
 import Core.Music.WylxPlayerManager;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
-public class SkipCommand extends ServerCommand {
-    public SkipCommand() {
-        super("skip", CommandPermission.EVERYONE);
+public class PauseCommand extends ServerCommand {
+    PauseCommand() {
+        super("pause", CommandPermission.EVERYONE);
     }
 
     @Override
@@ -20,7 +20,7 @@ public class SkipCommand extends ServerCommand {
         } else if (!MusicUtils.canUseVoiceCommand(guildID, memberID)) {
             event.getChannel().sendMessage("You are not in the same channel as the bot!").queue();
         } else {
-            manager.skip();
+            manager.pause(true);
         }
     }
 }
