@@ -13,21 +13,21 @@ import net.dv8tion.jda.api.requests.GatewayIntent;
 import javax.security.auth.login.LoginException;
 
 public class Wylx {
-	private static Wylx wylx;
+	private static final Wylx INSTANCE = new Wylx();
 
-	private final JDA jda;
+	private JDA jda;
 
 	private final boolean isRelease;
 
-	public static void main(String[] args) throws LoginException, InterruptedException {
-		wylx = new Wylx();
-	}
-
 	public static Wylx getInstance() {
-		return wylx;
+		return INSTANCE;
 	}
 
-	private Wylx() throws InterruptedException, LoginException {
+	public static void main(String[] args){
+		Wylx wylx = Wylx.getInstance();
+	}
+
+	private Wylx() {
 		MessageProcessing messageProcessor = new MessageProcessing();
 		Dotenv env = Dotenv.configure()
 				.ignoreIfMissing()
@@ -35,13 +35,16 @@ public class Wylx {
 
 		isRelease = Boolean.parseBoolean(env.get("RELEASE"));
 
-		jda = JDABuilder.createDefault(env.get("DISCORD_TOKEN"))
-				.setActivity(Activity.of(Activity.ActivityType.PLAYING, "with half a ship"))
-				.addEventListeners(messageProcessor)
-				.enableIntents(GatewayIntent.GUILD_MEMBERS)
-				.build();
-
-		jda.awaitReady();
+		try {
+			jda = JDABuilder.createDefault(env.get("DISCORD_TOKEN"))
+					.setActivity(Activity.of(Activity.ActivityType.PLAYING, "with half a ship"))
+					.addEventListeners(messageProcessor)
+					.enableIntents(GatewayIntent.GUILD_MEMBERS)
+					.build();
+		} catch (LoginException e) {
+			e.printStackTrace();
+			System.exit(-1);
+		}
 	}
 
 	public boolean isRelease(){
