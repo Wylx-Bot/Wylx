@@ -39,6 +39,7 @@ public class QueueCommand extends ServerCommand {
 
             @Override
             public void onButtonClick(@NotNull ButtonClickEvent event) {
+                // Not the message we sent
                 if (event.getMessage().getIdLong() != msgId.longValue()) {
                     return;
                 }
@@ -50,11 +51,7 @@ public class QueueCommand extends ServerCommand {
                     return;
                 }
 
-                String id = event.getComponentId();
-                String[] args = id.split(":");
-                if (!args[0].equals("queue")) return;
-
-                switch (args[1]) {
+                switch (event.getComponentId()) {
                     case "first" -> page = 0;
                     case "previous" -> --page;
                     case "next" -> ++page;
@@ -66,10 +63,10 @@ public class QueueCommand extends ServerCommand {
         };
 
         event.getChannel().sendMessage(getQueuePage(0, manager)).setActionRow(
-                Button.secondary("queue:first", "\u23EA"),
-                Button.secondary("queue:previous", "\u25C0"),
-                Button.secondary("queue:next", "\u25B6"),
-                Button.secondary("queue:last", "\u23E9")
+                Button.secondary("first", "\u23EA"),
+                Button.secondary("previous", "\u25C0"),
+                Button.secondary("next", "\u25B6"),
+                Button.secondary("last", "\u23E9")
         ).queue(message -> {
             message.editMessageComponents().queueAfter(30, TimeUnit.SECONDS, msg -> {
                 event.getJDA().removeEventListener(adapter);
@@ -86,7 +83,7 @@ public class QueueCommand extends ServerCommand {
         StringBuilder builder = new StringBuilder();
 
         page = Math.min(page, list.length / PAGE_COUNT);
-        long millis = MusicUtils.getTimeRemaining(list, currentPlaying);
+        Duration remaining = MusicUtils.getTimeRemaining(list, currentPlaying);
 
         builder.append(String.format("__Page **%d** of **%d**__\n", page + 1, (list.length / 10) + 1));
         builder.append(String.format("Now playing **%s** by **%s** : ",
@@ -102,7 +99,7 @@ public class QueueCommand extends ServerCommand {
         }
 
         builder.append(String.format("\nTime Left: %s - Songs Left: %d\n\n",
-                millis == -1 ? "Unknown" : MusicUtils.getPrettyDuration(Duration.ofMillis(millis)),
+                remaining == null ? "Unknown" : MusicUtils.getPrettyDuration(remaining),
                 list.length));
 
         int maxIdx = Math.min(PAGE_COUNT * (page + 1), list.length);

@@ -7,6 +7,10 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 
 import java.time.Duration;
+import java.time.temporal.ChronoUnit;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class MusicUtils {
 
@@ -52,16 +56,32 @@ public class MusicUtils {
                 requesterID);
     }
 
-    public static MessageEmbed createPlayingEmbed(AudioTrackInfo info) {
+    /**
+     * Nice embed which shows details/thumbnail of given track
+     *
+     * @param track AudioTrack details
+     * @param titleFormat Format for title (Queue or Play)
+     * @return MessageEmbed that can be sent
+     */
+    public static MessageEmbed createPlayingEmbed(AudioTrack track, String titleFormat) {
         EmbedBuilder builder = new EmbedBuilder();
-        builder.setTitle(String.format("Playing **%s**", info.title), info.uri);
+        AudioTrackInfo info = track.getInfo();
+        TrackContext ctx = (TrackContext) track.getUserData();
+
+        builder.setTitle(String.format(titleFormat, info.title), info.uri);
         builder.setDescription(String.format("Uploaded by: %s", info.author));
 
         if (info.isStream) {
             builder.setFooter("Stream (No Duration)");
         } else {
             String prettyDur = getPrettyDuration(Duration.ofMillis(info.length));
-            builder.setFooter(String.format("Duration: %s", prettyDur));
+
+            if (ctx.startMillis != 0) {
+                String prettyStart = getPrettyDuration(Duration.ofMillis(ctx.startMillis));
+                builder.setFooter(String.format("Duration: %s - Started at %s", prettyDur, prettyStart));
+            } else {
+                builder.setFooter(String.format("Duration: %s", prettyDur));
+            }
         }
 
         if (info.artworkUrl != null) {
@@ -71,28 +91,71 @@ public class MusicUtils {
         return builder.build();
     }
 
+
+    /**
+     * Get pretty text duration from milliseconds
+     *
+     * @param dur Millisecond duration to prettify
+     * @return Pretty string
+     */
     public static String getPrettyDuration(long millis) {
         return getPrettyDuration(Duration.ofMillis(millis));
     }
+
+    /**
+     * Get pretty text duration from Duration
+     *
+     * @param dur Duration to prettify
+     * @return Pretty string
+     */
     public static String getPrettyDuration(Duration dur) {
         String str = "";
         if (dur.toHours() > 0) str += String.format("%dh ", dur.toHours());
-        if (dur.toMinutes() > 0) str += String.format("%dm ", dur.toMinutesPart());
-        if (dur.toSeconds() > 0) str += String.format("%ds ", dur.toSecondsPart());
+        if (dur.toMinutesPart() > 0) str += String.format("%dm ", dur.toMinutesPart());
+        if (dur.toSecondsPart() > 0) str += String.format("%ds ", dur.toSecondsPart());
+        if (dur.toSeconds() == 0) str += "0s";
         return str.trim();
     }
 
+    /**
+     * Convert time argument to Duration
+     *
+     * @param string Seconds or HH:MM:SS or MM:SS string
+     * @return Duration
+     */
+    public static Duration getDurationFromArg(String string) {
+        List<Integer> parsedArgs = Arrays.stream(string.split(":"))
+                .map(Integer::parseInt)
+                .collect(Collectors.toList());
 
-    public static long getTimeRemaining(Object[] list, AudioTrack playingTrack) {
+        return switch (parsedArgs.size()) {
+            case 1 -> Duration.ofSeconds(parsedArgs.get(0));
+            case 2 -> Duration.ofMinutes(parsedArgs.get(0))
+                    .plus(parsedArgs.get(1), ChronoUnit.SECONDS);
+            case 3 -> Duration.ofHours(parsedArgs.get(0))
+                    .plus(parsedArgs.get(1), ChronoUnit.MINUTES)
+                    .plus(parsedArgs.get(2), ChronoUnit.SECONDS);
+            default -> Duration.ofSeconds(0);
+        };
+    }
+
+    /**
+     * Get remaining time in playlist
+     *
+     * @param list Playlist
+     * @param playingTrack Currently playing track
+     * @return Remaining time as Duration
+     */
+    public static Duration getTimeRemaining(Object[] list, AudioTrack playingTrack) {
         long millis = playingTrack.getDuration() - playingTrack.getPosition();
-        if (playingTrack.getInfo().isStream) return -1;
+        if (playingTrack.getInfo().isStream) return null;
 
         for (Object track: list) {
             var currentTrack = (AudioTrack) track;
             millis += currentTrack.getDuration();
-            if (currentTrack.getInfo().isStream) return -1;
+            if (currentTrack.getInfo().isStream) return null;
         }
 
-        return millis;
+        return Duration.ofMillis(millis);
     }
 }

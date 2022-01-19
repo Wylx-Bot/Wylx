@@ -24,10 +24,11 @@ public class PlayCommand extends ServerCommand {
         var playerManager = WylxPlayerManager.getInstance();
         var guildID = event.getGuild().getIdLong();
         var musicManager = playerManager.getGuildManager(event.getGuild().getIdLong());
-        var context = new TrackContext(guildID, event.getChannel().getIdLong(), event.getAuthor().getIdLong());
 
-        if (args.length != 2) {
-            event.getChannel().sendMessage("Usage: $play <link>").queue();
+        args = event.getMessage().getContentStripped().split(" ");
+
+        if (args.length < 2 || args.length > 3) {
+            event.getChannel().sendMessage("Usage: $play link <Seconds to skip OR HH:MM:SS>").queue();
             return;
         }
 
@@ -36,24 +37,31 @@ public class PlayCommand extends ServerCommand {
             return;
         }
 
+        // Replace < and > which avoids embeds on Discord
+        args[1] = args[1].replaceAll("(^<)|(>$)", "");
+
+        Duration dur = Duration.ofSeconds(0);
+        if (args.length == 3) {
+            dur = MusicUtils.getDurationFromArg(args[2]);
+        }
+
+        var context = new TrackContext(
+                guildID,
+                event.getChannel().getIdLong(),
+                event.getAuthor().getIdLong(),
+                dur.toMillis()
+        );
+
         playerManager.loadTracks(args[1], guildID, new AudioLoadResultHandler() {
             @Override
             public void trackLoaded(AudioTrack track) {
                 track.setUserData(context);
-                event.getChannel().sendMessage("Track found")
-                        .delay(Duration.ofSeconds(60))
-                        .flatMap(Message::delete)
-                        .queue();
                 musicManager.queue(track);
             }
 
             @Override
             public void playlistLoaded(AudioPlaylist playlist) {
                 playlist.getTracks().forEach(track -> track.setUserData(context));
-                event.getChannel().sendMessage("Playlist found: Added " + playlist.getTracks().size() + " Songs")
-                        .delay(Duration.ofSeconds(60))
-                        .flatMap(Message::delete)
-                        .queue();
                 musicManager.queuePlaylist(playlist);
             }
 

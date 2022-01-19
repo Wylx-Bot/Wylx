@@ -9,16 +9,18 @@ import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.TextChannel;
 
 import java.time.Duration;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.concurrent.BlockingQueue;
 
 import static Core.Music.MusicUtils.joinVoice;
 
 public class GuildMusicManager extends AudioEventAdapter {
     private Timer discTimer;
+    private TrackContext lastCtx;
     private final long guildID;
     private final AudioPlayer player;
     private final MusicPlaylist playlist = new MusicPlaylist();
@@ -35,10 +37,19 @@ public class GuildMusicManager extends AudioEventAdapter {
 
     public void queuePlaylist(AudioPlaylist newPlaylist) {
         var tracks = newPlaylist.getTracks();
+        var ctx = (TrackContext) tracks.get(0).getUserData();
+        var textChannel = Wylx.getInstance().getTextChannel(ctx.channelID);
 
-        if (joinVoice((TrackContext) tracks.get(0).getUserData())) return;
-        if (discTimer != null) discTimer.cancel();
-        discTimer = null;
+        cancelTimer();
+        if (joinVoice(ctx)) {
+            return;
+        }
+
+        textChannel.sendMessage(String.format("Playlist found: Added %d Songs", tracks.size()))
+                .delay(Duration.ofSeconds(60))
+                .flatMap(Message::delete)
+                .queue();
+
         if (player.startTrack(tracks.get(0), true)) {
             tracks.remove(0);
         }
@@ -47,13 +58,32 @@ public class GuildMusicManager extends AudioEventAdapter {
     }
 
     public void queue(AudioTrack newTrack) {
-        if (joinVoice((TrackContext) newTrack.getUserData())) return;
-        if (discTimer != null) discTimer.cancel();
-        discTimer = null;
+        var ctx = (TrackContext) newTrack.getUserData();
+        var textChannel = Wylx.getInstance().getTextChannel(ctx.channelID);
+
+        cancelTimer();
+        if (joinVoice(ctx)) {
+            return;
+        }
+
         if (player.startTrack(newTrack, true))
             return;
 
+        // Only send if queued instead of played right away
+        MessageEmbed embed = MusicUtils.createPlayingEmbed(newTrack, "Queueing **%s**");
+        textChannel.sendMessageEmbeds(embed)
+                .delay(Duration.ofSeconds(60))
+                .flatMap(Message::delete)
+                .queue();
+
         playlist.queue(newTrack);
+    }
+
+    private void cancelTimer() {
+        if (discTimer != null) {
+            discTimer.cancel();
+            discTimer = null;
+        }
     }
 
     public void skip() {
@@ -74,6 +104,14 @@ public class GuildMusicManager extends AudioEventAdapter {
     private void playNextTrack() {
         if (player.startTrack(playlist.getNextTrack(), false))
             return;
+
+        if (lastCtx != null) {
+            TextChannel channel = Wylx.getInstance().getTextChannel(lastCtx.channelID);
+            channel.sendMessage("Playlist ended. Use the $play command to add more music")
+                    .delay(Duration.ofMinutes(1))
+                    .flatMap(Message::delete)
+                    .queue();
+        }
 
         // Disconnect after a minute if not playing
         discTimer = new Timer();
@@ -102,6 +140,10 @@ public class GuildMusicManager extends AudioEventAdapter {
         return player.getPlayingTrack();
     }
 
+    public void seek(Duration dur) {
+        player.getPlayingTrack().setPosition(dur.toMillis());
+    }
+
     @Override
     public void onPlayerPause(AudioPlayer player) {
     }
@@ -114,11 +156,14 @@ public class GuildMusicManager extends AudioEventAdapter {
     @Override
     public void onTrackStart(AudioPlayer player, AudioTrack track) {
         var wylx = Wylx.getInstance();
-        TrackContext ctx = (TrackContext) track.getUserData();
-        var channel = wylx.getTextChannel(ctx.channelID);
+        lastCtx = (TrackContext) track.getUserData();
+        var channel = wylx.getTextChannel(lastCtx.channelID);
+
+        track.setPosition(lastCtx.startMillis);
 
         if (channel == null) return;
-        channel.sendMessageEmbeds(MusicUtils.createPlayingEmbed(track.getInfo()))
+        MessageEmbed embed = MusicUtils.createPlayingEmbed(track, "Playing **%s**");
+        channel.sendMessageEmbeds(embed)
                 .delay(Duration.ofSeconds(60))
                 .flatMap(Message::delete)
                 .queue();
