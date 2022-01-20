@@ -11,6 +11,8 @@ import java.nio.ByteBuffer;
  * This is a wrapper around AudioPlayer which makes it behave as an AudioSendHandler for JDA. As JDA calls canProvide
  * before every call to provide20MsAudio(), we pull the frame in canProvide() and use the frame we already pulled in
  * provide20MsAudio().
+ *
+ * This is from https://github.com/sedmelluq/lavaplayer/
  */
 public class AudioPlayerSendHandler implements AudioSendHandler {
     private final AudioPlayer audioPlayer;

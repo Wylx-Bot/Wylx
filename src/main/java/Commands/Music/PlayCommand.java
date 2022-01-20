@@ -25,8 +25,6 @@ public class PlayCommand extends ServerCommand {
         var guildID = event.getGuild().getIdLong();
         var musicManager = playerManager.getGuildManager(event.getGuild().getIdLong());
 
-        args = event.getMessage().getContentStripped().split(" ");
-
         if (args.length < 2 || args.length > 3) {
             event.getChannel().sendMessage("Usage: $play link <Seconds to skip OR HH:MM:SS>").queue();
             return;
@@ -40,6 +38,7 @@ public class PlayCommand extends ServerCommand {
         // Replace < and > which avoids embeds on Discord
         args[1] = args[1].replaceAll("(^<)|(>$)", "");
 
+        // Get start location if user gives time
         Duration dur = Duration.ofSeconds(0);
         if (args.length == 3) {
             dur = MusicUtils.getDurationFromArg(args[2]);
@@ -52,6 +51,7 @@ public class PlayCommand extends ServerCommand {
                 dur.toMillis()
         );
 
+        // Ask Lavaplayer for a track
         playerManager.loadTracks(args[1], guildID, new AudioLoadResultHandler() {
             @Override
             public void trackLoaded(AudioTrack track) {

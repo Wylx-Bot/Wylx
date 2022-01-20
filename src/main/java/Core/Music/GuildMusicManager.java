@@ -11,12 +11,11 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.managers.AudioManager;
 
 import java.time.Duration;
 import java.util.Timer;
 import java.util.TimerTask;
-
-import static Core.Music.MusicUtils.joinVoice;
 
 public class GuildMusicManager extends AudioEventAdapter {
     private Timer discTimer;
@@ -29,9 +28,10 @@ public class GuildMusicManager extends AudioEventAdapter {
         this.guildID = guildID;
         player = manager.createPlayer();
         player.addListener(this);
+        // TODO: Set volume with preference
         player.setVolume(20);
 
-        var audioManager = Wylx.getInstance().getGuildAudioManager(guildID);
+        AudioManager audioManager = Wylx.getInstance().getGuildAudioManager(guildID);
         audioManager.setSendingHandler(new AudioPlayerSendHandler(player));
     }
 
@@ -41,7 +41,7 @@ public class GuildMusicManager extends AudioEventAdapter {
         var textChannel = Wylx.getInstance().getTextChannel(ctx.channelID);
 
         cancelTimer();
-        if (joinVoice(ctx)) {
+        if (MusicUtils.joinVoice(ctx)) {
             return;
         }
 
@@ -50,6 +50,7 @@ public class GuildMusicManager extends AudioEventAdapter {
                 .flatMap(Message::delete)
                 .queue();
 
+        // Attempt to play song, this will return false if another song is playing already
         if (player.startTrack(tracks.get(0), true)) {
             tracks.remove(0);
         }
@@ -62,10 +63,11 @@ public class GuildMusicManager extends AudioEventAdapter {
         var textChannel = Wylx.getInstance().getTextChannel(ctx.channelID);
 
         cancelTimer();
-        if (joinVoice(ctx)) {
+        if (MusicUtils.joinVoice(ctx)) {
             return;
         }
 
+        // Attempt to play song, this will return false if another song is playing already
         if (player.startTrack(newTrack, true))
             return;
 
@@ -86,25 +88,12 @@ public class GuildMusicManager extends AudioEventAdapter {
         }
     }
 
-    public void skip() {
-        // TODO: Announce skip
-
-        playNextTrack();
-    }
-
-    public void clearQueue() {
-        playlist.clear();
-        playNextTrack();
-    }
-
-    public void setVolume(int vol) {
-        player.setVolume(vol);
-    }
-
+    // Called when skipped or last song ended
     private void playNextTrack() {
         if (player.startTrack(playlist.getNextTrack(), false))
             return;
 
+        // Nothing else to play!
         if (lastCtx != null) {
             TextChannel channel = Wylx.getInstance().getTextChannel(lastCtx.channelID);
             channel.sendMessage("Playlist ended. Use the $play command to add more music")
@@ -113,7 +102,7 @@ public class GuildMusicManager extends AudioEventAdapter {
                     .queue();
         }
 
-        // Disconnect after a minute if not playing
+        // Disconnect after a minute of not playing
         discTimer = new Timer();
         discTimer.schedule(new TimerTask() {
             @Override
@@ -140,9 +129,26 @@ public class GuildMusicManager extends AudioEventAdapter {
         return player.getPlayingTrack();
     }
 
+    public void skip() {
+        // TODO: Announce skip
+
+        playNextTrack();
+    }
+
+    public void clearQueue() {
+        playlist.clear();
+        playNextTrack();
+    }
+
+    public void setVolume(int vol) {
+        player.setVolume(vol);
+    }
+
     public void seek(Duration dur) {
         player.getPlayingTrack().setPosition(dur.toMillis());
     }
+
+    // Events from Lavaplayer
 
     @Override
     public void onPlayerPause(AudioPlayer player) {
@@ -150,7 +156,6 @@ public class GuildMusicManager extends AudioEventAdapter {
 
     @Override
     public void onPlayerResume(AudioPlayer player) {
-        super.onPlayerResume(player);
     }
 
     @Override

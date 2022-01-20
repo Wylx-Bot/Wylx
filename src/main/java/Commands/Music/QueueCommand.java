@@ -34,6 +34,7 @@ public class QueueCommand extends ServerCommand {
 
         AtomicLong msgId = new AtomicLong();
 
+        // Listen for buttons to switch queue page
         ListenerAdapter adapter = new ListenerAdapter() {
             int page = 0;
 
@@ -62,13 +63,15 @@ public class QueueCommand extends ServerCommand {
             }
         };
 
+        // By default send the first page and attach buttons
         event.getChannel().sendMessage(getQueuePage(0, manager)).setActionRow(
                 Button.secondary("first", "\u23EA"),
                 Button.secondary("previous", "\u25C0"),
                 Button.secondary("next", "\u25B6"),
                 Button.secondary("last", "\u23E9")
         ).queue(message -> {
-            message.editMessageComponents().queueAfter(30, TimeUnit.SECONDS, msg -> {
+            // Remove buttons after ~2 minutes
+            message.editMessageComponents().queueAfter(120, TimeUnit.SECONDS, msg -> {
                 event.getJDA().removeEventListener(adapter);
             });
             msgId.set(message.getIdLong());
@@ -77,7 +80,7 @@ public class QueueCommand extends ServerCommand {
         event.getJDA().addEventListener(adapter);
     }
 
-    public static String getQueuePage(int page, GuildMusicManager manager) {
+    private static String getQueuePage(int page, GuildMusicManager manager) {
         Object[] list = manager.getQueue();
         AudioTrack currentPlaying = manager.getCurrentTrack();
         StringBuilder builder = new StringBuilder();
@@ -85,6 +88,7 @@ public class QueueCommand extends ServerCommand {
         page = Math.min(page, list.length / PAGE_COUNT);
         Duration remaining = MusicUtils.getTimeRemaining(list, currentPlaying);
 
+        // Header
         builder.append(String.format("__Page **%d** of **%d**__\n", page + 1, (list.length / 10) + 1));
         builder.append(String.format("Now playing **%s** by **%s** : ",
                 currentPlaying.getInfo().title,
@@ -102,6 +106,7 @@ public class QueueCommand extends ServerCommand {
                 remaining == null ? "Unknown" : MusicUtils.getPrettyDuration(remaining),
                 list.length));
 
+        // Body with all other songs in queue
         int maxIdx = Math.min(PAGE_COUNT * (page + 1), list.length);
         for (int i = PAGE_COUNT * page; i < maxIdx; i++) {
             AudioTrack nextTrack = (AudioTrack) list[i];
