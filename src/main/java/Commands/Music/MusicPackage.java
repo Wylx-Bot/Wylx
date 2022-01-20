@@ -15,6 +15,7 @@ public class MusicPackage extends CommandPackage {
             new ResumeCommand(),
             new QueueCommand(),
             new SeekCommand(),
+            new LoopCommand(),
         }, new SilentEvent[]{});
     }
 
