@@ -9,21 +9,41 @@ import java.util.TimerTask;
 public abstract class ThreadedCommand extends ServerCommand{
 	private final long timeout;
 
+	@Deprecated
 	public ThreadedCommand(String keyword, CommandPermission cmdPerm) {
-		this(keyword, cmdPerm, 300000);
+		this(keyword, cmdPerm, "Some Dev is using deprecated features");
 	}
 
+	public ThreadedCommand(String keyword, CommandPermission cmdPerm, String description) {
+		this(keyword, cmdPerm, description,300000);
+	}
+
+	@Deprecated
 	public ThreadedCommand(String keyword, CommandPermission cmdPerm, long timeout) {
-		super (keyword, cmdPerm);
+		this(keyword, cmdPerm, "Some Dev is using deprecated features", timeout);
+	}
+
+	public ThreadedCommand(String keyword, CommandPermission cmdPerm, String description, long timeout) {
+		super (keyword, cmdPerm, description);
 		this.timeout = timeout;
 	}
 
+	@Deprecated
 	public ThreadedCommand(String keyword, CommandPermission cmdPerm, Permission perm) {
-		this(keyword, cmdPerm, perm, 300000);
+		this(keyword, cmdPerm, perm, "Some Dev is using deprecated features");
 	}
 
+	public ThreadedCommand(String keyword, CommandPermission cmdPerm, Permission perm, String description) {
+		this(keyword, cmdPerm, perm, description, 300000);
+	}
+
+	@Deprecated
 	public ThreadedCommand(String keyword, CommandPermission cmdPerm, Permission perm, long timeout) {
-		super(keyword, cmdPerm, perm);
+		this(keyword, cmdPerm, perm, "Some Dev is using deprecated features", timeout);
+	}
+
+	public ThreadedCommand(String keyword, CommandPermission cmdPerm, Permission perm, String description, long timeout) {
+		super(keyword, cmdPerm, perm, description);
 		this.timeout = timeout;
 	}
 

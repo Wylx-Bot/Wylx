@@ -20,8 +20,8 @@ import java.util.HashMap;
 
 public class MessageProcessing extends ListenerAdapter {
 	public static final ProcessPackage[] processPackages = {new ManagementPackage(), new TTRPGPackage()};
-	private static final HashMap<String, ServerCommand> commandMap = new HashMap<>();
-	private static final ArrayList<SilentEvent> events = new ArrayList<>();
+	public static final HashMap<String, ServerCommand> commandMap = new HashMap<>();
+	public static final ArrayList<SilentEvent> events = new ArrayList<>();
 
 	private static final Logger logger = LoggerFactory.getLogger(MessageProcessing.class);
 
