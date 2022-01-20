@@ -35,6 +35,7 @@ public class MusicUtils {
             return true; // User not in voice channel
 
         audioManager.openAudioConnection(voiceState.getChannel());
+        audioManager.setSelfDeafened(true);
         return false;
     }
 

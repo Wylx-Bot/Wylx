@@ -12,17 +12,22 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.managers.AudioManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
 import java.util.Timer;
 import java.util.TimerTask;
 
 public class GuildMusicManager extends AudioEventAdapter {
+    private boolean loop = false;
     private Timer discTimer;
     private TrackContext lastCtx;
     private final long guildID;
     private final AudioPlayer player;
     private final MusicPlaylist playlist = new MusicPlaylist();
+
+    private static final Logger logger = LoggerFactory.getLogger(GuildMusicManager.class);
 
     public GuildMusicManager(long guildID, AudioPlayerManager manager) {
         this.guildID = guildID;
@@ -140,6 +145,18 @@ public class GuildMusicManager extends AudioEventAdapter {
         playNextTrack();
     }
 
+    public void stop() {
+        player.stopTrack();
+    }
+
+    public void loop(boolean enable) {
+        loop = enable;
+    }
+
+    public boolean isLooping() {
+        return loop;
+    }
+
     public void setVolume(int vol) {
         player.setVolume(vol);
     }
@@ -177,12 +194,21 @@ public class GuildMusicManager extends AudioEventAdapter {
     @Override
     public void onTrackEnd(AudioPlayer player, AudioTrack track, AudioTrackEndReason endReason) {
         if (endReason.mayStartNext) {
-            playNextTrack();
+            if (loop) {
+                player.startTrack(track.makeClone(), false);
+            } else {
+                playNextTrack();
+            }
+        } else {
+            playlist.clear();
+
+            AudioManager audioManager = Wylx.getInstance().getGuildAudioManager(guildID);
+            audioManager.closeAudioConnection();
         }
     }
 
     @Override
     public void onTrackException(AudioPlayer player, AudioTrack track, FriendlyException exception) {
-        super.onTrackException(player, track, exception);
+        logger.error("Track ended: {}", exception.getMessage());
     }
 }
