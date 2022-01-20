@@ -3,10 +3,12 @@ package Core.Processing;
 import Commands.DND.TTRPGPackage;
 import Commands.Help;
 import Commands.Management.ManagementPackage;
+import Commands.Music.MusicPackage;
 import Core.Commands.CommandPackage;
 import Core.Commands.ServerCommand;
 import Core.Events.SilentEvent;
-import Core.Main;
+import Core.Wylx;
+import Core.Events.SilentEvent;
 import Core.ProcessPackage.ProcessPackage;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -19,7 +21,9 @@ import java.util.Arrays;
 import java.util.HashMap;
 
 public class MessageProcessing extends ListenerAdapter {
-	public static final ProcessPackage[] processPackages = {new ManagementPackage(), new TTRPGPackage()};
+	public static final ProcessPackage[] processPackages = {new ManagementPackage(),
+			new TTRPGPackage(),
+			new MusicPackage()};
 	public static final HashMap<String, ServerCommand> commandMap = new HashMap<>();
 	public static final ArrayList<SilentEvent> events = new ArrayList<>();
 

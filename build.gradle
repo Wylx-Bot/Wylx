@@ -12,6 +12,10 @@ repositories {
         name 'm2-dv8tion'
         url 'https://m2.dv8tion.net/releases'
     }
+    maven {
+        name 'jitpack'
+        url 'https://jitpack.io'
+    }
 }
 
 
@@ -19,4 +23,5 @@ dependencies {
     implementation("io.github.cdimascio:dotenv-kotlin:6.2.2")
     implementation("net.dv8tion:JDA:5.0.0-alpha.4")
     implementation("ch.qos.logback:logback-classic:1.2.10+")
+    implementation("com.github.walkyst:lavaplayer-fork:61dc03e")
 }
