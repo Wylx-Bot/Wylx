@@ -36,7 +36,7 @@ public class Wylx {
 
 		try {
 			jda = JDABuilder.createDefault(env.get("DISCORD_TOKEN"))
-					.setActivity(Activity.of(Activity.ActivityType.PLAYING, "with half a ship"))
+					.setActivity(Activity.of(Activity.ActivityType.PLAYING, "with invisible numbers"))
 					.addEventListeners(new MessageProcessing())
 					.enableIntents(GatewayIntent.GUILD_MEMBERS)
 					.build();
