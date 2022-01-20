@@ -18,7 +18,7 @@ public abstract class ProcessPackage {
 
 	public abstract String getHeader();
 
-	public String getDescription(){
+	public final String getDescription(){
 		StringBuilder descriptionBuilder = new StringBuilder();
 		descriptionBuilder.append("+");
 		descriptionBuilder.append(getName()).append(" - ");

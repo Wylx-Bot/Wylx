@@ -3,8 +3,9 @@ package Commands.Music;
 import Core.Commands.CommandPackage;
 import Core.Commands.ServerCommand;
 import Core.Events.SilentEvent;
+import Core.ProcessPackage.ProcessPackage;
 
-public class MusicPackage extends CommandPackage {
+public class MusicPackage extends ProcessPackage {
     public MusicPackage() {
         super(new ServerCommand[]{
             new PlayCommand(),
@@ -20,7 +21,7 @@ public class MusicPackage extends CommandPackage {
     }
 
     @Override
-    public String getDescription() {
-        return null;
+    public String getHeader() {
+        return "Commands for using Wylx to play music in your server";
     }
 }

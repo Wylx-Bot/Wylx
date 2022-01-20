@@ -4,11 +4,9 @@ import Commands.DND.TTRPGPackage;
 import Commands.Help;
 import Commands.Management.ManagementPackage;
 import Commands.Music.MusicPackage;
-import Core.Commands.CommandPackage;
 import Core.Commands.ServerCommand;
 import Core.Events.SilentEvent;
 import Core.Wylx;
-import Core.Events.SilentEvent;
 import Core.ProcessPackage.ProcessPackage;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -42,7 +40,7 @@ public class MessageProcessing extends ListenerAdapter {
 	@Override
 	public void onMessageReceived(@NotNull MessageReceivedEvent event) {
 		//Ignore messages from the bot
-		if(event.getAuthor().getIdLong() == Main.getBotID()) return;
+		if(event.getAuthor().getIdLong() == Wylx.getInstance().getBotID()) return;
 
 		String prefix = "$"; // TODO: Get as server preference
 		String msg = event.getMessage().getContentRaw();
