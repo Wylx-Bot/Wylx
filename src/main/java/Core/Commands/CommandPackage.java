@@ -3,8 +3,8 @@ package Core.Commands;
 import Core.Events.SilentEvent;
 
 public abstract class CommandPackage {
-	protected ServerCommand[] commands;
-	protected SilentEvent[] events;
+	protected final ServerCommand[] commands;
+	protected final SilentEvent[] events;
 
 	public CommandPackage(ServerCommand[] commands, SilentEvent[] events){
 		this.commands = commands;

@@ -28,7 +28,6 @@ public class Wylx {
 	}
 
 	private Wylx() {
-		MessageProcessing messageProcessor = new MessageProcessing();
 		Dotenv env = Dotenv.configure()
 				.ignoreIfMissing()
 				.load();
@@ -38,7 +37,7 @@ public class Wylx {
 		try {
 			jda = JDABuilder.createDefault(env.get("DISCORD_TOKEN"))
 					.setActivity(Activity.of(Activity.ActivityType.PLAYING, "with half a ship"))
-					.addEventListeners(messageProcessor)
+					.addEventListeners(new MessageProcessing())
 					.enableIntents(GatewayIntent.GUILD_MEMBERS)
 					.build();
 		} catch (LoginException e) {
