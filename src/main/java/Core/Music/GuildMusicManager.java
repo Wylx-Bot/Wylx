@@ -209,6 +209,9 @@ public class GuildMusicManager extends AudioEventAdapter {
 
     @Override
     public void onTrackException(AudioPlayer player, AudioTrack track, FriendlyException exception) {
+        TrackContext ctx = (TrackContext) track.getUserData();
+        TextChannel textChannel = Wylx.getInstance().getTextChannel(ctx.channelID);
+        textChannel.sendMessage("Error: " + exception.getMessage()).queue();
         logger.error("Track ended: {}", exception.getMessage());
     }
 }
