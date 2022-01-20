@@ -146,7 +146,12 @@ public class GuildMusicManager extends AudioEventAdapter {
     }
 
     public void stop() {
+        loop(false);
+        playlist.clear();
         player.stopTrack();
+
+        AudioManager audioManager = Wylx.getInstance().getGuildAudioManager(guildID);
+        audioManager.closeAudioConnection();
     }
 
     public void loop(boolean enable) {
@@ -199,11 +204,6 @@ public class GuildMusicManager extends AudioEventAdapter {
             } else {
                 playNextTrack();
             }
-        } else {
-            playlist.clear();
-
-            AudioManager audioManager = Wylx.getInstance().getGuildAudioManager(guildID);
-            audioManager.closeAudioConnection();
         }
     }
 
