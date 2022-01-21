@@ -6,9 +6,6 @@ import Core.ProcessPackage.ProcessPackage;
 import Core.Processing.MessageProcessing;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
-import java.awt.*;
-import java.util.Locale;
-
 public class Help extends ServerCommand {
 	public Help() {
 		super("help", CommandPermission.EVERYONE, "Provides lists and descriptions of commands");
@@ -42,7 +39,7 @@ public class Help extends ServerCommand {
 
 			//Check server commands to see if they provided the name of a server command
 			for(ServerCommand command : MessageProcessing.commandMap.values()){
-				if(command.getName().toLowerCase().equals(args[1].toLowerCase())){
+				if(command.getName().equalsIgnoreCase(args[1])){
 					event.getChannel().sendMessage(command.getName() + ": " + command.getDescription()).queue();
 					return;
 				}
@@ -50,7 +47,7 @@ public class Help extends ServerCommand {
 
 			//Check SilentEvents to see if they provided the name of an event
 			for(SilentEvent silentEvent : MessageProcessing.events){
-				if(silentEvent.getName().toLowerCase().equals(args[1].toLowerCase())){
+				if(silentEvent.getName().equalsIgnoreCase(args[1])){
 					event.getChannel().sendMessage(silentEvent.getName() + ": " + silentEvent.getDescription()).queue();
 					return;
 				}

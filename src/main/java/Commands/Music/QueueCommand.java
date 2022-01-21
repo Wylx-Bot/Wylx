@@ -20,7 +20,9 @@ public class QueueCommand extends ServerCommand {
     private static final int PAGE_COUNT = 10;
 
     QueueCommand() {
-        super("queue", CommandPermission.EVERYONE);
+        super("queue",
+                CommandPermission.EVERYONE,
+                "View current queue of songs waiting to be played");
     }
 
     @Override
@@ -63,7 +65,7 @@ public class QueueCommand extends ServerCommand {
             }
         };
 
-        // By default send the first page and attach buttons
+        // Send the first page and attach buttons
         event.getChannel().sendMessage(getQueuePage(0, manager)).setActionRow(
                 Button.secondary("first", "\u23EA"),
                 Button.secondary("previous", "\u25C0"),
@@ -71,9 +73,8 @@ public class QueueCommand extends ServerCommand {
                 Button.secondary("last", "\u23E9")
         ).queue(message -> {
             // Remove buttons after ~2 minutes
-            message.editMessageComponents().queueAfter(120, TimeUnit.SECONDS, msg -> {
-                event.getJDA().removeEventListener(adapter);
-            });
+            message.editMessageComponents().queueAfter(120, TimeUnit.SECONDS,
+                    msg -> event.getJDA().removeEventListener(adapter));
             msgId.set(message.getIdLong());
         });
 
@@ -86,7 +87,7 @@ public class QueueCommand extends ServerCommand {
         StringBuilder builder = new StringBuilder();
 
         page = Math.min(page, list.length / PAGE_COUNT);
-        Duration remaining = MusicUtils.getTimeRemaining(list, currentPlaying);
+        Duration remaining = MusicUtils.getTimeRemaining(list, manager);
 
         // Header
         builder.append(String.format("__Page **%d** of **%d**__\n", page + 1, (list.length / 10) + 1));
@@ -96,6 +97,8 @@ public class QueueCommand extends ServerCommand {
 
         if (currentPlaying.getInfo().isStream) {
             builder.append("Live");
+        } else if (manager.isLooping()) {
+            builder.append("Looping");
         } else {
             builder.append(MusicUtils.getPrettyDuration(Duration.ofMillis(
                     currentPlaying.getDuration() - currentPlaying.getPosition()

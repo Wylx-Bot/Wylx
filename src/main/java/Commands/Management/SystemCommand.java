@@ -2,7 +2,6 @@ package Commands.Management;
 
 import Core.Commands.ServerCommand;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import java.io.BufferedReader;
