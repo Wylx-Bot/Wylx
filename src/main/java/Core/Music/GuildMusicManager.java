@@ -11,9 +11,7 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.managers.AudioManager;
-import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -168,8 +166,7 @@ public class GuildMusicManager extends AudioEventAdapter {
         player.setVolume(vol);
     }
 
-    public void seek(@NotNull MusicSeek seek) {
-        logger.error(seek.toString());
+    public void seek(MusicSeek seek) {
         if (!seek.relative()) {
             player.getPlayingTrack().setPosition(seek.dur().toMillis());
             return;
