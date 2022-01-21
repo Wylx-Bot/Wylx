@@ -6,7 +6,7 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 public class PingCommand extends ThreadedCommand {
     public PingCommand() {
-        super("ping", CommandPermission.EVERYONE);
+        super("ping", CommandPermission.EVERYONE, "Provides the ping from the bot to discord");
     }
 
     @Override

@@ -2,9 +2,11 @@ package Core.Commands;
 
 import Core.Events.SilentEvent;
 
+@Deprecated
+// Switch Over To ProcessPackage
 public abstract class CommandPackage {
-	protected final ServerCommand[] commands;
-	protected final SilentEvent[] events;
+	protected ServerCommand[] commands;
+	protected SilentEvent[] events;
 
 	public CommandPackage(ServerCommand[] commands, SilentEvent[] events){
 		this.commands = commands;

@@ -17,11 +17,18 @@ public abstract class ServerCommand {
 	private final CommandPermission cmdPerm;
 	private final Permission discPerm;
 	private final String keyword;
-	protected final Logger logger = LoggerFactory.getLogger(this.getClass());
+	private final String description;
+	protected final Logger logger = LoggerFactory.getLogger(this.getClass());;
 
+	@Deprecated
 	public ServerCommand(String keyword, CommandPermission cmdPerm) {
+		this(keyword, cmdPerm, "Some Dev is using deprecated features");
+	}
+
+	public ServerCommand(String keyword, CommandPermission cmdPerm, String description){
 		this.keyword = keyword;
 		this.cmdPerm = cmdPerm;
+		this.description = description;
 		discPerm = null;
 
 		if (cmdPerm == CommandPermission.DISCORD_PERM) {
@@ -30,10 +37,16 @@ public abstract class ServerCommand {
 		}
 	}
 
+	@Deprecated
 	public ServerCommand(String keyword, CommandPermission cmdPerm, Permission perm) {
+		this(keyword, cmdPerm, perm, "Some Dev is using deprecated features");
+	}
+
+	public ServerCommand(String keyword, CommandPermission cmdPerm, Permission perm, String description) {
 		this.keyword = keyword;
 		this.cmdPerm = cmdPerm;
 		this.discPerm = perm;
+		this.description = description;
 
 		if (cmdPerm != CommandPermission.DISCORD_PERM) {
 			logger.error("Discord permission given when command permission != DISCORD_PERM");
@@ -86,4 +99,12 @@ public abstract class ServerCommand {
 	}
 
 	abstract public void runCommand(MessageReceivedEvent event, String[] args);
+
+	public String getName(){
+		return this.getClass().getSimpleName();
+	}
+
+	public String getDescription(){
+		return description;
+	}
 }
