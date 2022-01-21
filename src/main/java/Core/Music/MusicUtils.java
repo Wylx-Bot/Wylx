@@ -122,9 +122,15 @@ public class MusicUtils {
      */
     public static String getPrettyDuration(Duration dur) {
         String str = "";
-        if (dur.toHours() > 0) str += String.format("%dh ", dur.toHours());
-        if (dur.toMinutesPart() > 0) str += String.format("%dm ", dur.toMinutesPart());
-        if (dur.toSecondsPart() > 0) str += String.format("%ds ", dur.toSecondsPart());
+
+        if (dur.isNegative()) {
+            str += "-";
+            dur = dur.abs();
+        }
+
+        if (dur.toHours() != 0) str += String.format("%dh ", dur.toHours());
+        if (dur.toMinutesPart() != 0) str += String.format("%dm ", dur.toMinutesPart());
+        if (dur.toSecondsPart() != 0) str += String.format("%ds ", dur.toSecondsPart());
         if (dur.toSeconds() == 0) str += "0s";
         return str.trim();
     }
@@ -136,19 +142,15 @@ public class MusicUtils {
      * @return Duration
      */
     public static MusicSeek getDurationFromArg(String string) {
-        boolean relative = false;
-        boolean negative = false;
-
         if (!argToTimePattern.matcher(string).matches()) {
             return null;
         }
 
+        boolean relative = false;
+        long sign = 1;
         switch (string.charAt(0)) {
             case '+' -> relative = true;
-            case '-' -> {
-                relative = true;
-                negative = true;
-            }
+            case '-' -> { relative = true; sign = -1; }
             default -> {}
         }
 
@@ -158,14 +160,14 @@ public class MusicUtils {
         Duration dur = switch (parsedArgs.size()) {
             case 1 -> Duration.ofSeconds(parsedArgs.get(0));
             case 2 -> Duration.ofMinutes(parsedArgs.get(0))
-                    .plus(parsedArgs.get(1), ChronoUnit.SECONDS);
+                    .plus(sign * parsedArgs.get(1), ChronoUnit.SECONDS);
             case 3 -> Duration.ofHours(parsedArgs.get(0))
-                    .plus(parsedArgs.get(1), ChronoUnit.MINUTES)
-                    .plus(parsedArgs.get(2), ChronoUnit.SECONDS);
+                    .plus(sign * parsedArgs.get(1), ChronoUnit.MINUTES)
+                    .plus(sign * parsedArgs.get(2), ChronoUnit.SECONDS);
             default -> Duration.ofSeconds(0);
         };
 
-        return new MusicSeek(relative, negative, dur);
+        return new MusicSeek(relative, dur);
     }
 
     /**

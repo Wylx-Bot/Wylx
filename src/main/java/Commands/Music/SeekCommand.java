@@ -44,7 +44,14 @@ public class SeekCommand extends ServerCommand {
 
         String prettyTime = MusicUtils.getPrettyDuration(seekLoc.dur());
         musicManager.seek(seekLoc);
-        event.getChannel().sendMessage(String.format("Skipped to %s", prettyTime))
+        String msg;
+        if (seekLoc.relative()) {
+            msg = String.format("Seeking %s", prettyTime);
+        } else {
+            msg = String.format("Now playing at %s", prettyTime);
+        }
+
+        event.getChannel().sendMessage(msg)
                 .delay(Duration.ofMinutes(1))
                 .flatMap(Message::delete)
                 .queue();
