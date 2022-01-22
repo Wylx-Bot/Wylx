@@ -25,6 +25,7 @@ public class Wylx {
 		return INSTANCE;
 	}
 
+	@SuppressWarnings("EmptyMethod")
 	public static void main(String[] args) {}
 
 	private Wylx() {
