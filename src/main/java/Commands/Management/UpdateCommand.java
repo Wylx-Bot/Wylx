@@ -28,7 +28,7 @@ public class UpdateCommand extends ThreadedCommand {
 
     private boolean updateGit(MessageReceivedEvent event, String branch) {
         Runtime rt = Runtime.getRuntime();
-        String[] commands = {"git", "pull", branch, "--no-stat"};
+        String[] commands = {"git", "pull", "origin", branch, "--no-stat"};
 
         try {
             Process proc = rt.exec(commands);
@@ -44,7 +44,7 @@ public class UpdateCommand extends ThreadedCommand {
                 event.getChannel().sendMessage("An error occurred while updating.").queue();
                 StringBuilder errOutput = new StringBuilder("Error Output:\n```");
                 while (errInput.ready()) {
-                    errOutput.append(errInput.read());
+                    errOutput.append(errInput.readLine()).append("\n");
                 }
                 errOutput.append("\n```");
                 event.getChannel().sendMessage(errOutput.toString()).queue();
@@ -52,7 +52,7 @@ public class UpdateCommand extends ThreadedCommand {
 
             StringBuilder stdOutput = new StringBuilder("Stdout:\n```");
             while (stdInput.ready()) {
-                stdOutput.append(stdInput.read());
+                stdOutput.append(stdInput.readLine());
             }
             stdOutput.append("\n```");
             event.getChannel().sendMessage(stdOutput.toString()).queue();
