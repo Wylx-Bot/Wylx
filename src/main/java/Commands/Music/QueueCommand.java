@@ -54,12 +54,18 @@ public class QueueCommand extends ServerCommand {
                     return;
                 }
 
+                Object[] list = manager.getQueue();
+
                 switch (event.getComponentId()) {
                     case "first" -> page = 0;
                     case "previous" -> --page;
                     case "next" -> ++page;
-                    case "last" -> page = Integer.MAX_VALUE;
+                    case "last" -> page = list.length / PAGE_COUNT;
                 }
+
+                // Bind page number between 0-max
+                page = Math.min(list.length / PAGE_COUNT, page);
+                page = Math.max(0, page);
 
                 event.editMessage(QueueCommand.getQueuePage(page, manager)).queue();
             }
@@ -86,7 +92,6 @@ public class QueueCommand extends ServerCommand {
         AudioTrack currentPlaying = manager.getCurrentTrack();
         StringBuilder builder = new StringBuilder();
 
-        page = Math.min(page, list.length / PAGE_COUNT);
         Duration remaining = MusicUtils.getTimeRemaining(list, manager);
 
         // Header

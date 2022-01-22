@@ -7,11 +7,14 @@ import Core.ProcessPackage.ProcessPackage;
 public class ManagementPackage extends ProcessPackage {
 
 	public ManagementPackage() {
-		super(new ServerCommand[]{
+		super(new ServerCommand[] {
 				new SystemCommand(),
 				new PingCommand(),
-				new RepeatCommand()},
-				new SilentEvent[]{});
+				new RepeatCommand(),
+				new UpdateCommand(),
+				new RestartCommand(),
+			},
+			new SilentEvent[] {});
 	}
 
 	@Override
