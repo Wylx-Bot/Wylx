@@ -18,10 +18,17 @@ repositories {
     }
 }
 
-
 dependencies {
     implementation("io.github.cdimascio:dotenv-kotlin:6.2.2")
     implementation("net.dv8tion:JDA:5.0.0-alpha.4")
     implementation("ch.qos.logback:logback-classic:1.2.10+")
     implementation("com.github.walkyst:lavaplayer-fork:61dc03e")
+}
+
+jar {
+    manifest {
+        attributes(
+                'Main-Class': "Core.Wylx"
+        )
+    }
 }
