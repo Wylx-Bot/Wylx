@@ -11,7 +11,8 @@ public class ManagementPackage extends ProcessPackage {
 		super(new ServerCommand[]{
 				new SystemCommand(),
 				new PingCommand(),
-				new RepeatCommand()},
+				new RepeatCommand(),
+				new CleanCommand()},
 				new SilentEvent[]{});
 	}
 

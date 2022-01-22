@@ -26,8 +26,6 @@ public abstract class ProcessPackage {
 
 		for(ServerCommand command : commands){
 			descriptionBuilder.append("-\t");
-			descriptionBuilder.append(command.getName());
-			descriptionBuilder.append(": ");
 			descriptionBuilder.append(command.getKeyword());
 			descriptionBuilder.append("\n");
 		}
