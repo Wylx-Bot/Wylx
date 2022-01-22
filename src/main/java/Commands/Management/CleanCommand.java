@@ -14,7 +14,7 @@ import java.util.List;
 public class CleanCommand extends ServerCommand {
     public CleanCommand() {
         super("clean", CommandPermission.DISCORD_PERM, Permission.MESSAGE_MANAGE,
-                "Cleans the channel of bot interactions for the last X messages (20 by default)" +
+                "Cleans the channel of bot interactions for the last X messages (20 by default), Requires Manage Messages" +
                 "\nUsage: $clean <Optional: number of messages to scrape>");
     }
 
