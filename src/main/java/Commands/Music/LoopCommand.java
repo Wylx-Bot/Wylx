@@ -7,7 +7,9 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 public class LoopCommand extends ServerCommand {
     LoopCommand() {
-        super("loop", CommandPermission.EVERYONE);
+        super("loop",
+                CommandPermission.EVERYONE,
+                "Loop current track\nUsage: $loop <true/yes OR false/no>");
     }
 
     @Override
@@ -17,7 +19,7 @@ public class LoopCommand extends ServerCommand {
         long memberID = event.getAuthor().getIdLong();
 
         if (args.length != 2) {
-            event.getChannel().sendMessage("Usage: $loop <true OR false>");
+            event.getChannel().sendMessage("Usage: $loop <true OR false>").queue();
             return;
         }
 
@@ -30,18 +32,15 @@ public class LoopCommand extends ServerCommand {
         }
 
         switch (args[1].toLowerCase()) {
-            case "yes":
-            case "true":
+            case "yes", "true" -> {
                 manager.loop(true);
                 event.getChannel().sendMessage("Looping current song. Use $loop false to disable").queue();
-                break;
-            case "no":
-            case "false":
+            }
+            case "no", "false" -> {
                 manager.loop(false);
                 event.getChannel().sendMessage("Disabled looping").queue();
-                break;
-            default:
-                event.getChannel().sendMessage("Unknown argument").queue();
+            }
+            default -> event.getChannel().sendMessage("Unknown argument").queue();
         }
     }
 }

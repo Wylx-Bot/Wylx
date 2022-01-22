@@ -1,6 +1,5 @@
 package Commands.Music;
 
-import Core.Commands.CommandPackage;
 import Core.Commands.ServerCommand;
 import Core.Events.SilentEvent;
 import Core.ProcessPackage.ProcessPackage;

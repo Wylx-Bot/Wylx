@@ -10,9 +10,11 @@ import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.regex.Pattern;
 
 public class MusicUtils {
+
+    private static final Pattern argToTimePattern = Pattern.compile("^[+-]?(\\d*:)*\\d+$");
 
     /**
      * Join a voice channel so music can be played
@@ -22,8 +24,8 @@ public class MusicUtils {
      */
     public static boolean joinVoice(TrackContext ctx) {
         var wylx = Wylx.getInstance();
-        var audioManager = wylx.getGuildAudioManager(ctx.guildID);
-        var member = wylx.getMemberInGuild(ctx.guildID, ctx.requesterID);
+        var audioManager = wylx.getGuildAudioManager(ctx.guildID());
+        var member = wylx.getMemberInGuild(ctx.guildID(), ctx.requesterID());
 
         // Bot already in voice
         if (audioManager.isConnected())
@@ -86,8 +88,8 @@ public class MusicUtils {
         } else {
             String prettyDur = getPrettyDuration(Duration.ofMillis(info.length));
 
-            if (ctx.startMillis != 0) {
-                String prettyStart = getPrettyDuration(Duration.ofMillis(ctx.startMillis));
+            if (ctx.startMillis() != 0) {
+                String prettyStart = getPrettyDuration(Duration.ofMillis(ctx.startMillis()));
                 builder.setFooter(String.format("Duration: %s - Started at %s", prettyDur, prettyStart));
             } else {
                 builder.setFooter(String.format("Duration: %s", prettyDur));
@@ -105,7 +107,7 @@ public class MusicUtils {
     /**
      * Get pretty text duration from milliseconds
      *
-     * @param dur Millisecond duration to prettify
+     * @param millis Millisecond duration to prettify
      * @return Pretty string
      */
     public static String getPrettyDuration(long millis) {
@@ -120,9 +122,15 @@ public class MusicUtils {
      */
     public static String getPrettyDuration(Duration dur) {
         String str = "";
-        if (dur.toHours() > 0) str += String.format("%dh ", dur.toHours());
-        if (dur.toMinutesPart() > 0) str += String.format("%dm ", dur.toMinutesPart());
-        if (dur.toSecondsPart() > 0) str += String.format("%ds ", dur.toSecondsPart());
+
+        if (dur.isNegative()) {
+            str += "-";
+            dur = dur.abs();
+        }
+
+        if (dur.toHours() != 0) str += String.format("%dh ", dur.toHours());
+        if (dur.toMinutesPart() != 0) str += String.format("%dm ", dur.toMinutesPart());
+        if (dur.toSecondsPart() != 0) str += String.format("%ds ", dur.toSecondsPart());
         if (dur.toSeconds() == 0) str += "0s";
         return str.trim();
     }
@@ -133,32 +141,48 @@ public class MusicUtils {
      * @param string Seconds or HH:MM:SS or MM:SS string
      * @return Duration
      */
-    public static Duration getDurationFromArg(String string) {
-        List<Integer> parsedArgs = Arrays.stream(string.split(":"))
-                .map(Integer::parseInt)
-                .collect(Collectors.toList());
+    public static MusicSeek getDurationFromArg(String string) {
+        if (!argToTimePattern.matcher(string).matches()) {
+            return null;
+        }
 
-        return switch (parsedArgs.size()) {
+        boolean relative = false;
+        long sign = 1;
+        switch (string.charAt(0)) {
+            case '+' -> relative = true;
+            case '-' -> { relative = true; sign = -1; }
+            default -> {}
+        }
+
+        List<Integer> parsedArgs = Arrays.stream(string.split(":"))
+                .map(Integer::parseInt).toList();
+
+        Duration dur = switch (parsedArgs.size()) {
             case 1 -> Duration.ofSeconds(parsedArgs.get(0));
             case 2 -> Duration.ofMinutes(parsedArgs.get(0))
-                    .plus(parsedArgs.get(1), ChronoUnit.SECONDS);
+                    .plus(sign * parsedArgs.get(1), ChronoUnit.SECONDS);
             case 3 -> Duration.ofHours(parsedArgs.get(0))
-                    .plus(parsedArgs.get(1), ChronoUnit.MINUTES)
-                    .plus(parsedArgs.get(2), ChronoUnit.SECONDS);
+                    .plus(sign * parsedArgs.get(1), ChronoUnit.MINUTES)
+                    .plus(sign * parsedArgs.get(2), ChronoUnit.SECONDS);
             default -> Duration.ofSeconds(0);
         };
+
+        return new MusicSeek(relative, dur);
     }
 
     /**
      * Get remaining time in playlist
+     * Returns null if a stream exists in the playlist or manager is looping the current track
      *
      * @param list Playlist
-     * @param playingTrack Currently playing track
+     * @param manager Music manager for guild
      * @return Remaining time as Duration
      */
-    public static Duration getTimeRemaining(Object[] list, AudioTrack playingTrack) {
+    public static Duration getTimeRemaining(Object[] list, GuildMusicManager manager) {
+        AudioTrack playingTrack = manager.getCurrentTrack();
         long millis = playingTrack.getDuration() - playingTrack.getPosition();
         if (playingTrack.getInfo().isStream) return null;
+        if (manager.isLooping()) return null;
 
         for (Object track: list) {
             var currentTrack = (AudioTrack) track;
@@ -169,3 +193,4 @@ public class MusicUtils {
         return Duration.ofMillis(millis);
     }
 }
+

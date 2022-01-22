@@ -1,10 +1,7 @@
 package Commands.Music;
 
 import Core.Commands.ServerCommand;
-import Core.Music.GuildMusicManager;
-import Core.Music.MusicUtils;
-import Core.Music.TrackContext;
-import Core.Music.WylxPlayerManager;
+import Core.Music.*;
 import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
@@ -31,7 +28,13 @@ public class PlayCommand extends ServerCommand {
     private static final int MAX_SEARCH_TRACKS = 5;
 
     public PlayCommand() {
-        super("play", CommandPermission.EVERYONE);
+        super("play",
+                CommandPermission.EVERYONE,
+                """
+                        Play or queue a song to play
+                        Usage:
+                        $play <link> <Optional: seconds to skip OR HH:MM:SS>
+                        $play <search terms>""");
     }
 
     @Override
@@ -53,7 +56,7 @@ public class PlayCommand extends ServerCommand {
 
         isSearch = !args[1].contains(".") || !args[1].contains("/");
 
-        String token = "";
+        String token;
         // Get start location if user gives time
         Duration dur = Duration.ofSeconds(0);
 
@@ -63,7 +66,12 @@ public class PlayCommand extends ServerCommand {
             // Replace < and > which avoids embeds on Discord
             token = args[1].replaceAll("(^<)|(>$)", "");
             if (args.length == 3) {
-                dur = MusicUtils.getDurationFromArg(args[2]);
+                MusicSeek seek = MusicUtils.getDurationFromArg(args[2]);
+                if (seek == null) {
+                    displayUsage(event.getChannel());
+                    return;
+                }
+                dur = seek.dur();
             } else if (args.length > 3) {
                 displayUsage(event.getChannel());
                 return;
@@ -143,9 +151,8 @@ public class PlayCommand extends ServerCommand {
 
                 // Cancel search
                 if (event.getComponentId().equals("x")) {
-                    event.editMessage("Search cancelled").queue(msg -> {
-                        msg.editOriginalComponents().queue();
-                    });
+                    event.editMessage("Search cancelled")
+                            .queue(msg -> msg.editOriginalComponents().queue());
                 // User selected option
                 } else {
                     int idx = Integer.parseInt(event.getComponentId());
@@ -166,9 +173,8 @@ public class PlayCommand extends ServerCommand {
                 .setActionRows(ActionRow.of(components), ActionRow.of(cancelRow))
                 .queue(message -> {
                     // Remove buttons and search options after ~2 minutes
-                    message.delete().queueAfter(120, TimeUnit.SECONDS, msg -> {
-                        event.getJDA().removeEventListener(adapter);
-                    });
+                    message.delete().queueAfter(120, TimeUnit.SECONDS,
+                            msg -> event.getJDA().removeEventListener(adapter));
 
                     msgId.set(message.getIdLong());
                 });
@@ -177,8 +183,9 @@ public class PlayCommand extends ServerCommand {
     }
 
     private void displayUsage(MessageChannel channel) {
-        channel.sendMessage("Usage:\n" +
-                "$play <link> <Optional: seconds to skip OR HH:MM:SS>\n" +
-                "$play <search terms>").queue();
+        channel.sendMessage("""
+                Usage:
+                $play <link> <Optional: seconds to skip OR HH:MM:SS>
+                $play <search terms>""").queue();
     }
 }

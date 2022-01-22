@@ -1,6 +1,5 @@
 package Commands.Management;
 
-import Core.Commands.CommandPackage;
 import Core.Events.SilentEvent;
 import Core.Commands.ServerCommand;
 import Core.ProcessPackage.ProcessPackage;

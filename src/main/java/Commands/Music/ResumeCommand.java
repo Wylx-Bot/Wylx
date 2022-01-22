@@ -7,7 +7,9 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 public class ResumeCommand extends ServerCommand {
     ResumeCommand() {
-        super("resume", CommandPermission.EVERYONE);
+        super("resume",
+                CommandPermission.EVERYONE,
+                "Resume playback if paused");
     }
 
     @Override

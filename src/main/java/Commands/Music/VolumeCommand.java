@@ -7,7 +7,9 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 public class VolumeCommand extends ServerCommand {
     VolumeCommand () {
-        super("volume", CommandPermission.EVERYONE);
+        super("volume",
+                CommandPermission.EVERYONE,
+                "Set playback volume");
     }
 
     @Override

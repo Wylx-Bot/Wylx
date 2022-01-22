@@ -6,9 +6,6 @@ import Core.ProcessPackage.ProcessPackage;
 import Core.Processing.MessageProcessing;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
-import java.awt.*;
-import java.util.Locale;
-
 public class Help extends ServerCommand {
 	public Help() {
 		super("help", CommandPermission.EVERYONE, "Provides lists and descriptions of commands");

@@ -19,13 +19,15 @@ import java.util.Arrays;
 import java.util.HashMap;
 
 public class MessageProcessing extends ListenerAdapter {
-	public static final ProcessPackage[] processPackages = {new ManagementPackage(),
-			new TTRPGPackage(),
-			new MusicPackage()};
+	private static final Logger logger = LoggerFactory.getLogger(MessageProcessing.class);
 	public static final HashMap<String, ServerCommand> commandMap = new HashMap<>();
 	public static final ArrayList<SilentEvent> events = new ArrayList<>();
+	public static final ProcessPackage[] processPackages = {
+			new ManagementPackage(),
+			new TTRPGPackage(),
+			new MusicPackage()
+	};
 
-	private static final Logger logger = LoggerFactory.getLogger(MessageProcessing.class);
 
 	static {
 		commandMap.put("help", new Help());
