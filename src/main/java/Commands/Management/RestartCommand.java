@@ -14,6 +14,9 @@ public class RestartCommand extends ServerCommand {
     public void runCommand(MessageReceivedEvent event, String[] args) {
         // TODO: Do cool stuff like...idk...
         // TODO: I don't actually know?
+
+
+        //AHAHHAH
         System.exit(EXIT_STATUS);
     }
 }
