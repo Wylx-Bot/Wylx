@@ -81,4 +81,8 @@ public class Wylx {
 				voiceState.inAudioChannel() &&
 				voiceState.getChannel().getIdLong() == channelID;
 	}
+
+	public JDA getJDA(){
+		return jda;
+	}
 }
