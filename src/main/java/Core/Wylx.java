@@ -25,9 +25,7 @@ public class Wylx {
 		return INSTANCE;
 	}
 
-	public static void main(String[] args){
-		Wylx wylx = Wylx.getInstance();
-	}
+	public static void main(String[] args) {}
 
 	private Wylx() {
 		Dotenv env = Dotenv.configure()
