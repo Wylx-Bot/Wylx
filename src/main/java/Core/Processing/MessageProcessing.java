@@ -1,6 +1,7 @@
 package Core.Processing;
 
 import Commands.DND.TTRPGPackage;
+import Commands.Frog.FrogPackage;
 import Commands.Help;
 import Commands.Management.ManagementPackage;
 import Commands.Music.MusicPackage;
@@ -25,7 +26,8 @@ public class MessageProcessing extends ListenerAdapter {
 	public static final ProcessPackage[] processPackages = {
 			new ManagementPackage(),
 			new TTRPGPackage(),
-			new MusicPackage()
+			new MusicPackage(),
+			new FrogPackage()
 	};
 
 
