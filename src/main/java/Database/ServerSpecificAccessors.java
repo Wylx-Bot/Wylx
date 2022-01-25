@@ -1,5 +1,7 @@
 package Database;
 
+import org.bson.types.ObjectId;
+
 import java.util.Map;
 
 public interface ServerSpecificAccessors {
@@ -10,6 +12,6 @@ public interface ServerSpecificAccessors {
 
     public String[] getRoles();
 
-    public boolean timezoneResponses(DiscordUser discordUser);
+    public Map<ObjectId, Boolean> timezoneResponses();
 
 }

@@ -45,6 +45,13 @@ public class Setup {
 
     public static void main(String[] args) {
         DiscordServer example = new DiscordServer(getMongoClient(), "ExampleServer");
-        System.out.println(example.getMusicVolume());
+        System.out.println("Music Volume: " + example.getMusicVolume());
+        example.setMusicVolume(100);
+        System.out.println("Music Volume: " + example.getMusicVolume());
+        example.setMusicVolume(0);
+        System.out.println("Music Volume: " + example.getMusicVolume());
+        example.setMusicVolume(50);
+        System.out.println("Music Volume: " + example.getMusicVolume());
+
     }
 }
