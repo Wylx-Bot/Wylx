@@ -53,7 +53,7 @@ public class UpdateCommand extends ThreadedCommand {
 
             StringBuilder stdOutput = new StringBuilder("Stdout:\n```");
             while (stdInput.ready()) {
-                stdOutput.append(stdInput.readLine());
+                stdOutput.append(stdInput.readLine()).append("\n");
             }
             stdOutput.append("\n```");
             event.getChannel().sendMessage(stdOutput.toString()).queue();
