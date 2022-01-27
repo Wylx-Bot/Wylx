@@ -24,11 +24,12 @@ public class UpdateCommand extends ThreadedCommand {
         String branch = args.length == 2 ? args[1] : MAIN_BRANCH;
         if (!updateGit(event, branch)) return;
         runGradlewBuild(event);
+        runGradlewInstall(event);
     }
 
     private boolean updateGit(MessageReceivedEvent event, String branch) {
         Runtime rt = Runtime.getRuntime();
-        String[] commands = {"git", "pull", "origin", branch, "--no-stat"};
+        String[] commands = {"git", "pull", "origin", branch};
 
         try {
             Process proc = rt.exec(commands);
@@ -76,7 +77,25 @@ public class UpdateCommand extends ThreadedCommand {
             if (proc.waitFor() != 0) {
                 event.getChannel().sendMessage("An error occurred while building").queue();
             } else {
-                event.getChannel().sendMessage("Gradlew built Wylx - Ready for restart!").queue();
+                event.getChannel().sendMessage("Gradlew built Wylx").queue();
+            }
+
+        } catch (Exception e) {
+            event.getChannel().sendMessage("Exception while running gradlew").queue();
+        }
+    }
+
+    private void runGradlewInstall(MessageReceivedEvent event) {
+        Runtime rt = Runtime.getRuntime();
+        String[] commands = {"./gradlew", "installdist"};
+
+        try {
+            Process proc = rt.exec(commands);
+
+            if (proc.waitFor() != 0) {
+                event.getChannel().sendMessage("An error occurred while running installDist").queue();
+            } else {
+                event.getChannel().sendMessage("Gradlew finished running installDist - Ready for restart!").queue();
             }
 
         } catch (Exception e) {

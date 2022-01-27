@@ -26,4 +26,6 @@ dependencies {
     implementation("com.github.walkyst:lavaplayer-fork:61dc03e")
 }
 
-mainClassName="Core.Wylx"
+application {
+    mainClassName="Core.Wylx"
+}
