@@ -15,6 +15,7 @@ public class RestartCommand extends ServerCommand {
         // TODO: Do cool stuff like...idk...
         // TODO: I don't actually know?
 
+        logger.info("Restarting Wylx due to user command!");
         System.exit(RESTART_EXIT_STATUS);
     }
 }
