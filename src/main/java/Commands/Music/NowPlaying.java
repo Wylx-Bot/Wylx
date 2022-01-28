@@ -3,8 +3,11 @@ package Commands.Music;
 import Core.Commands.ServerCommand;
 import Core.Music.MusicUtils;
 import Core.Music.WylxPlayerManager;
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+
+import java.time.Duration;
 
 public class NowPlaying extends ServerCommand {
     NowPlaying() {
@@ -23,8 +26,11 @@ public class NowPlaying extends ServerCommand {
         } else if (!MusicUtils.canUseVoiceCommand(guildID, memberID)) {
             event.getChannel().sendMessage("You are not in the same channel as the bot!").queue();
         } else {
-            MessageEmbed embed = MusicUtils.createPlayingEmbed(manager.getCurrentTrack(), "Playing %s");
-            event.getChannel().sendMessageEmbeds(embed).queue();
+            MessageEmbed embed = MusicUtils.createPlayingEmbed(manager.getCurrentTrack(), "Playing %s", true);
+            event.getChannel().sendMessageEmbeds(embed)
+                    .delay(Duration.ofSeconds(60))
+                    .flatMap(Message::delete)
+                    .queue();
         }
     }
 }

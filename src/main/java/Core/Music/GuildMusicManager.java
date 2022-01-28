@@ -77,7 +77,7 @@ public class GuildMusicManager extends AudioEventAdapter {
             return;
 
         // Only send if queued instead of played right away
-        MessageEmbed embed = MusicUtils.createPlayingEmbed(newTrack, "Queueing **%s**");
+        MessageEmbed embed = MusicUtils.createPlayingEmbed(newTrack, "Queueing **%s**", false);
         textChannel.sendMessageEmbeds(embed)
                 .delay(Duration.ofSeconds(60))
                 .flatMap(Message::delete)
@@ -196,7 +196,7 @@ public class GuildMusicManager extends AudioEventAdapter {
         track.setPosition(lastCtx.startMillis());
 
         if (channel == null) return;
-        MessageEmbed embed = MusicUtils.createPlayingEmbed(track, "Playing **%s**");
+        MessageEmbed embed = MusicUtils.createPlayingEmbed(track, "Playing **%s**", false);
         channel.sendMessageEmbeds(embed)
                 .delay(Duration.ofSeconds(60))
                 .flatMap(Message::delete)
