@@ -13,15 +13,11 @@ public class ProgressBar {
         progress.append("#".repeat(length));
         progress.append(" -".repeat(remainder + (extra / 2)));
 
-//        if (extra % 2 == 1) {
         if (length == PROGRESS_BAR_LENGTH) {
             progress.append("]");
         } else {
             progress.append(" ]");
         }
-//        } else {
-//            progress.append("]");
-//        }
 
         return progress.toString();
     }
