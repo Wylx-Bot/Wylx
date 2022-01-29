@@ -9,7 +9,8 @@ public class VolumeCommand extends ServerCommand {
     VolumeCommand () {
         super("volume",
                 CommandPermission.EVERYONE,
-                "Set playback volume");
+                "Set playback volume",
+                "v");
     }
 
     @Override

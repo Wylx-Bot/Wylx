@@ -29,6 +29,13 @@ public abstract class ProcessPackage {
 			descriptionBuilder.append(command.getName());
 			descriptionBuilder.append(": ");
 			descriptionBuilder.append(command.getKeyword());
+			if(command.getAliases().length > 0){
+				descriptionBuilder.append(" (aka: ");
+				for(int i = 0; i < command.getAliases().length - 1; i++){
+					descriptionBuilder.append(command.getAliases()[i]).append(", ");
+				}
+				descriptionBuilder.append(command.getAliases()[command.getAliases().length - 1]).append(")");
+			}
 			descriptionBuilder.append("\n");
 		}
 		for(SilentEvent event : events){

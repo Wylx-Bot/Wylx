@@ -13,7 +13,8 @@ public class NowPlaying extends ServerCommand {
     NowPlaying() {
         super("nowplaying",
                 CommandPermission.EVERYONE,
-                "Show currently playing song");
+                "Show currently playing song",
+                "np");
     }
 
     @Override
