@@ -109,4 +109,8 @@ public class Wylx {
 				voiceState.inAudioChannel() &&
 				voiceState.getChannel().getIdLong() == channelID;
 	}
+
+	public String getPrefixThanksJosh(long guildID) {
+		return isRelease() ? ";" : "$";
+	}
 }

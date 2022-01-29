@@ -44,7 +44,7 @@ public class MessageProcessing extends ListenerAdapter {
 		//Ignore messages from the bot
 		if(event.getAuthor().getIdLong() == Wylx.getInstance().getBotID()) return;
 
-		String prefix = Wylx.getInstance().isRelease() ? ";" : "$"; // TODO: Get as server preference
+		String prefix = Wylx.getInstance().getPrefixThanksJosh(event.getGuild().getIdLong()); // TODO: Get as server preference
 		String msg = event.getMessage().getContentRaw();
 
 		if(!event.isFromGuild()) return;
