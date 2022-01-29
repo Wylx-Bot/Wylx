@@ -8,11 +8,6 @@ import java.util.TimerTask;
 public abstract class ThreadedSilentEvent extends SilentEvent {
 	private final long timeout;
 
-	@Deprecated
-	public ThreadedSilentEvent(long timeout){
-		this("Some Dev is using deprecated features", timeout);
-	}
-
 	public ThreadedSilentEvent(String description){
 		this(description, 300000);
 	}
