@@ -31,10 +31,11 @@ public abstract class ProcessPackage {
 			descriptionBuilder.append(command.getKeyword());
 			if(command.getAliases().length > 0){
 				descriptionBuilder.append(" (aka: ");
-				for(int i = 0; i < command.getAliases().length - 1; i++){
-					descriptionBuilder.append(command.getAliases()[i]).append(", ");
+				String[] aliases = command.getAliases();
+				for(int i = 0; i < aliases.length - 1; i++){
+					descriptionBuilder.append(aliases[i]).append(", ");
 				}
-				descriptionBuilder.append(command.getAliases()[command.getAliases().length - 1]).append(")");
+				descriptionBuilder.append(aliases[aliases.length - 1]).append(")");
 			}
 			descriptionBuilder.append("\n");
 		}
