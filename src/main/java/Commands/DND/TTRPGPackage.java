@@ -6,7 +6,11 @@ import Core.ProcessPackage.ProcessPackage;
 
 public class TTRPGPackage extends ProcessPackage {
 	public TTRPGPackage() {
-		super(new ServerCommand[]{}, new SilentEvent[]{new DiceRoll()});
+		super(new ServerCommand[]{
+				new MathCommand()
+		}, new SilentEvent[]{
+				new DiceRoll()
+		});
 	}
 
 	@Override
