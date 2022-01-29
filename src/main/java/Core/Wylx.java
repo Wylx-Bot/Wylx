@@ -7,16 +7,26 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.managers.AudioManager;
-import net.dv8tion.jda.api.requests.GatewayIntent;
 
 import javax.security.auth.login.LoginException;
+import java.util.*;
 
 public class Wylx {
 	private static final Wylx INSTANCE = new Wylx();
 
 	private JDA jda;
+
+	private static final int ACTIVITY_PERIOD = 60000; // 60 seconds
+	private final List<Activity> activities = new ArrayList<>(Arrays.asList(
+		Activity.playing("with half a ship"), 			// Timelord
+		Activity.playing("with other sentient bots"), 	// Dragonite
+		Activity.playing("with the fate of humanity"),
+		Activity.playing("Human Deception Simulator")
+	));
+	private int activityIndex = 0;
 
 	private final boolean isRelease;
 
@@ -24,9 +34,7 @@ public class Wylx {
 		return INSTANCE;
 	}
 
-	public static void main(String[] args){
-		Wylx wylx = Wylx.getInstance();
-	}
+	public static void main(String[] args) {}
 
 	private Wylx() {
 		Dotenv env = Dotenv.configure()
@@ -34,17 +42,35 @@ public class Wylx {
 				.load();
 
 		isRelease = Boolean.parseBoolean(env.get("RELEASE"));
+		String token;
+		if (isRelease) {
+			token = env.get("DISCORD_TOKEN");
+		} else {
+			token = env.get("BETA_DISCORD_TOKEN");
+			activities.add(Activity.playing("with Wylx!"));
+		}
 
 		try {
-			jda = JDABuilder.createDefault(env.get("DISCORD_TOKEN"))
-					.setActivity(Activity.of(Activity.ActivityType.PLAYING, "with half a ship"))
+			jda = JDABuilder.createDefault(token)
 					.addEventListeners(new MessageProcessing(), new VoiceChannelProcessing())
-					.enableIntents(GatewayIntent.GUILD_MEMBERS)
 					.build();
 		} catch (LoginException e) {
 			e.printStackTrace();
 			System.exit(-1);
 		}
+
+		Timer activityTimer = new Timer();
+		activityTimer.scheduleAtFixedRate(new TimerTask() {
+			@Override
+			public void run() {
+				setActivity();
+			}
+		}, 0, ACTIVITY_PERIOD);
+	}
+
+	private void setActivity() {
+		jda.getPresence().setActivity(activities.get(activityIndex++));
+		activityIndex %= activities.size();
 	}
 
 	public boolean isRelease(){
@@ -68,8 +94,10 @@ public class Wylx {
 		return guild.getMember(user);
 	}
 
-	public TextChannel getTextChannel(long channelID) {
-		return jda.getTextChannelById(channelID);
+	public MessageChannel getTextChannel(long channelID) {
+		TextChannel channel = jda.getTextChannelById(channelID);
+		if (channel != null) return channel;
+		else return jda.getThreadChannelById(channelID);
 	}
 
 	@SuppressWarnings("ConstantConditions")
@@ -84,5 +112,9 @@ public class Wylx {
 
 	public JDA getJDA(){
 		return jda;
+	}
+
+	public String getPrefixThanksJosh(long guildID) {
+		return isRelease() ? ";" : "$";
 	}
 }

@@ -19,13 +19,15 @@ import java.util.Arrays;
 import java.util.HashMap;
 
 public class MessageProcessing extends ListenerAdapter {
-	public static final ProcessPackage[] processPackages = {new ManagementPackage(),
-			new TTRPGPackage(),
-			new MusicPackage()};
+	private static final Logger logger = LoggerFactory.getLogger(MessageProcessing.class);
 	public static final HashMap<String, ServerCommand> commandMap = new HashMap<>();
 	public static final ArrayList<SilentEvent> events = new ArrayList<>();
+	public static final ProcessPackage[] processPackages = {
+			new ManagementPackage(),
+			new TTRPGPackage(),
+			new MusicPackage()
+	};
 
-	private static final Logger logger = LoggerFactory.getLogger(MessageProcessing.class);
 
 	static {
 		commandMap.put("help", new Help());
@@ -42,7 +44,7 @@ public class MessageProcessing extends ListenerAdapter {
 		//Ignore messages from the bot
 		if(event.getAuthor().getIdLong() == Wylx.getInstance().getBotID()) return;
 
-		String prefix = "$"; // TODO: Get as server preference
+		String prefix = Wylx.getInstance().getPrefixThanksJosh(event.getGuild().getIdLong()); // TODO: Get as server preference
 		String msg = event.getMessage().getContentRaw();
 
 		if(!event.isFromGuild()) return;
@@ -62,6 +64,7 @@ public class MessageProcessing extends ListenerAdapter {
 				}
 			}
 		}
+
 		for(SilentEvent silentEvent : events){
 			if(silentEvent.check(event)){
 				silentEvent.runEvent(event);

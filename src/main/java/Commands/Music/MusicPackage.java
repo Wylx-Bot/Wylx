@@ -1,6 +1,5 @@
 package Commands.Music;
 
-import Core.Commands.CommandPackage;
 import Core.Commands.ServerCommand;
 import Core.Events.SilentEvent;
 import Core.ProcessPackage.ProcessPackage;
@@ -17,6 +16,7 @@ public class MusicPackage extends ProcessPackage {
             new QueueCommand(),
             new SeekCommand(),
             new LoopCommand(),
+            new NowPlaying(),
         }, new SilentEvent[]{});
     }
 

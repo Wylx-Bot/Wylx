@@ -3,13 +3,17 @@ package Commands.Music;
 import Core.Commands.ServerCommand;
 import Core.Music.MusicUtils;
 import Core.Music.WylxPlayerManager;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
-public class PauseCommand extends ServerCommand {
-    PauseCommand() {
-        super("pause",
+import java.time.Duration;
+
+public class NowPlaying extends ServerCommand {
+    NowPlaying() {
+        super("nowplaying",
                 CommandPermission.EVERYONE,
-                "Pause current song");
+                "Show currently playing song");
     }
 
     @Override
@@ -22,7 +26,11 @@ public class PauseCommand extends ServerCommand {
         } else if (!MusicUtils.canUseVoiceCommand(guildID, memberID)) {
             event.getChannel().sendMessage("You are not in the same channel as the bot!").queue();
         } else {
-            manager.pause(true);
+            MessageEmbed embed = MusicUtils.createPlayingEmbed(manager.getCurrentTrack(), "Playing %s", true);
+            event.getChannel().sendMessageEmbeds(embed)
+                    .delay(Duration.ofSeconds(60))
+                    .flatMap(Message::delete)
+                    .queue();
         }
     }
 }

@@ -34,7 +34,7 @@ public class VoiceChannelProcessing extends ListenerAdapter {
         if (channel == null) {
             guildMusicManager.stop();
             return;
-        };
+        }
 
         // Leave if we are the only user left
         if (manager.isConnected() && channel.getMembers().size() == 1) {

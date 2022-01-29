@@ -7,7 +7,9 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 public class SkipCommand extends ServerCommand {
     public SkipCommand() {
-        super("skip", CommandPermission.EVERYONE);
+        super("skip",
+                CommandPermission.EVERYONE,
+                "Stop current track and play next in queue");
     }
 
     @Override

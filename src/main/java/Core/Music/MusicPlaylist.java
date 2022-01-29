@@ -2,7 +2,6 @@ package Core.Music;
 
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;

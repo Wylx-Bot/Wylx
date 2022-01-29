@@ -1,6 +1,5 @@
 package Commands.Management;
 
-import Core.Commands.ServerCommand;
 import Core.Commands.ThreadedCommand;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;

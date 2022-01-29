@@ -18,12 +18,7 @@ public abstract class ServerCommand {
 	private final Permission discPerm;
 	private final String keyword;
 	private final String description;
-	protected final Logger logger = LoggerFactory.getLogger(this.getClass());;
-
-	@Deprecated
-	public ServerCommand(String keyword, CommandPermission cmdPerm) {
-		this(keyword, cmdPerm, "Some Dev is using deprecated features");
-	}
+	protected final Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	public ServerCommand(String keyword, CommandPermission cmdPerm, String description){
 		this.keyword = keyword;
@@ -35,11 +30,6 @@ public abstract class ServerCommand {
 			logger.error("Discord Permission Not Specified");
 			System.exit(-1);
 		}
-	}
-
-	@Deprecated
-	public ServerCommand(String keyword, CommandPermission cmdPerm, Permission perm) {
-		this(keyword, cmdPerm, perm, "Some Dev is using deprecated features");
 	}
 
 	public ServerCommand(String keyword, CommandPermission cmdPerm, Permission perm, String description) {
