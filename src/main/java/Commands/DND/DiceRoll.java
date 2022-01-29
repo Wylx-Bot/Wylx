@@ -1,6 +1,7 @@
 package Commands.DND;
 
 import Core.Events.ThreadedSilentEvent;
+import Core.Wylx;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import java.util.Random;
@@ -10,13 +11,13 @@ public class DiceRoll extends ThreadedSilentEvent {
 	private final Random random = new Random();
 
 	public DiceRoll(){
-		super(1000);
+		super("Roll dice randomly", 1000);
 	}
 
 	@Override
 	public boolean check(MessageReceivedEvent event) {
 		String msg = event.getMessage().getContentRaw();
-		String prefix = "$";
+		String prefix = Wylx.getInstance().getPrefixThanksJosh(event.getGuild().getIdLong());
 		if(!msg.startsWith(prefix)) return false;
 		return Pattern.matches("\\d*d\\d.*", msg.substring(prefix.length()));
 	}
