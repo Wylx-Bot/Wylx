@@ -49,6 +49,10 @@ public class Wylx {
 			token = env.get("DISCORD_TOKEN");
 		} else {
 			betaPrefix = env.get("BETA_PREFIX");
+			if(betaPrefix == null){
+				betaPrefix = "$";
+			}
+
 			token = env.get("BETA_DISCORD_TOKEN");
 			activities.add(Activity.playing("with Wylx!"));
 		}
