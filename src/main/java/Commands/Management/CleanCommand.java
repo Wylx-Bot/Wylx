@@ -21,14 +21,15 @@ public class CleanCommand extends ServerCommand {
     @Override
     public void runCommand(MessageReceivedEvent event, String[] args) {
         if(args.length == 1){
-            cleanMessages(event.getChannel().getHistory(), 20);
+            cleanMessages(event.getChannel().getHistory(), 20, Wylx.getInstance().getPrefixThanksJosh(event.getGuild().getIdLong()));
         } else if(args.length == 2){
             try{
                 int scrape = Integer.parseInt(args[1]);
                 if(scrape > 20) {
-                    Helper.validate("Are you sure you want to clean " + scrape + " messages", event, () -> cleanMessages(event.getChannel().getHistory(), scrape));
+                    Helper.validate("Are you sure you want to clean " + scrape + " messages", event,
+                            () -> cleanMessages(event.getChannel().getHistory(), scrape, Wylx.getInstance().getPrefixThanksJosh(event.getGuild().getIdLong())));
                 } else {
-                    cleanMessages(event.getChannel().getHistory(), scrape);
+                    cleanMessages(event.getChannel().getHistory(), scrape, Wylx.getInstance().getPrefixThanksJosh(event.getGuild().getIdLong()));
                 }
             } catch (NumberFormatException nfe){
                 event.getMessage().reply(getDescription()).queue();
@@ -38,16 +39,15 @@ public class CleanCommand extends ServerCommand {
         }
     }
 
-    public void cleanMessages(MessageHistory history, int scrape){
-        cleanMessages(history, scrape, new ArrayList<>());
+    public void cleanMessages(MessageHistory history, int scrape, String prefix){
+        cleanMessages(history, scrape, prefix, new ArrayList<>());
     }
 
-    public void cleanMessages(MessageHistory history, int scrape, List<Message> toDelete){
+    public void cleanMessages(MessageHistory history, int scrape, String prefix, List<Message> toDelete){
         int scrapeThisTime = Math.min(scrape, 100);
         history.retrievePast(scrapeThisTime).queue(messages -> {
             // Load information that will be constant
             long botID = Wylx.getInstance().getBotID();
-            char prefix = '$';
 
             // Loop through each loaded message
             for(int i = 0; i < messages.size(); i++){
@@ -58,13 +58,14 @@ public class CleanCommand extends ServerCommand {
                     toDelete.add(message);
 
                     // If the message before the bot message was calling the bot specifically also delete that message
-                    if(i < scrapeThisTime-1 && messages.get(i+1).getContentRaw().length() > 1  && messages.get(i+1).getContentRaw().charAt(0) == prefix){
+                    if(i < scrapeThisTime-1 && messages.get(i+1).getContentRaw().length() > prefix.length()
+                            && messages.get(i+1).getContentRaw().startsWith(prefix)){
                         toDelete.add(messages.get(i+1));
                     }
                 }
             }
             if(scrape > 100){
-                cleanMessages(history, scrape - 100, toDelete);
+                cleanMessages(history, scrape - 100, prefix, toDelete);
             } else {
                 history.getChannel().purgeMessages(toDelete);
             }
