@@ -1,5 +1,6 @@
 package Core.Music;
 
+import Core.Util.ProgressBar;
 import Core.Wylx;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
@@ -73,9 +74,10 @@ public class MusicUtils {
      *
      * @param track AudioTrack details
      * @param titleFormat Format for title (Queue or Play)
+     * @param progress Show progress through song
      * @return MessageEmbed that can be sent
      */
-    public static MessageEmbed createPlayingEmbed(AudioTrack track, String titleFormat) {
+    public static MessageEmbed createPlayingEmbed(AudioTrack track, String titleFormat, boolean progress) {
         EmbedBuilder builder = new EmbedBuilder();
         AudioTrackInfo info = track.getInfo();
         TrackContext ctx = (TrackContext) track.getUserData();
@@ -86,13 +88,22 @@ public class MusicUtils {
         if (info.isStream) {
             builder.setFooter("Stream (No Duration)");
         } else {
-            String prettyDur = getPrettyDuration(Duration.ofMillis(info.length));
+            String prettyDur = getPrettyDuration(info.length);
 
             if (ctx.startMillis() != 0) {
-                String prettyStart = getPrettyDuration(Duration.ofMillis(ctx.startMillis()));
+                String prettyStart = getPrettyDuration(ctx.startMillis());
                 builder.setFooter(String.format("Duration: %s - Started at %s", prettyDur, prettyStart));
             } else {
                 builder.setFooter(String.format("Duration: %s", prettyDur));
+            }
+
+            if (progress) {
+                builder.appendDescription("\n");
+                builder.appendDescription(MusicUtils.getPrettyDuration(track.getPosition()));
+                builder.appendDescription(" / ");
+                builder.appendDescription(prettyDur);
+                builder.appendDescription("\n");
+                builder.appendDescription(ProgressBar.progressBar((double) track.getPosition() / track.getDuration()));
             }
         }
 

@@ -16,6 +16,7 @@ public class MusicPackage extends ProcessPackage {
             new QueueCommand(),
             new SeekCommand(),
             new LoopCommand(),
+            new NowPlaying(),
         }, new SilentEvent[]{});
     }
 
