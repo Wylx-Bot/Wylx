@@ -31,7 +31,9 @@ public class MathCommand extends ServerCommand {
     }
 
     MathCommand() {
-        super("math", CommandPermission.EVERYONE, "Do Math");
+        super("math", CommandPermission.EVERYONE,
+                "Evaluates Math. Supported operators are `*,/,+,-,^,(,)`\n" +
+                        "Implicit multiplication (ie. `5(2)` instead of `5 * (2)`) is not allowed");
     }
 
     @Override
@@ -39,6 +41,10 @@ public class MathCommand extends ServerCommand {
         String msg = event.getMessage().getContentRaw();
 
         msg = msg.substring(args[0].length());
+        if (args.length == 1) {
+            event.getChannel().sendMessage(getDescription()).queue();
+            return;
+        }
 
         try {
             double retVal = doMath(msg);
@@ -108,9 +114,7 @@ public class MathCommand extends ServerCommand {
                         case '/' -> op = MathOp.Div;
                         case '^' -> op = MathOp.Sqr;
                         case ')' -> state = MathState.Op;
-                        default -> {
-                            throw new MathException("Expected operator (Got character `" + chr + "` instead)");
-                        }
+                        default -> throw new MathException("Expected operator (Got character `" + chr + "` instead)");
                     }
             }
         }
