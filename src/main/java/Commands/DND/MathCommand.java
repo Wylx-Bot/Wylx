@@ -8,7 +8,7 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 
 public class MathCommand extends ServerCommand {
-    private final DecimalFormat decFormat = new DecimalFormat("0.#");
+    private final DecimalFormat decFormat = new DecimalFormat();
 
     enum MathState {
         NumPrefix,
@@ -34,6 +34,9 @@ public class MathCommand extends ServerCommand {
         super("math", CommandPermission.EVERYONE,
                 "Evaluates Math. Supported operators are `*,/,+,-,^,(,)`\n" +
                         "Implicit multiplication (ie. `5(2)` instead of `5 * (2)`) is not allowed");
+
+        decFormat.setDecimalSeparatorAlwaysShown(false);
+        decFormat.setMaximumFractionDigits(10);
     }
 
     @Override
