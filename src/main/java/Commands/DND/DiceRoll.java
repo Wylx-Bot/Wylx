@@ -25,7 +25,7 @@ public class DiceRoll extends ThreadedSilentEvent {
 	@Override
 	protected void runEventThread(MessageReceivedEvent event) {
 		event.getMessage().getChannel().sendTyping().queue();
-		String message = event.getMessage().getContentRaw().toLowerCase().replace("$", "");
+		String message = event.getMessage().getContentRaw().toLowerCase().replace(Wylx.getInstance().getPrefixThanksJosh(event.getGuild().getIdLong()), "");
 		String[] elms = message.split(" ");
 		int total = 0;
 		int mult = 1;
