@@ -48,7 +48,7 @@ public class ClearCommand extends ServerCommand {
 			if(count > 100){
 				clearMessages(history, count - 100, messageDeletes);
 			} else {
-				history.getChannel().purgeMessages(messages);
+				history.getChannel().purgeMessages(messageDeletes);
 			}
 		});
 	}

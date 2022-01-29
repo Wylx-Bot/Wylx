@@ -15,7 +15,8 @@ public class ManagementPackage extends ProcessPackage {
 				new ClearCommand(),
 				new UpdateCommand(),
 				new RestartCommand(),
-				new InviteCommand()},
+				new InviteCommand(),
+				new ClearToCommand()},
 				new SilentEvent[]{});
 	}
 

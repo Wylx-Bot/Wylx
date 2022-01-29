@@ -41,6 +41,7 @@ public class Helper {
 		public void onGenericMessageReaction(@NotNull GenericMessageReactionEvent event) {
 			if(event.getMessageIdLong() == messageID && event.getUserIdLong() == userID){
 				if(event.getReactionEmote().getAsCodepoints().equals(CHECK)){
+					event.getChannel().deleteMessageById(messageID).queue();
 					runnable.run();
 					Wylx.getInstance().getJDA().removeEventListener(this);
 				} else if(event.getReactionEmote().getAsCodepoints().equals(X)){
