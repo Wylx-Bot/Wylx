@@ -20,5 +20,7 @@ public abstract class SilentEvent {
 	public String getName(){
 		return this.getClass().getSimpleName();
 	}
-	public abstract String getDescription();
+	public String getDescription(){
+		return description;
+	}
 }

@@ -13,6 +13,7 @@ public class ManagementPackage extends ProcessPackage {
 				new RepeatCommand(),
 				new UpdateCommand(),
 				new RestartCommand(),
+				new InviteCommand()
 			},
 			new SilentEvent[] {});
 	}
