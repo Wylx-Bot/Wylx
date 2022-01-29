@@ -33,7 +33,7 @@ public class MessageProcessing extends ListenerAdapter {
 		commandMap.put("help", new Help());
 		for(ProcessPackage processPackage : processPackages){
 			for(ServerCommand command : processPackage.getCommands()){
-				commandMap.putAll(command.getHashMap());
+				commandMap.putAll(command.getCommandMap());
 			}
 			events.addAll(Arrays.asList(processPackage.getEvents()));
 		}

@@ -106,7 +106,7 @@ public abstract class ServerCommand {
 		return aliases;
 	}
 
-	public final HashMap<String, ServerCommand> getHashMap(){
+	public final HashMap<String, ServerCommand> getCommandMap(){
 		HashMap<String, ServerCommand> myMap = new HashMap<>();
 		myMap.put(this.keyword, this);
 		for(String alias : aliases){
