@@ -37,14 +37,6 @@ public class Help extends ServerCommand {
 				return;
 			}
 
-			//Check server commands to see if they provided the name of a server command
-			for(ServerCommand command : MessageProcessing.commandMap.values()){
-				if(command.getName().toLowerCase().equals(args[1].toLowerCase())){
-					event.getChannel().sendMessage(command.getName() + ": " + command.getDescription()).queue();
-					return;
-				}
-			}
-
 			//Check SilentEvents to see if they provided the name of an event
 			for(SilentEvent silentEvent : MessageProcessing.events){
 				if(silentEvent.getName().toLowerCase().equals(args[1].toLowerCase())){

@@ -11,7 +11,7 @@ public class DiceRoll extends ThreadedSilentEvent {
 	private final Random random = new Random();
 
 	public DiceRoll(){
-		super("Roll dice randomly", 1000);
+		super("Roll <x>d<y> dice, can separate arguments with spaces to roll multiple dice", 1000);
 	}
 
 	@Override
@@ -23,14 +23,10 @@ public class DiceRoll extends ThreadedSilentEvent {
 	}
 
 	@Override
-	public String getDescription() {
-		return "Roll <x>d<y> dice, can separate arguments with spaces to roll multiple dice";
-	}
-
-	@Override
 	protected void runEventThread(MessageReceivedEvent event) {
 		event.getMessage().getChannel().sendTyping().queue();
-		String message = event.getMessage().getContentRaw().toLowerCase().replace("$", "");
+		String prefix = Wylx.getInstance().getPrefixThanksJosh(event.getGuild().getIdLong());
+		String message = event.getMessage().getContentRaw().toLowerCase().replace(prefix, "");
 		String[] elms = message.split(" ");
 		int total = 0;
 		int mult = 1;
