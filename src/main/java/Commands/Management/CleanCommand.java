@@ -22,6 +22,7 @@ public class CleanCommand extends ServerCommand {
     public void runCommand(MessageReceivedEvent event, String[] args) {
         if(args.length == 1){
             cleanMessages(event.getChannel().getHistory(), 20, Wylx.getInstance().getPrefixThanksJosh(event.getGuild().getIdLong()));
+            event.getChannel().deleteMessageById(event.getMessageId()).queue();
             return;
         } else if(args.length != 2) {
             event.getMessage().reply(getDescription()).queue();

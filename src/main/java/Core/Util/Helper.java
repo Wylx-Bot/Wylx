@@ -16,6 +16,7 @@ public class Helper {
 	public static final String CHECK = "U+2705";
 	public static final String X = "U+274c";
 	public static void validate(String description, MessageReceivedEvent event, Runnable runnable){
+		event.getChannel().deleteMessageById(event.getMessageId()).queue();
 		event.getChannel().sendMessage(description).queue(message -> {
 			// Check emoji
 			message.addReaction(CHECK).queue();
