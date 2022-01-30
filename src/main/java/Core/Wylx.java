@@ -30,6 +30,8 @@ public class Wylx {
 
 	private final boolean isRelease;
 
+	private String betaPrefix;
+
 	public static Wylx getInstance() {
 		return INSTANCE;
 	}
@@ -46,6 +48,11 @@ public class Wylx {
 		if (isRelease) {
 			token = env.get("DISCORD_TOKEN");
 		} else {
+			betaPrefix = env.get("BETA_PREFIX");
+			if(betaPrefix == null){
+				betaPrefix = "$";
+			}
+
 			token = env.get("BETA_DISCORD_TOKEN");
 			activities.add(Activity.playing("with Wylx!"));
 		}
@@ -115,6 +122,6 @@ public class Wylx {
 	}
 
 	public String getPrefixThanksJosh(long guildID) {
-		return isRelease() ? ";" : "$";
+		return isRelease() ? ";" : betaPrefix;
 	}
 }

@@ -27,6 +27,14 @@ public abstract class ProcessPackage {
 		for(ServerCommand command : commands){
 			descriptionBuilder.append("-\t");
 			descriptionBuilder.append(command.getKeyword());
+			if(command.getAliases().length > 0){
+				descriptionBuilder.append(" (aka: ");
+				String[] aliases = command.getAliases();
+				for(int i = 0; i < aliases.length - 1; i++){
+					descriptionBuilder.append(aliases[i]).append(", ");
+				}
+				descriptionBuilder.append(aliases[aliases.length - 1]).append(")");
+			}
 			descriptionBuilder.append("\n");
 		}
 		for(SilentEvent event : events){

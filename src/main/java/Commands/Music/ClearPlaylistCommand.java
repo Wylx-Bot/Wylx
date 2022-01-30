@@ -9,7 +9,8 @@ public class ClearPlaylistCommand extends ServerCommand {
         // TODO: Change perm
         super("clearplaylist",
                 CommandPermission.EVERYONE,
-                "Clear playlist and stop current track");
+                "Clear playlist and stop current track",
+                "cp");
     }
 
     @Override

@@ -22,7 +22,8 @@ public class QueueCommand extends ServerCommand {
     QueueCommand() {
         super("queue",
                 CommandPermission.EVERYONE,
-                "View current queue of songs waiting to be played");
+                "View current queue of songs waiting to be played",
+                "q");
     }
 
     @Override
