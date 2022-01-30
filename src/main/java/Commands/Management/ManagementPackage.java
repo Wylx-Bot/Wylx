@@ -11,11 +11,13 @@ public class ManagementPackage extends ProcessPackage {
 				new SystemCommand(),
 				new PingCommand(),
 				new RepeatCommand(),
+				new CleanCommand(),
+				new ClearCommand(),
 				new UpdateCommand(),
 				new RestartCommand(),
-				new InviteCommand()
-			},
-			new SilentEvent[] {});
+				new InviteCommand(),
+				new ClearToCommand()},
+				new SilentEvent[]{});
 	}
 
 	@Override
