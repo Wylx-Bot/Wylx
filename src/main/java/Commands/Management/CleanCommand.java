@@ -22,19 +22,21 @@ public class CleanCommand extends ServerCommand {
     public void runCommand(MessageReceivedEvent event, String[] args) {
         if(args.length == 1){
             cleanMessages(event.getChannel().getHistory(), 20, Wylx.getInstance().getPrefixThanksJosh(event.getGuild().getIdLong()));
-        } else if(args.length == 2){
-            try{
-                int scrape = Integer.parseInt(args[1]);
-                if(scrape > 20) {
-                    Helper.validate("Are you sure you want to clean " + scrape + " messages", event,
-                            () -> cleanMessages(event.getChannel().getHistory(), scrape, Wylx.getInstance().getPrefixThanksJosh(event.getGuild().getIdLong())));
-                } else {
-                    cleanMessages(event.getChannel().getHistory(), scrape, Wylx.getInstance().getPrefixThanksJosh(event.getGuild().getIdLong()));
-                }
-            } catch (NumberFormatException nfe){
-                event.getMessage().reply(getDescription()).queue();
+            return;
+        } else if(args.length != 2) {
+            event.getMessage().reply(getDescription()).queue();
+            return;
+        }
+
+        try{
+            int scrape = Integer.parseInt(args[1]);
+            if(scrape > 20) {
+                Helper.validate("Are you sure you want to clean " + scrape + " messages", event,
+                        () -> cleanMessages(event.getChannel().getHistory(), scrape, Wylx.getInstance().getPrefixThanksJosh(event.getGuild().getIdLong())));
+            } else {
+                cleanMessages(event.getChannel().getHistory(), scrape, Wylx.getInstance().getPrefixThanksJosh(event.getGuild().getIdLong()));
             }
-        } else {
+        } catch (NumberFormatException nfe){
             event.getMessage().reply(getDescription()).queue();
         }
     }
@@ -64,6 +66,7 @@ public class CleanCommand extends ServerCommand {
                     }
                 }
             }
+
             if(scrape > 100){
                 cleanMessages(history, scrape - 100, prefix, toDelete);
             } else {
