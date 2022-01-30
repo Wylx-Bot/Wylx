@@ -35,6 +35,7 @@ public class CleanCommand extends ServerCommand {
                 Helper.validate("Are you sure you want to clean " + scrape + " messages", event,
                         () -> cleanMessages(event.getChannel().getHistory(), scrape, Wylx.getInstance().getPrefixThanksJosh(event.getGuild().getIdLong())));
             } else {
+                event.getChannel().deleteMessageById(event.getMessageId()).queue();
                 cleanMessages(event.getChannel().getHistory(), scrape, Wylx.getInstance().getPrefixThanksJosh(event.getGuild().getIdLong()));
             }
         } catch (NumberFormatException nfe){
