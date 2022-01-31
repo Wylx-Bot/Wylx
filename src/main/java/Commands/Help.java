@@ -21,8 +21,8 @@ public class Help extends ServerCommand {
 
 		//If there are more than two args the user provided invalid input, correct them
 		if(args.length > 2){
-			event.getMessage().reply("Usage: %{p}help <Keyword> or $help <CommandName>"
-					.replaceAll("%\\{p}", Matcher.quoteReplacement(ctx.prefix()))).queue();
+			event.getMessage().reply("Usage: %{p}help <Keyword>".replaceAll("%\\{p}",
+					Matcher.quoteReplacement(ctx.prefix()))).queue();
 			return;
 		}
 
