@@ -1,5 +1,6 @@
 package Commands;
 
+import Core.Commands.CommandContext;
 import Core.Commands.ServerCommand;
 import Core.Events.SilentEvent;
 import Core.ProcessPackage.ProcessPackage;
@@ -7,18 +8,21 @@ import Core.Processing.MessageProcessing;
 import Core.Wylx;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
+import java.util.regex.Matcher;
+
 public class Help extends ServerCommand {
 	public Help() {
 		super("help", CommandPermission.EVERYONE, "Provides lists and descriptions of commands");
 	}
 
 	@Override
-	public void runCommand(MessageReceivedEvent event, String[] args) {
-		String prefix = Wylx.getInstance().getPrefixThanksJosh(event.getGuild().getIdLong());
+	public void runCommand(MessageReceivedEvent event, CommandContext ctx) {
+		String[] args = ctx.args();
 
 		//If there are more than two args the user provided invalid input, correct them
 		if(args.length > 2){
-			event.getMessage().reply("Usage: $help <Keyword> or $help <CommandName>").queue();
+			event.getMessage().reply("Usage: %{p}help <Keyword> or $help <CommandName>"
+					.replaceAll("%\\{p}", Matcher.quoteReplacement(ctx.prefix()))).queue();
 			return;
 		}
 
@@ -36,7 +40,7 @@ public class Help extends ServerCommand {
 			//Check command map for the arg to see if they provided the keyword for a command
 			if(MessageProcessing.commandMap.containsKey(args[1].toLowerCase())){
 				ServerCommand command = MessageProcessing.commandMap.get(args[1]);
-				event.getChannel().sendMessage(command.getName() + ": " + command.getDescription(prefix)).queue();
+				event.getChannel().sendMessage(command.getName() + ": " + command.getDescription(ctx.prefix())).queue();
 				return;
 			}
 

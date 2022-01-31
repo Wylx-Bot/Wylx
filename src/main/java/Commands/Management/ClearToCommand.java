@@ -1,5 +1,6 @@
 package Commands.Management;
 
+import Core.Commands.CommandContext;
 import Core.Commands.ServerCommand;
 import Core.Util.Helper;
 import Core.Wylx;
@@ -19,21 +20,21 @@ public class ClearToCommand extends ServerCommand {
 	}
 
 	@Override
-	public void runCommand(MessageReceivedEvent event, String[] args) {
-		String prefix = Wylx.getInstance().getPrefixThanksJosh(event.getGuild().getIdLong());
+	public void runCommand(MessageReceivedEvent event, CommandContext ctx) {
+		String[] args = ctx.args();
 		if(args.length == 2) {
 			try{
 				long messageID = Long.parseLong(args[1]);
 				deleteToID(event, messageID);
 			} catch (NumberFormatException nfe){
-				event.getMessage().reply(getDescription(prefix)).queue();
+				event.getMessage().reply(getDescription(ctx.prefix())).queue();
 			}
 		} else if (args.length == 1){
 			try {
 				long messageID = event.getMessage().getMessageReference().getMessageIdLong();
 				deleteToID(event, messageID);
 			} catch (NullPointerException npe){
-				event.getMessage().reply(getDescription(prefix)).queue();
+				event.getMessage().reply(getDescription(ctx.prefix())).queue();
 			}
 		}
 	}

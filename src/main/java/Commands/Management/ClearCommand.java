@@ -1,5 +1,6 @@
 package Commands.Management;
 
+import Core.Commands.CommandContext;
 import Core.Commands.ServerCommand;
 import Core.Commands.ThreadedCommand;
 import Core.Util.Helper;
@@ -20,10 +21,10 @@ public class ClearCommand extends ServerCommand {
 	}
 
 	@Override
-	public void runCommand(MessageReceivedEvent event, String[] args) {
-		String prefix = Wylx.getInstance().getPrefixThanksJosh(event.getGuild().getIdLong());
+	public void runCommand(MessageReceivedEvent event, CommandContext ctx) {
+		String[] args = ctx.args();
 		if(args.length != 2){
-			event.getMessage().reply(getDescription(prefix)).queue();
+			event.getMessage().reply(getDescription(ctx.prefix())).queue();
 			return;
 		}
 
@@ -36,7 +37,7 @@ public class ClearCommand extends ServerCommand {
 				clearMessages(event.getChannel().getHistory(), toDelete + 1);
 			}
 		} catch(NumberFormatException nfe){
-			event.getMessage().reply(getDescription(prefix)).queue();
+			event.getMessage().reply(getDescription(ctx.prefix())).queue();
 		}
 	}
 

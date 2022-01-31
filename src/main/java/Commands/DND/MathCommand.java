@@ -1,7 +1,9 @@
 package Commands.DND;
 
+import Core.Commands.CommandContext;
 import Core.Commands.ServerCommand;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.interactions.commands.Command;
 
 import java.text.DecimalFormat;
 import java.util.ArrayDeque;
@@ -40,12 +42,12 @@ public class MathCommand extends ServerCommand {
     }
 
     @Override
-    public void runCommand(MessageReceivedEvent event, String[] args) {
+    public void runCommand(MessageReceivedEvent event, CommandContext ctx) {
         String msg = event.getMessage().getContentRaw();
 
-        msg = msg.substring(args[0].length());
-        if (args.length == 1) {
-            event.getChannel().sendMessage(getDescription(event.getGuild().getIdLong())).queue();
+        msg = msg.substring(ctx.args()[0].length());
+        if (ctx.args().length == 1) {
+            event.getChannel().sendMessage(getDescription(ctx.prefix())).queue();
             return;
         }
 

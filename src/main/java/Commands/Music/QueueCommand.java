@@ -1,5 +1,6 @@
 package Commands.Music;
 
+import Core.Commands.CommandContext;
 import Core.Commands.ServerCommand;
 import Core.Music.GuildMusicManager;
 import Core.Music.MusicUtils;
@@ -27,8 +28,8 @@ public class QueueCommand extends ServerCommand {
     }
 
     @Override
-    public void runCommand(MessageReceivedEvent event, String[] args) {
-        GuildMusicManager manager = WylxPlayerManager.getInstance().getGuildManager(event.getGuild().getIdLong());
+    public void runCommand(MessageReceivedEvent event, CommandContext ctx) {
+        GuildMusicManager manager = WylxPlayerManager.getInstance().getGuildManager(ctx.guildID());
 
         if (manager.isNotPlaying()) {
             event.getChannel().sendMessage("Wylx is not playing anything!").queue();

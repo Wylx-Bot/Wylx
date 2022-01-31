@@ -1,5 +1,6 @@
 package Commands.Management;
 
+import Core.Commands.CommandContext;
 import Core.Commands.ServerCommand;
 import Core.Util.Helper;
 import Core.Wylx;
@@ -19,15 +20,14 @@ public class CleanCommand extends ServerCommand {
     }
 
     @Override
-    public void runCommand(MessageReceivedEvent event, String[] args) {
-        long guildID = event.getGuild().getIdLong();
-        String prefix = Wylx.getInstance().getPrefixThanksJosh(guildID);
+    public void runCommand(MessageReceivedEvent event, CommandContext ctx) {
+        String[] args = ctx.args();
         if(args.length == 1){
-            cleanMessages(event.getChannel().getHistory(), 20, prefix);
+            cleanMessages(event.getChannel().getHistory(), 20, ctx.prefix());
             event.getChannel().deleteMessageById(event.getMessageId()).queue();
             return;
         } else if(args.length != 2) {
-            event.getMessage().reply(getDescription(prefix)).queue();
+            event.getMessage().reply(getDescription(ctx.prefix())).queue();
             return;
         }
 
@@ -35,13 +35,13 @@ public class CleanCommand extends ServerCommand {
             int scrape = Integer.parseInt(args[1]);
             if(scrape > 20) {
                 Helper.validate("Are you sure you want to clean " + scrape + " messages", event,
-                        () -> cleanMessages(event.getChannel().getHistory(), scrape, prefix));
+                        () -> cleanMessages(event.getChannel().getHistory(), scrape, ctx.prefix()));
             } else {
                 event.getChannel().deleteMessageById(event.getMessageId()).queue();
-                cleanMessages(event.getChannel().getHistory(), scrape, prefix);
+                cleanMessages(event.getChannel().getHistory(), scrape, ctx.prefix());
             }
         } catch (NumberFormatException nfe){
-            event.getMessage().reply(getDescription(prefix)).queue();
+            event.getMessage().reply(getDescription(ctx.prefix())).queue();
         }
     }
 

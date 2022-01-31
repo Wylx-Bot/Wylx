@@ -1,5 +1,6 @@
 package Commands.Music;
 
+import Core.Commands.CommandContext;
 import Core.Commands.ServerCommand;
 import Core.Music.*;
 import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
@@ -39,10 +40,10 @@ public class PlayCommand extends ServerCommand {
     }
 
     @Override
-    public void runCommand(MessageReceivedEvent event, String[] args) {
+    public void runCommand(MessageReceivedEvent event, CommandContext ctx) {
         var playerManager = WylxPlayerManager.getInstance();
-        var guildID = event.getGuild().getIdLong();
-        var musicManager = playerManager.getGuildManager(event.getGuild().getIdLong());
+        var musicManager = playerManager.getGuildManager(ctx.guildID());
+        String[] args = ctx.args();
         boolean isSearch;
 
         if (args.length < 2) {
@@ -50,7 +51,7 @@ public class PlayCommand extends ServerCommand {
             return;
         }
 
-        if (!MusicUtils.canUseVoiceCommand(guildID, event.getAuthor().getIdLong())) {
+        if (!MusicUtils.canUseVoiceCommand(ctx.guildID(), event.getAuthor().getIdLong())) {
             event.getChannel().sendMessage("You are not in the same channel as the bot!").queue();
             return;
         }
@@ -80,14 +81,14 @@ public class PlayCommand extends ServerCommand {
         }
 
         var context = new TrackContext(
-                guildID,
+                ctx.guildID(),
                 event.getChannel().getIdLong(),
                 event.getAuthor().getIdLong(),
                 dur.toMillis()
         );
 
         // Ask Lavaplayer for a track
-        playerManager.loadTracks(token, guildID, new AudioLoadResultHandler() {
+        playerManager.loadTracks(token, ctx.guildID(), new AudioLoadResultHandler() {
             @Override
             public void trackLoaded(AudioTrack track) {
                 track.setUserData(context);

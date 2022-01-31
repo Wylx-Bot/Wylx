@@ -1,5 +1,6 @@
 package Commands.Management;
 
+import Core.Commands.CommandContext;
 import Core.Commands.ThreadedCommand;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
@@ -11,7 +12,8 @@ public class RepeatCommand extends ThreadedCommand {
     }
 
     @Override
-    protected void runCommandThread(MessageReceivedEvent event, String[] args) {
+    protected void runCommandThread(MessageReceivedEvent event, CommandContext ctx) {
+        String[] args = ctx.args();
         int x;
         if(args.length < 3){
             event.getMessage().reply("Usage $repeat <int x> <str msg>").queue();

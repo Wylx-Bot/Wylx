@@ -1,5 +1,6 @@
 package Commands.Music;
 
+import Core.Commands.CommandContext;
 import Core.Commands.ServerCommand;
 import Core.Music.WylxPlayerManager;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
@@ -14,8 +15,8 @@ public class ClearPlaylistCommand extends ServerCommand {
     }
 
     @Override
-    public void runCommand(MessageReceivedEvent event, String[] args) {
-        var manager = WylxPlayerManager.getInstance().getGuildManager(event.getGuild().getIdLong());
+    public void runCommand(MessageReceivedEvent event, CommandContext ctx) {
+        var manager = WylxPlayerManager.getInstance().getGuildManager(ctx.guildID());
         manager.clearQueue();
     }
 }

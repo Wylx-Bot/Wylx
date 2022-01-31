@@ -1,5 +1,6 @@
 package Commands.Music;
 
+import Core.Commands.CommandContext;
 import Core.Commands.ServerCommand;
 import Core.Music.MusicUtils;
 import Core.Music.WylxPlayerManager;
@@ -13,13 +14,13 @@ public class PauseCommand extends ServerCommand {
     }
 
     @Override
-    public void runCommand(MessageReceivedEvent event, String[] args) {
-        var manager = WylxPlayerManager.getInstance().getGuildManager(event.getGuild().getIdLong());
-        long guildID = event.getGuild().getIdLong();
+    public void runCommand(MessageReceivedEvent event, CommandContext ctx) {
+        var manager = WylxPlayerManager.getInstance().getGuildManager(ctx.guildID());
         long memberID = event.getAuthor().getIdLong();
+
         if (manager.isNotPlaying()) {
             event.getChannel().sendMessage("Wylx is not playing music right now!").queue();
-        } else if (!MusicUtils.canUseVoiceCommand(guildID, memberID)) {
+        } else if (!MusicUtils.canUseVoiceCommand(ctx.guildID(), memberID)) {
             event.getChannel().sendMessage("You are not in the same channel as the bot!").queue();
         } else {
             manager.pause(true);
