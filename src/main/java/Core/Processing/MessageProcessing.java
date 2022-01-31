@@ -4,6 +4,7 @@ import Commands.DND.TTRPGPackage;
 import Commands.Help;
 import Commands.Management.ManagementPackage;
 import Commands.Music.MusicPackage;
+import Core.Commands.CommandContext;
 import Core.Commands.ServerCommand;
 import Core.Events.SilentEvent;
 import Core.Wylx;
@@ -60,7 +61,7 @@ public class MessageProcessing extends ListenerAdapter {
 			if (command != null) {
 				if(command.checkPermission(event)) {
 					logger.debug("Command ({}) Called With {} Args", commandString, args.length);
-					command.runCommand(event, args);
+					command.runCommand(event, new CommandContext(args, prefix, event.getGuild().getIdLong()));
 					return;
 				} else {
 					event.getMessage().reply("You don't have permission to use this command!").queue();
