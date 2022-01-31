@@ -13,8 +13,14 @@ public class SeekCommand extends ServerCommand {
     SeekCommand() {
         super("seek",
                 CommandPermission.EVERYONE,
-                "Seek to location in current track. You can use + or - to seek relative to current place\n" +
-                        "Usage: $seek <+/-Seconds OR +/-HH:MM:SS OR +/-MM:SS>");
+                """
+                        Seek to location in current track. You can use + or - to seek relative to current place
+                        
+                        Usage:
+                        %{p}seek Seconds
+                        %{p}seek HH:MM:SS OR MM:SS>
+                        %{p}seek +/-Seconds OR +/- HH:MM:SS OR +/- MM:SS
+                        """);
     }
 
     @Override
@@ -38,7 +44,7 @@ public class SeekCommand extends ServerCommand {
         MusicSeek seekLoc = MusicUtils.getDurationFromArg(args[1]);
 
         if (seekLoc == null) {
-            event.getChannel().sendMessage("Usage: $seek <+/-Seconds OR +/-HH:MM:SS OR +/-MM:SS>").queue();
+            event.getChannel().sendMessage(getDescription(guildID)).queue();
             return;
         }
 

@@ -33,8 +33,8 @@ public class PlayCommand extends ServerCommand {
                 """
                         Play or queue a song to play
                         Usage:
-                        $play <link> <Optional: seconds to skip OR HH:MM:SS>
-                        $play <search terms>""",
+                        %{p}play <link> <Optional: seconds to skip OR HH:MM:SS>
+                        %{p}play <search terms>""",
                 "p");
     }
 

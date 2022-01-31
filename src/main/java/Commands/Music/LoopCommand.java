@@ -9,7 +9,7 @@ public class LoopCommand extends ServerCommand {
     LoopCommand() {
         super("loop",
                 CommandPermission.EVERYONE,
-                "Loop current track\nUsage: $loop <true/yes OR false/no>");
+                "Loop current track\nUsage: %{p}loop <true/yes OR false/no>");
     }
 
     @Override

@@ -7,7 +7,7 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 public class RepeatCommand extends ThreadedCommand {
     public RepeatCommand() {
         super("repeat", CommandPermission.DISCORD_PERM, Permission.ADMINISTRATOR,
-                "$repeat <int x> <str msg> Repeats message msg x times, only accessible to admins");
+                "%{p}repeat <int x> <str msg> Repeats message msg x times, only accessible to admins");
     }
 
     @Override

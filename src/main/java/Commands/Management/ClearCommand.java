@@ -3,6 +3,7 @@ package Commands.Management;
 import Core.Commands.ServerCommand;
 import Core.Commands.ThreadedCommand;
 import Core.Util.Helper;
+import Core.Wylx;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageHistory;
@@ -15,25 +16,27 @@ public class ClearCommand extends ServerCommand {
 	public ClearCommand() {
 		super("clear", CommandPermission.DISCORD_PERM, Permission.MESSAGE_MANAGE,
 				"Delete the most recent X messages from the channel, Requires Manage Messages Perm" +
-				"\nUsage: ;clear <messages to delete>");
+				"\nUsage: %{p}clear <messages to delete>");
 	}
 
 	@Override
 	public void runCommand(MessageReceivedEvent event, String[] args) {
+		String prefix = Wylx.getInstance().getPrefixThanksJosh(event.getGuild().getIdLong());
 		if(args.length != 2){
-			event.getMessage().reply(getDescription()).queue();
+			event.getMessage().reply(getDescription(prefix)).queue();
 			return;
 		}
 
 		try {
 			int toDelete = Integer.parseInt(args[1]);
 			if(toDelete > 10) {
-				Helper.validate("Are you sure you want to delete " + toDelete + " messages", event, () -> clearMessages(event.getChannel().getHistory(), toDelete + 2));
+				Helper.validate("Are you sure you want to delete " + toDelete + " messages", event,
+						() -> clearMessages(event.getChannel().getHistory(), toDelete + 2));
 			} else {
 				clearMessages(event.getChannel().getHistory(), toDelete + 1);
 			}
 		} catch(NumberFormatException nfe){
-			event.getMessage().reply(getDescription()).queue();
+			event.getMessage().reply(getDescription(prefix)).queue();
 		}
 	}
 

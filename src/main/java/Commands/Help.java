@@ -4,6 +4,7 @@ import Core.Commands.ServerCommand;
 import Core.Events.SilentEvent;
 import Core.ProcessPackage.ProcessPackage;
 import Core.Processing.MessageProcessing;
+import Core.Wylx;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 public class Help extends ServerCommand {
@@ -13,6 +14,8 @@ public class Help extends ServerCommand {
 
 	@Override
 	public void runCommand(MessageReceivedEvent event, String[] args) {
+		String prefix = Wylx.getInstance().getPrefixThanksJosh(event.getGuild().getIdLong());
+
 		//If there are more than two args the user provided invalid input, correct them
 		if(args.length > 2){
 			event.getMessage().reply("Usage: $help <Keyword> or $help <CommandName>").queue();
@@ -33,7 +36,7 @@ public class Help extends ServerCommand {
 			//Check command map for the arg to see if they provided the keyword for a command
 			if(MessageProcessing.commandMap.containsKey(args[1].toLowerCase())){
 				ServerCommand command = MessageProcessing.commandMap.get(args[1]);
-				event.getChannel().sendMessage(command.getName() + ": " + command.getDescription()).queue();
+				event.getChannel().sendMessage(command.getName() + ": " + command.getDescription(prefix)).queue();
 				return;
 			}
 

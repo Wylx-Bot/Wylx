@@ -1,12 +1,12 @@
 package Core.Commands;
+import Core.Wylx;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
-import java.util.Map;
-
+import java.util.regex.Matcher;
 
 public abstract class ServerCommand {
 
@@ -121,7 +121,12 @@ public abstract class ServerCommand {
 		return this.getClass().getSimpleName();
 	}
 
-	public String getDescription(){
-		return description;
+	public String getDescription(String prefix) {
+		return description.replaceAll("%\\{p}", Matcher.quoteReplacement(prefix));
+	}
+
+	public String getDescription(long guildID){
+		String prefix = Wylx.getInstance().getPrefixThanksJosh(guildID);
+		return getDescription(prefix);
 	}
 }

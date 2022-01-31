@@ -45,7 +45,7 @@ public class MathCommand extends ServerCommand {
 
         msg = msg.substring(args[0].length());
         if (args.length == 1) {
-            event.getChannel().sendMessage(getDescription()).queue();
+            event.getChannel().sendMessage(getDescription(event.getGuild().getIdLong())).queue();
             return;
         }
 
