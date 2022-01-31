@@ -39,7 +39,7 @@ public class Help extends ServerCommand {
 
 			//Check SilentEvents to see if they provided the name of an event
 			for(SilentEvent silentEvent : MessageProcessing.events){
-				if(silentEvent.getName().toLowerCase().equals(args[1].toLowerCase())){
+				if(silentEvent.getName().equalsIgnoreCase(args[1])){
 					event.getChannel().sendMessage(silentEvent.getName() + ": " + silentEvent.getDescription()).queue();
 					return;
 				}

@@ -41,13 +41,16 @@ public class MessageProcessing extends ListenerAdapter {
 
 	@Override
 	public void onMessageReceived(@NotNull MessageReceivedEvent event) {
-		//Ignore messages from the bot
-		if(event.getAuthor().getIdLong() == Wylx.getInstance().getBotID()) return;
+		Wylx wylx = Wylx.getInstance();
 
-		String prefix = Wylx.getInstance().getPrefixThanksJosh(event.getGuild().getIdLong()); // TODO: Get as server preference
+		//Ignore messages from the bot
+		if(event.getAuthor().getIdLong() == wylx.getBotID() ||
+			!event.getChannel().canTalk() ||
+			!event.isFromGuild()) return;
+
+		String prefix = wylx.getPrefixThanksJosh(event.getGuild().getIdLong()); // TODO: Get as server preference
 		String msg = event.getMessage().getContentRaw();
 
-		if(!event.isFromGuild()) return;
 		// Check Commands if aimed at bot
 		if (msg.startsWith(prefix)) {
 			String[] args = msg.split(" ");
