@@ -19,7 +19,7 @@ public class ResumeCommand extends ServerCommand {
         long memberID = event.getAuthor().getIdLong();
         if (manager.isNotPlaying()) {
             event.getChannel().sendMessage("Wylx is not playing music right now!").queue();
-        } else if (!MusicUtils.canUseVoiceCommand(ctx.guildID(), memberID)) {
+        } else if (!MusicUtils.canUseVoiceCommand(ctx)) {
             event.getChannel().sendMessage("You are not in the same channel as the bot!").queue();
         } else {
             manager.pause(false);

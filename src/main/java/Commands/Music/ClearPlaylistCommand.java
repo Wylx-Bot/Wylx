@@ -16,7 +16,6 @@ public class ClearPlaylistCommand extends ServerCommand {
 
     @Override
     public void runCommand(MessageReceivedEvent event, CommandContext ctx) {
-        var manager = WylxPlayerManager.getInstance().getGuildManager(ctx.guildID());
-        manager.clearQueue();
+        ctx.musicManager().clearQueue();
     }
 }

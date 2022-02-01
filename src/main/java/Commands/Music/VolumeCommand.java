@@ -16,7 +16,6 @@ public class VolumeCommand extends ServerCommand {
 
     @Override
     public void runCommand(MessageReceivedEvent event, CommandContext ctx) {
-        var manager = WylxPlayerManager.getInstance().getGuildManager(ctx.guildID());
         String[] args = ctx.args();
 
         if (args.length != 2) {
@@ -24,7 +23,7 @@ public class VolumeCommand extends ServerCommand {
             return;
         }
 
-        if (!MusicUtils.canUseVoiceCommand(ctx.guildID(), event.getAuthor().getIdLong())) {
+        if (!MusicUtils.canUseVoiceCommand(ctx)) {
             event.getChannel().sendMessage("You are not in the same channel as the bot!").queue();
             return;
         }
@@ -36,6 +35,6 @@ public class VolumeCommand extends ServerCommand {
             return;
         }
 
-        manager.setVolume(number);
+        ctx.musicManager().setVolume(number);
     }
 }

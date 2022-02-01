@@ -1,5 +1,6 @@
 package Core.Music;
 
+import Core.Commands.CommandContext;
 import Core.Util.ProgressBar;
 import Core.Wylx;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
@@ -45,15 +46,14 @@ public class MusicUtils {
     /**
      * Check that bot is not in any voice channel or that user is in the same channel as bot
      *
-     * @param guildID guild ID
-     * @param requesterID member ID
+     * @param ctx CommandContext which contains member and guild ID
      * @return True if voice commands are allowed
      */
     @SuppressWarnings("ConstantConditions")
-    public static boolean canUseVoiceCommand(long guildID, long requesterID) {
+    public static boolean canUseVoiceCommand(CommandContext ctx) {
         var wylx = Wylx.getInstance();
-        var audioManager = wylx.getGuildAudioManager(guildID);
-        var member = wylx.getMemberInGuild(guildID, requesterID);
+        var audioManager = wylx.getGuildAudioManager(ctx.guildID());
+        var member = wylx.getMemberInGuild(ctx.guildID(), ctx.authorID());
 
         // Check user is in a voice channel
         // Note that JDA only caches members in voice channels, so NULL is expected a lot
@@ -64,9 +64,9 @@ public class MusicUtils {
         if (!audioManager.isConnected()) return true;
 
         // Check that bot is in the same channel as user
-        return wylx.userInVoiceChannel(guildID,
+        return wylx.userInVoiceChannel(ctx.guildID(),
                 audioManager.getConnectedChannel().getIdLong(),
-                requesterID);
+                ctx.guildID());
     }
 
     /**

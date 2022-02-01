@@ -4,7 +4,6 @@ import Core.Commands.CommandContext;
 import Core.Commands.ServerCommand;
 import Core.Music.MusicSeek;
 import Core.Music.MusicUtils;
-import Core.Music.WylxPlayerManager;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
@@ -26,31 +25,27 @@ public class SeekCommand extends ServerCommand {
 
     @Override
     public void runCommand(MessageReceivedEvent event, CommandContext ctx) {
-        var playerManager = WylxPlayerManager.getInstance();
-        var musicManager = playerManager.getGuildManager(ctx.guildID());
-        String[] args = ctx.args();
-
-        if (args.length != 2) {
+        if (ctx.args().length != 2) {
             return;
         }
 
-        if (musicManager.isNotPlaying()) {
+        if (ctx.musicManager().isNotPlaying()) {
             event.getChannel().sendMessage("Wylx is not playing music right now!").queue();
             return;
-        } else if (!MusicUtils.canUseVoiceCommand(ctx.guildID(), event.getAuthor().getIdLong())) {
+        } else if (!MusicUtils.canUseVoiceCommand(ctx)) {
             event.getChannel().sendMessage("You are not in the same channel as the bot!").queue();
             return;
         }
 
-        MusicSeek seekLoc = MusicUtils.getDurationFromArg(args[1]);
+        MusicSeek seekLoc = MusicUtils.getDurationFromArg(ctx.args()[1]);
 
         if (seekLoc == null) {
-            event.getChannel().sendMessage(getDescription(ctx.guildID())).queue();
+            event.getChannel().sendMessage(getDescription(ctx.prefix())).queue();
             return;
         }
 
         String prettyTime = MusicUtils.getPrettyDuration(seekLoc.dur());
-        musicManager.seek(seekLoc);
+        ctx.musicManager().seek(seekLoc);
         String msg;
         if (seekLoc.relative()) {
             msg = String.format("Seeking %s", prettyTime);

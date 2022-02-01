@@ -29,7 +29,7 @@ public class QueueCommand extends ServerCommand {
 
     @Override
     public void runCommand(MessageReceivedEvent event, CommandContext ctx) {
-        GuildMusicManager manager = WylxPlayerManager.getInstance().getGuildManager(ctx.guildID());
+        GuildMusicManager manager = ctx.musicManager();
 
         if (manager.isNotPlaying()) {
             event.getChannel().sendMessage("Wylx is not playing anything!").queue();
