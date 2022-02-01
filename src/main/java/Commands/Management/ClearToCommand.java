@@ -3,7 +3,6 @@ package Commands.Management;
 import Core.Commands.CommandContext;
 import Core.Commands.ServerCommand;
 import Core.Util.Helper;
-import Core.Wylx;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageHistory;
@@ -20,7 +19,8 @@ public class ClearToCommand extends ServerCommand {
 	}
 
 	@Override
-	public void runCommand(MessageReceivedEvent event, CommandContext ctx) {
+	public void runCommand(CommandContext ctx) {
+		MessageReceivedEvent event = ctx.event();
 		String[] args = ctx.args();
 		if(args.length == 2) {
 			try{

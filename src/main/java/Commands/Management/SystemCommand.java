@@ -59,7 +59,8 @@ public class SystemCommand extends ServerCommand {
     }
 
     @Override
-    public void runCommand(MessageReceivedEvent event, CommandContext ctx) {
+    public void runCommand(CommandContext ctx) {
+        MessageReceivedEvent event = ctx.event();
         EmbedBuilder embed = new EmbedBuilder();
         embed.setColor(event.getGuild().getSelfMember().getColor());
 

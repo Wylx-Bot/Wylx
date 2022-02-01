@@ -11,7 +11,8 @@ public class PingCommand extends ThreadedCommand {
     }
 
     @Override
-    protected void runCommandThread(MessageReceivedEvent event, CommandContext ctx) {
+    protected void runCommandThread(CommandContext ctx) {
+        MessageReceivedEvent event = ctx.event();
         JDA jda = event.getJDA();
         jda.getRestPing().queue(time -> {
             String msg = String.format("Pong! REST response time was %d ms. Websocket ping is %s ms\n",

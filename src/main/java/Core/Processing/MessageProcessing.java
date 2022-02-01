@@ -66,7 +66,7 @@ public class MessageProcessing extends ListenerAdapter {
 			if (command != null) {
 				if(command.checkPermission(event)) {
 					logger.debug("Command ({}) Called With {} Args", commandString, args.length);
-					command.runCommand(event, new CommandContext(args, prefix, guildID, memberID,
+					command.runCommand(new CommandContext(event, args, prefix, guildID, memberID,
 							musicPlayerManager.getGuildManager(guildID)));
 					return;
 				} else {

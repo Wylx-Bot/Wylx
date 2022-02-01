@@ -12,7 +12,8 @@ public class RepeatCommand extends ThreadedCommand {
     }
 
     @Override
-    protected void runCommandThread(MessageReceivedEvent event, CommandContext ctx) {
+    protected void runCommandThread(CommandContext ctx) {
+        MessageReceivedEvent event = ctx.event();
         String[] args = ctx.args();
         int x;
         if(args.length < 3){

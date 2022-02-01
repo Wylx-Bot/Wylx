@@ -3,7 +3,6 @@ package Commands.Music;
 import Core.Commands.CommandContext;
 import Core.Commands.ServerCommand;
 import Core.Music.MusicUtils;
-import Core.Music.WylxPlayerManager;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
@@ -19,7 +18,8 @@ public class NowPlaying extends ServerCommand {
     }
 
     @Override
-    public void runCommand(MessageReceivedEvent event, CommandContext ctx) {
+    public void runCommand(CommandContext ctx) {
+        MessageReceivedEvent event = ctx.event();
         if (ctx.musicManager().isNotPlaying()) {
             event.getChannel().sendMessage("Wylx is not playing music right now!").queue();
         } else if (!MusicUtils.canUseVoiceCommand(ctx)) {

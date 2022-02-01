@@ -115,7 +115,7 @@ public abstract class ServerCommand {
 		return myMap;
 	}
 
-	abstract public void runCommand(MessageReceivedEvent event, CommandContext ctx);
+	abstract public void runCommand(CommandContext ctx);
 
 	public String getName(){
 		return this.getClass().getSimpleName();

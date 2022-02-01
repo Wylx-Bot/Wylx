@@ -2,8 +2,6 @@ package Commands.Music;
 
 import Core.Commands.CommandContext;
 import Core.Commands.ServerCommand;
-import Core.Music.WylxPlayerManager;
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 public class ClearPlaylistCommand extends ServerCommand {
     ClearPlaylistCommand() {
@@ -15,7 +13,7 @@ public class ClearPlaylistCommand extends ServerCommand {
     }
 
     @Override
-    public void runCommand(MessageReceivedEvent event, CommandContext ctx) {
+    public void runCommand(CommandContext ctx) {
         ctx.musicManager().clearQueue();
     }
 }

@@ -12,7 +12,8 @@ public class RestartCommand extends ServerCommand {
 
 
     @Override
-    public void runCommand(MessageReceivedEvent event, CommandContext ctx) {
+    public void runCommand(CommandContext ctx) {
+        MessageReceivedEvent event = ctx.event();
         // TODO: Do cool stuff like...idk...
         // TODO: I don't actually know?
 

@@ -12,7 +12,8 @@ public class InviteCommand extends ServerCommand {
 	}
 
 	@Override
-	public void runCommand(MessageReceivedEvent event, CommandContext ctx) {
+	public void runCommand(CommandContext ctx) {
+		MessageReceivedEvent event = ctx.event();
 		event.getChannel().sendMessage("Click here to invite me to your server: " + URL).queue();
 	}
 }

@@ -20,7 +20,8 @@ public class CleanCommand extends ServerCommand {
     }
 
     @Override
-    public void runCommand(MessageReceivedEvent event, CommandContext ctx) {
+    public void runCommand(CommandContext ctx) {
+        MessageReceivedEvent event = ctx.event();
         String[] args = ctx.args();
         if(args.length == 1){
             cleanMessages(event.getChannel().getHistory(), 20, ctx.prefix());

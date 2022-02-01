@@ -14,7 +14,8 @@ public class ResumeCommand extends ServerCommand {
     }
 
     @Override
-    public void runCommand(MessageReceivedEvent event, CommandContext ctx) {
+    public void runCommand(CommandContext ctx) {
+        MessageReceivedEvent event = ctx.event();
         var manager = WylxPlayerManager.getInstance().getGuildManager(ctx.guildID());
         long memberID = event.getAuthor().getIdLong();
         if (manager.isNotPlaying()) {

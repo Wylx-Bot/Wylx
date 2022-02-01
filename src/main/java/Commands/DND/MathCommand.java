@@ -3,7 +3,6 @@ package Commands.DND;
 import Core.Commands.CommandContext;
 import Core.Commands.ServerCommand;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.api.interactions.commands.Command;
 
 import java.text.DecimalFormat;
 import java.util.ArrayDeque;
@@ -42,7 +41,8 @@ public class MathCommand extends ServerCommand {
     }
 
     @Override
-    public void runCommand(MessageReceivedEvent event, CommandContext ctx) {
+    public void runCommand(CommandContext ctx) {
+        MessageReceivedEvent event = ctx.event();
         String msg = event.getMessage().getContentRaw();
 
         msg = msg.substring(ctx.args()[0].length());

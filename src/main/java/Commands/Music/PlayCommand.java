@@ -40,7 +40,8 @@ public class PlayCommand extends ServerCommand {
     }
 
     @Override
-    public void runCommand(MessageReceivedEvent event, CommandContext ctx) {
+    public void runCommand(CommandContext ctx) {
+        MessageReceivedEvent event = ctx.event();
         var playerManager = WylxPlayerManager.getInstance();
         String[] args = ctx.args();
         boolean isSearch;

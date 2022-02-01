@@ -5,7 +5,6 @@ import Core.Commands.ServerCommand;
 import Core.Events.SilentEvent;
 import Core.ProcessPackage.ProcessPackage;
 import Core.Processing.MessageProcessing;
-import Core.Wylx;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import java.util.regex.Matcher;
@@ -16,7 +15,8 @@ public class Help extends ServerCommand {
 	}
 
 	@Override
-	public void runCommand(MessageReceivedEvent event, CommandContext ctx) {
+	public void runCommand(CommandContext ctx) {
+		MessageReceivedEvent event = ctx.event();
 		String[] args = ctx.args();
 
 		//If there are more than two args the user provided invalid input, correct them
