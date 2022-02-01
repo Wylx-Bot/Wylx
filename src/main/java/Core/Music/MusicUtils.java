@@ -66,7 +66,7 @@ public class MusicUtils {
         // Check that bot is in the same channel as user
         return wylx.userInVoiceChannel(ctx.guildID(),
                 audioManager.getConnectedChannel().getIdLong(),
-                ctx.guildID());
+                ctx.authorID());
     }
 
     /**
