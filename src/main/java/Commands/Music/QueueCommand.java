@@ -1,9 +1,9 @@
 package Commands.Music;
 
+import Core.Commands.CommandContext;
 import Core.Commands.ServerCommand;
 import Core.Music.GuildMusicManager;
 import Core.Music.MusicUtils;
-import Core.Music.WylxPlayerManager;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
@@ -27,8 +27,9 @@ public class QueueCommand extends ServerCommand {
     }
 
     @Override
-    public void runCommand(MessageReceivedEvent event, String[] args) {
-        GuildMusicManager manager = WylxPlayerManager.getInstance().getGuildManager(event.getGuild().getIdLong());
+    public void runCommand(CommandContext ctx) {
+        MessageReceivedEvent event = ctx.event();
+        GuildMusicManager manager = ctx.musicManager();
 
         if (manager.isNotPlaying()) {
             event.getChannel().sendMessage("Wylx is not playing anything!").queue();

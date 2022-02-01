@@ -4,8 +4,10 @@ import Commands.DND.TTRPGPackage;
 import Commands.Help;
 import Commands.Management.ManagementPackage;
 import Commands.Music.MusicPackage;
+import Core.Commands.CommandContext;
 import Core.Commands.ServerCommand;
 import Core.Events.SilentEvent;
+import Core.Music.WylxPlayerManager;
 import Core.Wylx;
 import Core.ProcessPackage.ProcessPackage;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
@@ -19,6 +21,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 
 public class MessageProcessing extends ListenerAdapter {
+	private static final WylxPlayerManager musicPlayerManager = WylxPlayerManager.getInstance();
 	private static final Logger logger = LoggerFactory.getLogger(MessageProcessing.class);
 	public static final HashMap<String, ServerCommand> commandMap = new HashMap<>();
 	public static final ArrayList<SilentEvent> events = new ArrayList<>();
@@ -41,23 +44,30 @@ public class MessageProcessing extends ListenerAdapter {
 
 	@Override
 	public void onMessageReceived(@NotNull MessageReceivedEvent event) {
-		//Ignore messages from the bot
-		if(event.getAuthor().getIdLong() == Wylx.getInstance().getBotID()) return;
+		Wylx wylx = Wylx.getInstance();
 
-		String prefix = Wylx.getInstance().getPrefixThanksJosh(event.getGuild().getIdLong()); // TODO: Get as server preference
+		long memberID = event.getAuthor().getIdLong();
+		long guildID = event.getGuild().getIdLong();
+
+		//Ignore messages from the bot
+		if(memberID == wylx.getBotID() ||
+			!event.getChannel().canTalk() ||
+			!event.isFromGuild()) return;
+
+		String prefix = wylx.getPrefixThanksJosh(guildID);
 		String msg = event.getMessage().getContentRaw();
 
-		if(!event.isFromGuild()) return;
 		// Check Commands if aimed at bot
 		if (msg.startsWith(prefix)) {
 			String[] args = msg.split(" ");
-			String commandString = args[0].toLowerCase().replace(prefix, "");
+			String commandString = args[0].replace(prefix, "").toLowerCase();
 			ServerCommand command = commandMap.get(commandString);
 
 			if (command != null) {
 				if(command.checkPermission(event)) {
 					logger.debug("Command ({}) Called With {} Args", commandString, args.length);
-					command.runCommand(event, args);
+					command.runCommand(new CommandContext(event, args, prefix, guildID, memberID,
+							musicPlayerManager.getGuildManager(guildID)));
 					return;
 				} else {
 					event.getMessage().reply("You don't have permission to use this command!").queue();

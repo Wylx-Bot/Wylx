@@ -1,7 +1,6 @@
 package Core.Commands;
 
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -48,10 +47,10 @@ public abstract class ThreadedCommand extends ServerCommand{
 	}
 
 	@Override
-	public final void runCommand(MessageReceivedEvent event, String[] args) {
+	public final void runCommand(CommandContext ctx) {
 		Timer timer = new Timer();
 		Thread thread = new Thread(() -> {
-			runCommandThread(event, args);
+			runCommandThread(ctx);
 			timer.cancel();
 		});
 		thread.start();
@@ -60,11 +59,11 @@ public abstract class ThreadedCommand extends ServerCommand{
 			public void run() {
 				if(thread.isAlive()){
 					thread.stop();
-					event.getMessage().reply("error: command took to long").queue();
+					ctx.event().getMessage().reply("error: command took to long").queue();
 				}
 			}
 		}, timeout);
 	}
 
-	protected abstract void runCommandThread(MessageReceivedEvent event, String[] args);
+	protected abstract void runCommandThread(CommandContext ctx);
 }

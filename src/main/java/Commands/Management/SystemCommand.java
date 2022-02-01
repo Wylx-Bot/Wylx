@@ -1,5 +1,6 @@
 package Commands.Management;
 
+import Core.Commands.CommandContext;
 import Core.Commands.ServerCommand;
 import Core.Util.ProgressBar;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -58,7 +59,8 @@ public class SystemCommand extends ServerCommand {
     }
 
     @Override
-    public void runCommand(MessageReceivedEvent event, String[] args) {
+    public void runCommand(CommandContext ctx) {
+        MessageReceivedEvent event = ctx.event();
         EmbedBuilder embed = new EmbedBuilder();
         embed.setColor(event.getGuild().getSelfMember().getColor());
 

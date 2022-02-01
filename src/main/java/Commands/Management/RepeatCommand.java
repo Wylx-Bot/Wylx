@@ -1,5 +1,6 @@
 package Commands.Management;
 
+import Core.Commands.CommandContext;
 import Core.Commands.ThreadedCommand;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
@@ -7,11 +8,13 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 public class RepeatCommand extends ThreadedCommand {
     public RepeatCommand() {
         super("repeat", CommandPermission.DISCORD_PERM, Permission.ADMINISTRATOR,
-                "$repeat <int x> <str msg> Repeats message msg x times, only accessible to admins");
+                "%{p}repeat <int x> <str msg> Repeats message msg x times, only accessible to admins");
     }
 
     @Override
-    protected void runCommandThread(MessageReceivedEvent event, String[] args) {
+    protected void runCommandThread(CommandContext ctx) {
+        MessageReceivedEvent event = ctx.event();
+        String[] args = ctx.args();
         int x;
         if(args.length < 3){
             event.getMessage().reply("Usage $repeat <int x> <str msg>").queue();

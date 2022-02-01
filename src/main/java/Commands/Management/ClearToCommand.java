@@ -1,5 +1,6 @@
 package Commands.Management;
 
+import Core.Commands.CommandContext;
 import Core.Commands.ServerCommand;
 import Core.Util.Helper;
 import net.dv8tion.jda.api.Permission;
@@ -18,20 +19,22 @@ public class ClearToCommand extends ServerCommand {
 	}
 
 	@Override
-	public void runCommand(MessageReceivedEvent event, String[] args) {
+	public void runCommand(CommandContext ctx) {
+		MessageReceivedEvent event = ctx.event();
+		String[] args = ctx.args();
 		if(args.length == 2) {
 			try{
 				long messageID = Long.parseLong(args[1]);
 				deleteToID(event, messageID);
 			} catch (NumberFormatException nfe){
-				event.getMessage().reply(getDescription()).queue();
+				event.getMessage().reply(getDescription(ctx.prefix())).queue();
 			}
 		} else if (args.length == 1){
 			try {
 				long messageID = event.getMessage().getMessageReference().getMessageIdLong();
 				deleteToID(event, messageID);
 			} catch (NullPointerException npe){
-				event.getMessage().reply(getDescription()).queue();
+				event.getMessage().reply(getDescription(ctx.prefix())).queue();
 			}
 		}
 	}

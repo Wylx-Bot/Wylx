@@ -1,5 +1,6 @@
 package Commands.Management;
 
+import Core.Commands.CommandContext;
 import Core.Commands.ThreadedCommand;
 import Core.Wylx;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
@@ -15,7 +16,9 @@ public class UpdateCommand extends ThreadedCommand {
     }
 
     @Override
-    public void runCommandThread(MessageReceivedEvent event, String[] args) {
+    public void runCommandThread(CommandContext ctx) {
+        MessageReceivedEvent event = ctx.event();
+        String[] args = ctx.args();
         if (args.length == 2 && !Wylx.getInstance().isRelease()) {
             event.getChannel().sendMessage("Unable to use different branch on RELEASE").queue();
             return;

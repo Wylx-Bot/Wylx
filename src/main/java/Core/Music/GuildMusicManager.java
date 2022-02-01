@@ -101,10 +101,12 @@ public class GuildMusicManager extends AudioEventAdapter {
         // Nothing else to play!
         if (lastCtx != null) {
             MessageChannel channel = Wylx.getInstance().getTextChannel(lastCtx.channelID());
-            channel.sendMessage("Playlist ended. Use the $play command to add more music")
-                    .delay(Duration.ofMinutes(1))
-                    .flatMap(Message::delete)
-                    .queue();
+            if (channel.canTalk()) {
+                channel.sendMessage("Playlist ended. Use the $play command to add more music")
+                        .delay(Duration.ofMinutes(1))
+                        .flatMap(Message::delete)
+                        .queue();
+            }
         }
 
         // Disconnect after a minute of not playing
@@ -195,7 +197,9 @@ public class GuildMusicManager extends AudioEventAdapter {
 
         track.setPosition(lastCtx.startMillis());
 
-        if (channel == null) return;
+        if (channel == null ||
+            !channel.canTalk()) return;
+
         MessageEmbed embed = MusicUtils.createPlayingEmbed(track, "Playing **%s**", false);
         channel.sendMessageEmbeds(embed)
                 .delay(Duration.ofSeconds(60))

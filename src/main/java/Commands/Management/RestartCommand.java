@@ -1,5 +1,6 @@
 package Commands.Management;
 
+import Core.Commands.CommandContext;
 import Core.Commands.ServerCommand;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
@@ -11,7 +12,8 @@ public class RestartCommand extends ServerCommand {
 
 
     @Override
-    public void runCommand(MessageReceivedEvent event, String[] args) {
+    public void runCommand(CommandContext ctx) {
+        MessageReceivedEvent event = ctx.event();
         // TODO: Do cool stuff like...idk...
         // TODO: I don't actually know?
 
