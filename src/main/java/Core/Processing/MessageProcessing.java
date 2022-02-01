@@ -1,9 +1,10 @@
 package Core.Processing;
 
+import Commands.BotUtil.BotUtilPackage;
 import Commands.DND.TTRPGPackage;
 import Commands.Help;
-import Commands.Management.ManagementPackage;
 import Commands.Music.MusicPackage;
+import Commands.ServerUtil.ServerUtilPackage;
 import Core.Commands.CommandContext;
 import Core.Commands.ServerCommand;
 import Core.Events.SilentEvent;
@@ -26,9 +27,10 @@ public class MessageProcessing extends ListenerAdapter {
 	public static final HashMap<String, ServerCommand> commandMap = new HashMap<>();
 	public static final ArrayList<SilentEvent> events = new ArrayList<>();
 	public static final ProcessPackage[] processPackages = {
-			new ManagementPackage(),
+			new ServerUtilPackage(),
 			new TTRPGPackage(),
-			new MusicPackage()
+			new MusicPackage(),
+			new BotUtilPackage()
 	};
 
 

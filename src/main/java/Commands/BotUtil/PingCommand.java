@@ -1,4 +1,4 @@
-package Commands.Management;
+package Commands.BotUtil;
 
 import Core.Commands.CommandContext;
 import Core.Commands.ThreadedCommand;
