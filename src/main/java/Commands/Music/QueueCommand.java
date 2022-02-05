@@ -4,7 +4,7 @@ import Core.Commands.CommandContext;
 import Core.Commands.ServerCommand;
 import Core.Music.GuildMusicManager;
 import Core.Music.MusicUtils;
-import Core.Util.InteractionHelper;
+import Core.Util.Helper;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
@@ -44,8 +44,7 @@ public class QueueCommand extends ServerCommand {
                 Button.secondary("last", "\u23E9")
                 ));
 
-
-        InteractionHelper.createButtonInteraction((ButtonInteractionEvent buttonEvent, Object object) -> {
+        Helper.createButtonInteraction((ButtonInteractionEvent buttonEvent, Object object) -> {
             Integer page = (Integer) object;
             // Not playing anymore, remove buttons and empty message
             if (manager.isNotPlaying()) {
@@ -70,9 +69,8 @@ public class QueueCommand extends ServerCommand {
             buttonEvent.editMessage(QueueCommand.getQueuePage(page, manager)).queue();
 
             return false;
-        }, (Message msg, Object object) -> {
-            msg.editMessageComponents().queue();
-        }, rows, event.getChannel().sendMessage(getQueuePage(0, manager)), 0);
+        }, (Message msg, Object object) -> msg.editMessageComponents().queue(),
+                rows, event.getChannel().sendMessage(getQueuePage(0, manager)), 0);
     }
 
     private static String getQueuePage(int page, GuildMusicManager manager) {

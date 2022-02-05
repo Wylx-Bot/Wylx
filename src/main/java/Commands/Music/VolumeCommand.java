@@ -5,8 +5,6 @@ import Core.Commands.ServerCommand;
 import Core.Music.MusicUtils;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
-import java.util.regex.Matcher;
-
 public class VolumeCommand extends ServerCommand {
     VolumeCommand () {
         super("volume",
@@ -28,7 +26,7 @@ public class VolumeCommand extends ServerCommand {
             return;
         }
 
-        if (!MusicUtils.canUseVoiceCommand(ctx)) {
+        if (MusicUtils.canUseVoiceCommand(ctx)) {
             event.getChannel().sendMessage("You are not in the same channel as the bot!").queue();
             return;
         }
@@ -43,6 +41,7 @@ public class VolumeCommand extends ServerCommand {
         ctx.musicManager().setVolume(number);
     }
 
+    @SuppressWarnings("SameReturnValue")
     private static String getUsage() {
         return "Usage: %{p}volume <number between 0 and 100>";
     }

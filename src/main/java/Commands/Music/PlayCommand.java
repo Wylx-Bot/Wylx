@@ -3,7 +3,7 @@ package Commands.Music;
 import Core.Commands.CommandContext;
 import Core.Commands.ServerCommand;
 import Core.Music.*;
-import Core.Util.InteractionHelper;
+import Core.Util.Helper;
 import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
@@ -49,7 +49,7 @@ public class PlayCommand extends ServerCommand {
             return;
         }
 
-        if (!MusicUtils.canUseVoiceCommand(ctx)) {
+        if (MusicUtils.canUseVoiceCommand(ctx)) {
             event.getChannel().sendMessage("You are not in the same channel as the bot!").queue();
             return;
         }
@@ -115,6 +115,7 @@ public class PlayCommand extends ServerCommand {
         });
     }
 
+    @SuppressWarnings("UnusedAssignment")
     private void selectSearchResult(AudioPlaylist playlist, MessageReceivedEvent event, GuildMusicManager musicManager) {
         int resNum = Math.min(playlist.getTracks().size(), MAX_SEARCH_TRACKS);
         StringBuilder builder = new StringBuilder();
@@ -138,8 +139,8 @@ public class PlayCommand extends ServerCommand {
         cancelRow.add(Button.secondary("x", Emoji.fromUnicode("U+274C")));
 
         var toSend = event.getChannel().sendMessage(builder.toString());
-        InteractionHelper.createButtonInteraction((ButtonInteractionEvent buttonEvent, Object ctx) -> {
-            ctx = (Boolean) true;
+        Helper.createButtonInteraction((ButtonInteractionEvent buttonEvent, Object ctx) -> {
+            ctx = true;
             // Cancel search
             if (buttonEvent.getComponentId().equals("x")) {
                 buttonEvent.editMessage("Search cancelled")

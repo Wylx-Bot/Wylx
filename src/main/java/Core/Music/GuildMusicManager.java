@@ -1,6 +1,6 @@
 package Core.Music;
 
-import Core.Util.InteractionHelper;
+import Core.Util.Helper;
 import Core.Wylx;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
@@ -206,7 +206,7 @@ public class GuildMusicManager extends AudioEventAdapter {
             !channel.canTalk()) return;
 
         MessageEmbed embed = MusicUtils.createPlayingEmbed(track, "Playing **%s**", false);
-        InteractionHelper.sendTemporaryMessage(channel.sendMessageEmbeds(embed), Duration.ofMinutes(1));
+        Helper.sendTemporaryMessage(channel.sendMessageEmbeds(embed), Duration.ofMinutes(1));
     }
 
     @Override
