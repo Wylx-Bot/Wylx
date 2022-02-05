@@ -26,7 +26,7 @@ public class VolumeCommand extends ServerCommand {
             return;
         }
 
-        if (MusicUtils.canUseVoiceCommand(ctx)) {
+        if (MusicUtils.voiceCommandBlocked(ctx)) {
             event.getChannel().sendMessage("You are not in the same channel as the bot!").queue();
             return;
         }

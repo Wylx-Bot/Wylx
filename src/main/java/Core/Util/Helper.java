@@ -20,12 +20,11 @@ import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
-import java.util.function.Consumer;
 
 public class Helper {
-	private static final int MILLIS_PER_SECOND = 1000;
+	private static final int MILLISECONDS_PER_SECOND = 1000;
 	private static final int SECONDS_PER_MINUTE = 60;
-	private static final int TWO_MINUTES = MILLIS_PER_SECOND * SECONDS_PER_MINUTE * 2;
+	private static final int TWO_MINUTES = MILLISECONDS_PER_SECOND * SECONDS_PER_MINUTE * 2;
 
 	// Validates the users choice, if they select :check: it runs the runnable, if they select :x: do nothing
 	public static final String CHECK = "U+2705";
@@ -69,8 +68,10 @@ public class Helper {
 	}
 
 	public static void sendTemporaryMessage(MessageAction msg, Duration timeout) {
-		msg.queue(message -> message.delete().queueAfter(timeout.toSeconds(), TimeUnit.SECONDS, null,
-				new ErrorHandler().ignore(ErrorResponse.UNKNOWN_MESSAGE)));
+		msg.queue(message -> {
+			var errorHandler = new ErrorHandler().ignore(ErrorResponse.UNKNOWN_MESSAGE);
+			message.delete().queueAfter(timeout.toSeconds(), TimeUnit.SECONDS, null, errorHandler);
+		});
 	}
 
 	public static void createButtonInteraction(BiFunction<ButtonInteractionEvent, Object, Boolean> interactionRunnable,

@@ -33,7 +33,7 @@ public class SeekCommand extends ServerCommand {
         if (ctx.musicManager().isNotPlaying()) {
             event.getChannel().sendMessage("Wylx is not playing music right now!").queue();
             return;
-        } else if (MusicUtils.canUseVoiceCommand(ctx)) {
+        } else if (MusicUtils.voiceCommandBlocked(ctx)) {
             event.getChannel().sendMessage("You are not in the same channel as the bot!").queue();
             return;
         }
