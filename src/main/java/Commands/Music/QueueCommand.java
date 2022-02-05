@@ -69,7 +69,7 @@ public class QueueCommand extends ServerCommand {
             buttonEvent.editMessage(QueueCommand.getQueuePage(page, manager)).queue();
 
             return false;
-        }, (Message msg, Object object) -> msg.editMessageComponents().queue(),
+        }, (Message msg, Boolean timedOut) -> msg.editMessageComponents().queue(),
                 rows, event.getChannel().sendMessage(getQueuePage(0, manager)), 0);
     }
 

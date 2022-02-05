@@ -115,7 +115,6 @@ public class PlayCommand extends ServerCommand {
         });
     }
 
-    @SuppressWarnings("UnusedAssignment")
     private void selectSearchResult(AudioPlaylist playlist, MessageReceivedEvent event, GuildMusicManager musicManager) {
         int resNum = Math.min(playlist.getTracks().size(), MAX_SEARCH_TRACKS);
         StringBuilder builder = new StringBuilder();
@@ -139,8 +138,7 @@ public class PlayCommand extends ServerCommand {
         cancelRow.add(Button.secondary("x", Emoji.fromUnicode("U+274C")));
 
         var toSend = event.getChannel().sendMessage(builder.toString());
-        Helper.createButtonInteraction((ButtonInteractionEvent buttonEvent, Object ctx) -> {
-            ctx = true;
+        Helper.createButtonInteraction((ButtonInteractionEvent buttonEvent, Object obj) -> {
             // Cancel search
             if (buttonEvent.getComponentId().equals("x")) {
                 buttonEvent.editMessage("Search cancelled")
@@ -157,12 +155,13 @@ public class PlayCommand extends ServerCommand {
             }
 
             return true;
-        }, (Message message, Object ctx) -> {
-            if ((Boolean) ctx) return;
+        }, (Message message, Boolean timedOut) -> {
+            if (!timedOut) return;
             message.editMessage("Search timed out")
                     .map(Message::editMessageComponents)
                     .queue();
-        }, List.of(ActionRow.of(components), ActionRow.of(cancelRow)), toSend, false);
+        }, List.of(ActionRow.of(components),
+                ActionRow.of(cancelRow)), toSend, null);
     }
 
     private void displayUsage(MessageChannel channel) {

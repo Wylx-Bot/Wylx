@@ -74,11 +74,12 @@ public class Helper {
 	}
 
 	public static void createButtonInteraction(BiFunction<ButtonInteractionEvent, Object, Boolean> interactionRunnable,
-											   BiConsumer<Message, Object> interactionEndRunnable,
+											   BiConsumer<Message, Boolean> interactionEndRunnable,
 											   Collection<ActionRow> actionRows,
 											   MessageAction toSend,
 											   Object ctx) {
 
+		Timer timer = new Timer();
 		Message msg = toSend.setActionRows(actionRows).complete();
 		JDA jda = Wylx.getInstance().getJDA();
 
@@ -91,19 +92,19 @@ public class Helper {
 				}
 
 				if (interactionRunnable.apply(event, ctx)) {
+					timer.cancel();
 					jda.removeEventListener(this);
-					interactionEndRunnable.accept(msg, ctx);
+					interactionEndRunnable.accept(msg, false);
 				}
 			}
 		};
 
 		jda.addEventListener(adapter);
-
-		Timer timer = new Timer();
 		timer.schedule(new TimerTask() {
 			@Override
 			public void run() {
-				interactionEndRunnable.accept(msg, ctx);
+				jda.removeEventListener(adapter);
+				interactionEndRunnable.accept(msg, true);
 				timer.cancel();
 			}
 		}, TWO_MINUTES);
