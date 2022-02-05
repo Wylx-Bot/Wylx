@@ -206,7 +206,7 @@ public class GuildMusicManager extends AudioEventAdapter {
             !channel.canTalk()) return;
 
         MessageEmbed embed = MusicUtils.createPlayingEmbed(track, "Playing **%s**", false);
-        Helper.sendTemporaryMessage(channel.sendMessageEmbeds(embed), Duration.ofMinutes(1));
+        Helper.selfDestructingMsg(channel.sendMessageEmbeds(embed), Duration.ofMinutes(1));
     }
 
     @Override

@@ -67,13 +67,31 @@ public class Helper {
 		}
 	}
 
-	public static void sendTemporaryMessage(MessageAction msg, Duration timeout) {
+	/**
+	 * Create a self-destructing message which deletes itself after timeout
+	 * @param msg Message to send
+	 * @param timeout Time until message is deleted
+	 */
+	public static void selfDestructingMsg(MessageAction msg, Duration timeout) {
 		msg.queue(message -> {
 			var errorHandler = new ErrorHandler().ignore(ErrorResponse.UNKNOWN_MESSAGE);
 			message.delete().queueAfter(timeout.toSeconds(), TimeUnit.SECONDS, null, errorHandler);
 		});
 	}
 
+	/**
+	 * Helper function to create button interactions on a message.
+	 * The buttons remain until either interactionRunnable returns true, or a timeout occurs after 2 minutes.
+	 *
+	 * @param interactionRunnable (ButtonInteractionEvent, Object == ctx) -> Boolean
+	 *                            Ran anytime a button is pressed on the method
+	 * @param interactionEndRunnable (Message, Boolean == timed out) -> Void
+	 *                               Ran once when buttons are removed.
+	 * @param actionRows Action Rows which contain buttons
+	 * @param toSend Message to be sent with buttons
+	 * @param ctx Context to be passed into interactionRunnable.
+	 *            Useful for keeping state between calls of interactionRunnable
+	 */
 	public static void createButtonInteraction(BiFunction<ButtonInteractionEvent, Object, Boolean> interactionRunnable,
 											   BiConsumer<Message, Boolean> interactionEndRunnable,
 											   Collection<ActionRow> actionRows,

@@ -28,7 +28,7 @@ public class NowPlaying extends ServerCommand {
             MessageEmbed embed = MusicUtils.createPlayingEmbed(ctx.musicManager().getCurrentTrack(),
                     "Playing %s", true);
 
-            Helper.sendTemporaryMessage(event.getChannel().sendMessageEmbeds(embed), Duration.ofMinutes(1));
+            Helper.selfDestructingMsg(event.getChannel().sendMessageEmbeds(embed), Duration.ofMinutes(1));
         }
     }
 }

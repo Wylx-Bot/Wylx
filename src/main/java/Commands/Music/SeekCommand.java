@@ -54,6 +54,6 @@ public class SeekCommand extends ServerCommand {
             msg = String.format("Now playing at %s", prettyTime);
         }
 
-        Helper.sendTemporaryMessage(event.getChannel().sendMessage(msg), Duration.ofMinutes(1));
+        Helper.selfDestructingMsg(event.getChannel().sendMessage(msg), Duration.ofMinutes(1));
     }
 }
