@@ -6,10 +6,12 @@ import Core.Music.MusicUtils;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 public class VolumeCommand extends ServerCommand {
+    private static final String USAGE = "Usage: %{p}volume <number between 0 and 100>";
+
     VolumeCommand () {
         super("volume",
                 CommandPermission.EVERYONE,
-                "Set playback volume\n" + getUsage(),
+                "Set playback volume\n" + USAGE,
                 "v");
     }
 
@@ -21,7 +23,7 @@ public class VolumeCommand extends ServerCommand {
         if (args.length != 2) {
             String message = String.format("Current volume is: %d\n%s",
                     ctx.musicManager().getVolume(),
-                    ServerCommand.replacePrefix(getUsage(), ctx.prefix()));
+                    ServerCommand.replacePrefix(USAGE, ctx.prefix()));
             event.getChannel().sendMessage(message).queue();
             return;
         }
@@ -39,10 +41,5 @@ public class VolumeCommand extends ServerCommand {
         }
 
         ctx.musicManager().setVolume(number);
-    }
-
-    @SuppressWarnings("SameReturnValue")
-    private static String getUsage() {
-        return "Usage: %{p}volume <number between 0 and 100>";
     }
 }
