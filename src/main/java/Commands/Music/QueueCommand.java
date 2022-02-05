@@ -4,17 +4,18 @@ import Core.Commands.CommandContext;
 import Core.Commands.ServerCommand;
 import Core.Music.GuildMusicManager;
 import Core.Music.MusicUtils;
+import Core.Util.InteractionHelper;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
-import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.InteractionHook;
-import net.dv8tion.jda.api.interactions.components.Button;
-import org.jetbrains.annotations.NotNull;
+import net.dv8tion.jda.api.interactions.components.ActionRow;
+import net.dv8tion.jda.api.interactions.components.buttons.Button;
 
 import java.time.Duration;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.Collection;
+import java.util.List;
 
 public class QueueCommand extends ServerCommand {
     private static final int PAGE_COUNT = 10;
@@ -36,57 +37,42 @@ public class QueueCommand extends ServerCommand {
             return;
         }
 
-        AtomicLong msgId = new AtomicLong();
-
-        // Listen for buttons to switch queue page
-        ListenerAdapter adapter = new ListenerAdapter() {
-            int page = 0;
-
-            @Override
-            public void onButtonClick(@NotNull ButtonClickEvent event) {
-                // Not the message we sent
-                if (event.getMessage().getIdLong() != msgId.longValue()) {
-                    return;
-                }
-
-                // Not playing anymore, remove buttons and empty message
-                if (manager.isNotPlaying()) {
-                    event.editMessage("Wylx is not playing anymore!")
-                            .flatMap(InteractionHook::editOriginalComponents).queue();
-                    return;
-                }
-
-                Object[] list = manager.getQueue();
-
-                switch (event.getComponentId()) {
-                    case "first" -> page = 0;
-                    case "previous" -> --page;
-                    case "next" -> ++page;
-                    case "last" -> page = list.length / PAGE_COUNT;
-                }
-
-                // Bind page number between 0-max
-                page = Math.min(list.length / PAGE_COUNT, page);
-                page = Math.max(0, page);
-
-                event.editMessage(QueueCommand.getQueuePage(page, manager)).queue();
-            }
-        };
-
-        // Send the first page and attach buttons
-        event.getChannel().sendMessage(getQueuePage(0, manager)).setActionRow(
+        Collection<ActionRow> rows = List.of(ActionRow.of(
                 Button.secondary("first", "\u23EA"),
                 Button.secondary("previous", "\u25C0"),
                 Button.secondary("next", "\u25B6"),
                 Button.secondary("last", "\u23E9")
-        ).queue(message -> {
-            // Remove buttons after ~2 minutes
-            message.editMessageComponents().queueAfter(120, TimeUnit.SECONDS,
-                    msg -> event.getJDA().removeEventListener(adapter));
-            msgId.set(message.getIdLong());
-        });
+                ));
 
-        event.getJDA().addEventListener(adapter);
+
+        InteractionHelper.createButtonInteraction((ButtonInteractionEvent buttonEvent, Object object) -> {
+            Integer page = (Integer) object;
+            // Not playing anymore, remove buttons and empty message
+            if (manager.isNotPlaying()) {
+                buttonEvent.editMessage("Wylx is not playing anymore!")
+                        .flatMap(InteractionHook::editOriginalComponents).queue();
+                return true;
+            }
+
+            Object[] list = manager.getQueue();
+
+            switch (buttonEvent.getComponentId()) {
+                case "first" -> page = 0;
+                case "previous" -> --page;
+                case "next" -> ++page;
+                case "last" -> page = list.length / PAGE_COUNT;
+            }
+
+            // Bind page number between 0-max
+            page = Math.min(list.length / PAGE_COUNT, page);
+            page = Math.max(0, page);
+
+            buttonEvent.editMessage(QueueCommand.getQueuePage(page, manager)).queue();
+
+            return false;
+        }, (Message msg, Object object) -> {
+            msg.editMessageComponents().queue();
+        }, rows, event.getChannel().sendMessage(getQueuePage(0, manager)), 0);
     }
 
     private static String getQueuePage(int page, GuildMusicManager manager) {

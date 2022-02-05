@@ -121,12 +121,11 @@ public abstract class ServerCommand {
 		return this.getClass().getSimpleName();
 	}
 
-	public String getDescription(String prefix) {
-		return description.replaceAll("%\\{p}", Matcher.quoteReplacement(prefix));
+	public static String replacePrefix(String string, String prefix) {
+		return string.replaceAll("%\\{p}", Matcher.quoteReplacement(prefix));
 	}
 
-	public String getDescription(long guildID){
-		String prefix = Wylx.getInstance().getPrefixThanksJosh(guildID);
-		return getDescription(prefix);
+	public String getDescription(String prefix) {
+		return replacePrefix(description, prefix);
 	}
 }

@@ -1,5 +1,6 @@
 package Core.Music;
 
+import Core.Util.InteractionHelper;
 import Core.Wylx;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
@@ -168,6 +169,10 @@ public class GuildMusicManager extends AudioEventAdapter {
         player.setVolume(vol);
     }
 
+    public int getVolume() {
+        return player.getVolume();
+    }
+
     public void seek(MusicSeek seek) {
         if (!seek.relative()) {
             player.getPlayingTrack().setPosition(seek.dur().toMillis());
@@ -201,10 +206,7 @@ public class GuildMusicManager extends AudioEventAdapter {
             !channel.canTalk()) return;
 
         MessageEmbed embed = MusicUtils.createPlayingEmbed(track, "Playing **%s**", false);
-        channel.sendMessageEmbeds(embed)
-                .delay(Duration.ofSeconds(60))
-                .flatMap(Message::delete)
-                .queue();
+        InteractionHelper.sendTemporaryMessage(channel.sendMessageEmbeds(embed), Duration.ofMinutes(1));
     }
 
     @Override

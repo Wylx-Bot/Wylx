@@ -3,6 +3,7 @@ package Commands.Music;
 import Core.Commands.CommandContext;
 import Core.Commands.ServerCommand;
 import Core.Music.MusicUtils;
+import Core.Util.InteractionHelper;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
@@ -28,10 +29,7 @@ public class NowPlaying extends ServerCommand {
             MessageEmbed embed = MusicUtils.createPlayingEmbed(ctx.musicManager().getCurrentTrack(),
                     "Playing %s", true);
 
-            event.getChannel().sendMessageEmbeds(embed)
-                    .delay(Duration.ofSeconds(60))
-                    .flatMap(Message::delete)
-                    .queue();
+            InteractionHelper.sendTemporaryMessage(event.getChannel().sendMessageEmbeds(embed), Duration.ofMinutes(1));
         }
     }
 }

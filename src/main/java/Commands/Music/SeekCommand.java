@@ -4,6 +4,7 @@ import Core.Commands.CommandContext;
 import Core.Commands.ServerCommand;
 import Core.Music.MusicSeek;
 import Core.Music.MusicUtils;
+import Core.Util.InteractionHelper;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
@@ -54,9 +55,6 @@ public class SeekCommand extends ServerCommand {
             msg = String.format("Now playing at %s", prettyTime);
         }
 
-        event.getChannel().sendMessage(msg)
-                .delay(Duration.ofMinutes(1))
-                .flatMap(Message::delete)
-                .queue();
+        InteractionHelper.sendTemporaryMessage(event.getChannel().sendMessage(msg), Duration.ofMinutes(1));
     }
 }
