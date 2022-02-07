@@ -9,8 +9,12 @@ public class ValidateCommand extends SenderReceiverCommand {
                         Remind another user that they matter to you
                         Usage: validate <user tag>
                         """,
-                "@sender wants everyone to know that they are loved and appreciated.",
-                "@sender wants @recipient to know that they are loved and appreciated");
+                new String[]{"@sender wants everyone to know that they are loved and appreciated"},
+                new String[]{"@sender wants @recipient to know that they are loved and appreciated",
+                "Hey @recipient: @sender thinks that you're doing a great job",
+                "@recipient: @sender wants you to know that you make them smile",
+                "@sender thinks @recipient is looking fabulous today"}
+        );
     }
 
 }

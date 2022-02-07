@@ -21,11 +21,10 @@ public class FrogFactCommand extends ServerCommand {
     @Override
     public void runCommand(CommandContext ctx) {
 
-        File frogFactList = new File("src/main/resources/frog-facts.txt");
-
         Random r = new Random();
         if(allFacts.isEmpty()) { //don't read the whole file every time
             try {
+                File frogFactList = new File("src/main/resources/frog-facts.txt");
                 allFacts = Files.readAllLines(frogFactList.toPath());
             } catch (IOException e) {
                 allFacts = new ArrayList<>(List.of("It appears I've forgotten all my frog facts!"));

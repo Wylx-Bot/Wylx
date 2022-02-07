@@ -8,8 +8,10 @@ public class BonkCommand extends SenderReceiverCommand {
                         Bonks another user
                         Usage: bonk <user tag>
                         """,
-                "@sender has tried to bonk someone but missed!",
-                "@sender has bonked @recipient!"
+                new String[]{"@sender has tried to bonk someone but missed!",
+                "Hey @sender: who were you trying to bonk?"},
+                new String[]{"@sender has bonked @recipient!",
+                "Get bonked, @recipient!"}
                 );
     }
 
