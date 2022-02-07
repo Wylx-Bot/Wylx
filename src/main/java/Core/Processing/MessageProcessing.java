@@ -2,6 +2,7 @@ package Core.Processing;
 
 import Commands.BotUtil.BotUtilPackage;
 import Commands.DND.TTRPGPackage;
+import Commands.Frog.FrogPackage;
 import Commands.Help;
 import Commands.Music.MusicPackage;
 import Commands.ServerUtil.ServerUtilPackage;
@@ -30,7 +31,8 @@ public class MessageProcessing extends ListenerAdapter {
 			new ServerUtilPackage(),
 			new TTRPGPackage(),
 			new MusicPackage(),
-			new BotUtilPackage()
+			new BotUtilPackage(),
+			new FrogPackage()
 	};
 
 
