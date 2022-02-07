@@ -24,9 +24,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class PlayCommand extends ServerCommand {
     private static final int MAX_SEARCH_TRACKS = 5;
+    // Find &t=<nums>, but don't capture &t=
+    private static final Pattern ytTimestamp = Pattern.compile("(?<=&t=)[0-9]*");
 
     public PlayCommand() {
         super("play",
@@ -67,6 +71,14 @@ public class PlayCommand extends ServerCommand {
         } else {
             // Replace < and > which avoids embeds on Discord
             token = args[1].replaceAll("(^<)|(>$)", "");
+
+            // Try to use youtube timestamp if present
+            Matcher m = ytTimestamp.matcher(args[1]);
+            if (m.find()) {
+                int ytDur = Integer.parseInt(m.group());
+                dur = Duration.ofSeconds(ytDur);
+            }
+
             if (args.length == 3) {
                 MusicSeek seek = MusicUtils.getDurationFromArg(args[2]);
                 if (seek == null) {
