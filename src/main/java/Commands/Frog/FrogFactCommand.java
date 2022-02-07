@@ -1,7 +1,7 @@
 package Commands.Frog;
 
+import Core.Commands.CommandContext;
 import Core.Commands.ServerCommand;
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import java.io.File;
 import java.io.IOException;
@@ -19,7 +19,7 @@ public class FrogFactCommand extends ServerCommand {
     }
 
     @Override
-    public void runCommand(MessageReceivedEvent event, String[] args) {
+    public void runCommand(CommandContext ctx) {
 
         File frogFactList = new File("src/main/resources/frog-facts.txt");
 
@@ -33,6 +33,6 @@ public class FrogFactCommand extends ServerCommand {
         }
 
         int factNum = r.nextInt(allFacts.size());
-        event.getChannel().sendMessage(allFacts.get(factNum)).queue();
+        ctx.event().getChannel().sendMessage(allFacts.get(factNum)).queue();
     }
 }

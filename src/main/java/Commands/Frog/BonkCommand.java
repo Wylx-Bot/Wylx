@@ -6,11 +6,10 @@ public class BonkCommand extends SenderReceiverCommand {
         super("bonk", CommandPermission.EVERYONE,
                 """
                         Bonks another user
-                        Usage: $bonk <user tag>
+                        Usage: bonk <user tag>
                         """,
                 "@sender has tried to bonk someone but missed!",
-                "@sender has tried to bonk a user that doesn't exist here!",
-                "@sender has bonked @receiver!"
+                "@sender has bonked @recipient!"
                 );
     }
 

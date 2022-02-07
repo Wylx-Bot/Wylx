@@ -1,5 +1,6 @@
 package Commands.Frog;
 
+import Core.Commands.CommandContext;
 import Core.Commands.ServerCommand;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
@@ -14,7 +15,7 @@ public class DrawFrogCardCommand extends ServerCommand {
     }
 
     @Override
-    public void runCommand(MessageReceivedEvent event, String[] args) {
+    public void runCommand(CommandContext ctx) {
         String suit = "";
         String face;
 
@@ -52,6 +53,6 @@ public class DrawFrogCardCommand extends ServerCommand {
         embed.setTitle("Drew the " + face + " of " + suit);
         embed.setColor(new Color(107, 179, 130));
         embed.setFooter("Frog believes in you.");
-        event.getChannel().sendMessageEmbeds(embed.build()).queue();
+        ctx.event().getChannel().sendMessageEmbeds(embed.build()).queue();
     }
 }
