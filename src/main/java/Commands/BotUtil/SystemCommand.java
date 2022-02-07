@@ -1,6 +1,8 @@
-package Commands.Management;
+package Commands.BotUtil;
 
+import Core.Commands.CommandContext;
 import Core.Commands.ServerCommand;
+import Core.Util.ProgressBar;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
@@ -57,7 +59,8 @@ public class SystemCommand extends ServerCommand {
     }
 
     @Override
-    public void runCommand(MessageReceivedEvent event, String[] args) {
+    public void runCommand(CommandContext ctx) {
+        MessageReceivedEvent event = ctx.event();
         EmbedBuilder embed = new EmbedBuilder();
         embed.setColor(event.getGuild().getSelfMember().getColor());
 
@@ -73,17 +76,12 @@ public class SystemCommand extends ServerCommand {
         var ratio = (double) usedMem / maxMem;
         var uptime = ManagementFactory.getRuntimeMXBean().getUptime();
 
-        StringBuilder progress = new StringBuilder();
-        for (int i = 0; i < 30; i++) {
-            progress.append(((double) i / 30) < ratio ? "\u2588" : "\\_");
-        }
-
         String builder =
                 String.format("**OS**: %s\n", System.getProperty("os.name")) +
                 String.format("**Commit**: %s\n", commitID) +
                 String.format("**Threads**: %d\n", rt.availableProcessors()) +
                 String.format("**Memory**: %dMB of %dMB\n", usedMem, maxMem) +
-                progress + "\n\n" +
+                ProgressBar.progressBar(ratio) + "\n\n" +
                 String.format("**Bot Uptime**: %d Days, %d Hours, and %d minutes",
                         milliToDays(uptime), milliToHours(uptime), milliToMinutes(uptime));
 

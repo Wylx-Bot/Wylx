@@ -77,7 +77,7 @@ public class GuildMusicManager extends AudioEventAdapter {
             return;
 
         // Only send if queued instead of played right away
-        MessageEmbed embed = MusicUtils.createPlayingEmbed(newTrack, "Queueing **%s**");
+        MessageEmbed embed = MusicUtils.createPlayingEmbed(newTrack, "Queueing **%s**", false);
         textChannel.sendMessageEmbeds(embed)
                 .delay(Duration.ofSeconds(60))
                 .flatMap(Message::delete)
@@ -101,10 +101,12 @@ public class GuildMusicManager extends AudioEventAdapter {
         // Nothing else to play!
         if (lastCtx != null) {
             MessageChannel channel = Wylx.getInstance().getTextChannel(lastCtx.channelID());
-            channel.sendMessage("Playlist ended. Use the $play command to add more music")
-                    .delay(Duration.ofMinutes(1))
-                    .flatMap(Message::delete)
-                    .queue();
+            if (channel.canTalk()) {
+                channel.sendMessage("Playlist ended. Use the $play command to add more music")
+                        .delay(Duration.ofMinutes(1))
+                        .flatMap(Message::delete)
+                        .queue();
+            }
         }
 
         // Disconnect after a minute of not playing
@@ -195,8 +197,10 @@ public class GuildMusicManager extends AudioEventAdapter {
 
         track.setPosition(lastCtx.startMillis());
 
-        if (channel == null) return;
-        MessageEmbed embed = MusicUtils.createPlayingEmbed(track, "Playing **%s**");
+        if (channel == null ||
+            !channel.canTalk()) return;
+
+        MessageEmbed embed = MusicUtils.createPlayingEmbed(track, "Playing **%s**", false);
         channel.sendMessageEmbeds(embed)
                 .delay(Duration.ofSeconds(60))
                 .flatMap(Message::delete)

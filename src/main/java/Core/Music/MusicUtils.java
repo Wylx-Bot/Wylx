@@ -1,5 +1,7 @@
 package Core.Music;
 
+import Core.Commands.CommandContext;
+import Core.Util.ProgressBar;
 import Core.Wylx;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
@@ -44,15 +46,14 @@ public class MusicUtils {
     /**
      * Check that bot is not in any voice channel or that user is in the same channel as bot
      *
-     * @param guildID guild ID
-     * @param requesterID member ID
+     * @param ctx CommandContext which contains member and guild ID
      * @return True if voice commands are allowed
      */
     @SuppressWarnings("ConstantConditions")
-    public static boolean canUseVoiceCommand(long guildID, long requesterID) {
+    public static boolean canUseVoiceCommand(CommandContext ctx) {
         var wylx = Wylx.getInstance();
-        var audioManager = wylx.getGuildAudioManager(guildID);
-        var member = wylx.getMemberInGuild(guildID, requesterID);
+        var audioManager = wylx.getGuildAudioManager(ctx.guildID());
+        var member = wylx.getMemberInGuild(ctx.guildID(), ctx.authorID());
 
         // Check user is in a voice channel
         // Note that JDA only caches members in voice channels, so NULL is expected a lot
@@ -63,9 +64,9 @@ public class MusicUtils {
         if (!audioManager.isConnected()) return true;
 
         // Check that bot is in the same channel as user
-        return wylx.userInVoiceChannel(guildID,
+        return wylx.userInVoiceChannel(ctx.guildID(),
                 audioManager.getConnectedChannel().getIdLong(),
-                requesterID);
+                ctx.authorID());
     }
 
     /**
@@ -73,9 +74,10 @@ public class MusicUtils {
      *
      * @param track AudioTrack details
      * @param titleFormat Format for title (Queue or Play)
+     * @param progress Show progress through song
      * @return MessageEmbed that can be sent
      */
-    public static MessageEmbed createPlayingEmbed(AudioTrack track, String titleFormat) {
+    public static MessageEmbed createPlayingEmbed(AudioTrack track, String titleFormat, boolean progress) {
         EmbedBuilder builder = new EmbedBuilder();
         AudioTrackInfo info = track.getInfo();
         TrackContext ctx = (TrackContext) track.getUserData();
@@ -86,13 +88,22 @@ public class MusicUtils {
         if (info.isStream) {
             builder.setFooter("Stream (No Duration)");
         } else {
-            String prettyDur = getPrettyDuration(Duration.ofMillis(info.length));
+            String prettyDur = getPrettyDuration(info.length);
 
             if (ctx.startMillis() != 0) {
-                String prettyStart = getPrettyDuration(Duration.ofMillis(ctx.startMillis()));
+                String prettyStart = getPrettyDuration(ctx.startMillis());
                 builder.setFooter(String.format("Duration: %s - Started at %s", prettyDur, prettyStart));
             } else {
                 builder.setFooter(String.format("Duration: %s", prettyDur));
+            }
+
+            if (progress) {
+                builder.appendDescription("\n");
+                builder.appendDescription(MusicUtils.getPrettyDuration(track.getPosition()));
+                builder.appendDescription(" / ");
+                builder.appendDescription(prettyDur);
+                builder.appendDescription("\n");
+                builder.appendDescription(ProgressBar.progressBar((double) track.getPosition() / track.getDuration()));
             }
         }
 

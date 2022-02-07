@@ -1,9 +1,12 @@
 package Core.Commands;
+import Core.Wylx;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.HashMap;
+import java.util.regex.Matcher;
 
 public abstract class ServerCommand {
 
@@ -18,12 +21,18 @@ public abstract class ServerCommand {
 	private final Permission discPerm;
 	private final String keyword;
 	private final String description;
+	private final String[] aliases;
 	protected final Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	public ServerCommand(String keyword, CommandPermission cmdPerm, String description){
+		this(keyword, cmdPerm, description, new String[]{});
+	}
+
+	public ServerCommand(String keyword, CommandPermission cmdPerm, String description, String ... aliases){
 		this.keyword = keyword;
 		this.cmdPerm = cmdPerm;
 		this.description = description;
+		this.aliases = aliases;
 		discPerm = null;
 
 		if (cmdPerm == CommandPermission.DISCORD_PERM) {
@@ -33,10 +42,15 @@ public abstract class ServerCommand {
 	}
 
 	public ServerCommand(String keyword, CommandPermission cmdPerm, Permission perm, String description) {
+		this(keyword, cmdPerm, perm, description, new String[]{});
+	}
+
+	public ServerCommand(String keyword, CommandPermission cmdPerm, Permission perm, String description, String ... aliases) {
 		this.keyword = keyword;
 		this.cmdPerm = cmdPerm;
 		this.discPerm = perm;
 		this.description = description;
+		this.aliases = aliases;
 
 		if (cmdPerm != CommandPermission.DISCORD_PERM) {
 			logger.error("Discord permission given when command permission != DISCORD_PERM");
@@ -88,13 +102,31 @@ public abstract class ServerCommand {
 		return false;
 	}
 
-	abstract public void runCommand(MessageReceivedEvent event, String[] args);
+	public final String[] getAliases(){
+		return aliases;
+	}
+
+	public final HashMap<String, ServerCommand> getCommandMap(){
+		HashMap<String, ServerCommand> myMap = new HashMap<>();
+		myMap.put(this.keyword, this);
+		for(String alias : aliases){
+			myMap.put(alias, this);
+		}
+		return myMap;
+	}
+
+	abstract public void runCommand(CommandContext ctx);
 
 	public String getName(){
 		return this.getClass().getSimpleName();
 	}
 
-	public String getDescription(){
-		return description;
+	public String getDescription(String prefix) {
+		return description.replaceAll("%\\{p}", Matcher.quoteReplacement(prefix));
+	}
+
+	public String getDescription(long guildID){
+		String prefix = Wylx.getInstance().getPrefixThanksJosh(guildID);
+		return getDescription(prefix);
 	}
 }

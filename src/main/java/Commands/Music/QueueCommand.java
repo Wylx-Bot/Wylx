@@ -1,9 +1,9 @@
 package Commands.Music;
 
+import Core.Commands.CommandContext;
 import Core.Commands.ServerCommand;
 import Core.Music.GuildMusicManager;
 import Core.Music.MusicUtils;
-import Core.Music.WylxPlayerManager;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
@@ -22,12 +22,14 @@ public class QueueCommand extends ServerCommand {
     QueueCommand() {
         super("queue",
                 CommandPermission.EVERYONE,
-                "View current queue of songs waiting to be played");
+                "View current queue of songs waiting to be played",
+                "q");
     }
 
     @Override
-    public void runCommand(MessageReceivedEvent event, String[] args) {
-        GuildMusicManager manager = WylxPlayerManager.getInstance().getGuildManager(event.getGuild().getIdLong());
+    public void runCommand(CommandContext ctx) {
+        MessageReceivedEvent event = ctx.event();
+        GuildMusicManager manager = ctx.musicManager();
 
         if (manager.isNotPlaying()) {
             event.getChannel().sendMessage("Wylx is not playing anything!").queue();
@@ -54,12 +56,18 @@ public class QueueCommand extends ServerCommand {
                     return;
                 }
 
+                Object[] list = manager.getQueue();
+
                 switch (event.getComponentId()) {
                     case "first" -> page = 0;
                     case "previous" -> --page;
                     case "next" -> ++page;
-                    case "last" -> page = Integer.MAX_VALUE;
+                    case "last" -> page = list.length / PAGE_COUNT;
                 }
+
+                // Bind page number between 0-max
+                page = Math.min(list.length / PAGE_COUNT, page);
+                page = Math.max(0, page);
 
                 event.editMessage(QueueCommand.getQueuePage(page, manager)).queue();
             }
@@ -86,7 +94,6 @@ public class QueueCommand extends ServerCommand {
         AudioTrack currentPlaying = manager.getCurrentTrack();
         StringBuilder builder = new StringBuilder();
 
-        page = Math.min(page, list.length / PAGE_COUNT);
         Duration remaining = MusicUtils.getTimeRemaining(list, manager);
 
         // Header

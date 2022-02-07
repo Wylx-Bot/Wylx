@@ -1,5 +1,6 @@
 package Commands.Music;
 
+import Core.Commands.CommandContext;
 import Core.Commands.ServerCommand;
 import Core.Music.*;
 import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
@@ -23,9 +24,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class PlayCommand extends ServerCommand {
     private static final int MAX_SEARCH_TRACKS = 5;
+    // Find &t=<nums>, but don't capture &t=
+    private static final Pattern ytTimestamp = Pattern.compile("(?<=&t=)[0-9]*");
 
     public PlayCommand() {
         super("play",
@@ -33,15 +38,16 @@ public class PlayCommand extends ServerCommand {
                 """
                         Play or queue a song to play
                         Usage:
-                        $play <link> <Optional: seconds to skip OR HH:MM:SS>
-                        $play <search terms>""");
+                        %{p}play <link> <Optional: seconds to skip OR HH:MM:SS>
+                        %{p}play <search terms>""",
+                "p");
     }
 
     @Override
-    public void runCommand(MessageReceivedEvent event, String[] args) {
+    public void runCommand(CommandContext ctx) {
+        MessageReceivedEvent event = ctx.event();
         var playerManager = WylxPlayerManager.getInstance();
-        var guildID = event.getGuild().getIdLong();
-        var musicManager = playerManager.getGuildManager(event.getGuild().getIdLong());
+        String[] args = ctx.args();
         boolean isSearch;
 
         if (args.length < 2) {
@@ -49,7 +55,7 @@ public class PlayCommand extends ServerCommand {
             return;
         }
 
-        if (!MusicUtils.canUseVoiceCommand(guildID, event.getAuthor().getIdLong())) {
+        if (!MusicUtils.canUseVoiceCommand(ctx)) {
             event.getChannel().sendMessage("You are not in the same channel as the bot!").queue();
             return;
         }
@@ -65,6 +71,14 @@ public class PlayCommand extends ServerCommand {
         } else {
             // Replace < and > which avoids embeds on Discord
             token = args[1].replaceAll("(^<)|(>$)", "");
+
+            // Try to use youtube timestamp if present
+            Matcher m = ytTimestamp.matcher(args[1]);
+            if (m.find()) {
+                int ytDur = Integer.parseInt(m.group());
+                dur = Duration.ofSeconds(ytDur);
+            }
+
             if (args.length == 3) {
                 MusicSeek seek = MusicUtils.getDurationFromArg(args[2]);
                 if (seek == null) {
@@ -79,27 +93,27 @@ public class PlayCommand extends ServerCommand {
         }
 
         var context = new TrackContext(
-                guildID,
+                ctx.guildID(),
                 event.getChannel().getIdLong(),
                 event.getAuthor().getIdLong(),
                 dur.toMillis()
         );
 
         // Ask Lavaplayer for a track
-        playerManager.loadTracks(token, guildID, new AudioLoadResultHandler() {
+        playerManager.loadTracks(token, ctx.musicManager(), new AudioLoadResultHandler() {
             @Override
             public void trackLoaded(AudioTrack track) {
                 track.setUserData(context);
-                musicManager.queue(track);
+                ctx.musicManager().queue(track);
             }
 
             @Override
             public void playlistLoaded(AudioPlaylist playlist) {
                 playlist.getTracks().forEach(track -> track.setUserData(context));
                 if (isSearch) {
-                    selectSearchResult(playlist, event);
+                    selectSearchResult(playlist, event, ctx.musicManager());
                 } else {
-                    musicManager.queuePlaylist(playlist);
+                    ctx.musicManager().queuePlaylist(playlist);
                 }
             }
 
@@ -115,8 +129,7 @@ public class PlayCommand extends ServerCommand {
         });
     }
 
-    private void selectSearchResult(AudioPlaylist playlist, MessageReceivedEvent event) {
-        GuildMusicManager musicManager = WylxPlayerManager.getInstance().getGuildManager(event.getGuild().getIdLong());
+    private void selectSearchResult(AudioPlaylist playlist, MessageReceivedEvent event, GuildMusicManager musicManager) {
         int resNum = Math.min(playlist.getTracks().size(), MAX_SEARCH_TRACKS);
         StringBuilder builder = new StringBuilder();
         List<Component> components = new ArrayList<>();
