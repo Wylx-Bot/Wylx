@@ -2,19 +2,25 @@ package Core.Util;
 
 import Core.Wylx;
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.Emoji;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.react.GenericMessageReactionEvent;
 import net.dv8tion.jda.api.exceptions.ErrorHandler;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
+import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.requests.ErrorResponse;
+import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
+import net.dv8tion.jda.api.requests.restaction.interactions.MessageEditCallbackAction;
 import org.jetbrains.annotations.NotNull;
 
 import java.time.Duration;
 import java.util.Collection;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
@@ -24,7 +30,8 @@ import java.util.function.BiFunction;
 public class Helper {
 	private static final int MILLISECONDS_PER_SECOND = 1000;
 	private static final int SECONDS_PER_MINUTE = 60;
-	private static final int TWO_MINUTES = MILLISECONDS_PER_SECOND * SECONDS_PER_MINUTE * 2;
+	private static final int MINUTES_PER_HOUR = 60;
+	private static final int ONE_HOUR = MINUTES_PER_HOUR * SECONDS_PER_MINUTE * MILLISECONDS_PER_SECOND;
 
 	// Validates the users choice, if they select :check: it runs the runnable, if they select :x: do nothing
 	public static final String CHECK = "U+2705";
@@ -79,6 +86,34 @@ public class Helper {
 		});
 	}
 
+	public static void validateButtons(String description, MessageReceivedEvent event, Runnable runnable) {
+		long messageId = event.getMessageIdLong();
+		List<ActionRow> rows = List.of(ActionRow.of(
+				Button.success(CHECK, "Continue"),
+				Button.danger(X, "Cancel")
+		));
+
+		createButtonInteraction((ButtonInteractionEvent buttonEvent, Object ctx) -> {
+			if (buttonEvent.getUser().getIdLong() == event.getAuthor().getIdLong()) {
+				if (buttonEvent.getComponentId().equals(CHECK)) {
+					event.getChannel().deleteMessageById(messageId).queue();
+					runnable.run();
+				} else {
+					buttonEvent.editMessage("Cancelled")
+							.flatMap(InteractionHook::editOriginalComponents)
+							.queue();
+				}
+				return true;
+			}
+			return false;
+		}, (Message sentMessage, Boolean timedOut) -> {
+			if (timedOut) {
+				sentMessage.editMessage("Timed Out")
+						.flatMap(Message::editMessageComponents).queue();
+			}
+		}, rows, event.getChannel().sendMessage(description), null);
+	}
+
 	/**
 	 * Helper function to create button interactions on a message.
 	 * The buttons remain until either interactionRunnable returns true, or a timeout occurs after 2 minutes.
@@ -111,8 +146,8 @@ public class Helper {
 				}
 
 				if (interactionRunnable.apply(event, ctx)) {
-					timer.cancel();
 					jda.removeEventListener(this);
+					timer.cancel();
 					interactionEndRunnable.accept(msg, false);
 				}
 			}
@@ -123,9 +158,9 @@ public class Helper {
 			@Override
 			public void run() {
 				jda.removeEventListener(adapter);
-				interactionEndRunnable.accept(msg, true);
 				timer.cancel();
+				interactionEndRunnable.accept(msg, true);
 			}
-		}, TWO_MINUTES);
+		}, ONE_HOUR);
 	}
 }
