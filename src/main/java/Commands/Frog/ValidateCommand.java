@@ -7,7 +7,7 @@ public class ValidateCommand extends SenderReceiverCommand {
         super("validate", CommandPermission.EVERYONE,
                 """
                         Remind another user that they matter to you
-                        Usage: validate <user tag>
+                        Usage: %{p}validate <user tag>
                         """,
                 new String[]{"@sender wants everyone to know that they are loved and appreciated"},
                 new String[]{"@sender wants @recipient to know that they are loved and appreciated",

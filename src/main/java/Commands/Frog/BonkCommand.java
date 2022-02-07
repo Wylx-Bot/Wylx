@@ -6,7 +6,7 @@ public class BonkCommand extends SenderReceiverCommand {
         super("bonk", CommandPermission.EVERYONE,
                 """
                         Bonks another user
-                        Usage: bonk <user tag>
+                        Usage: %{p}bonk <user tag>
                         """,
                 new String[]{"@sender has tried to bonk someone but missed!",
                 "Hey @sender: who were you trying to bonk?"},
