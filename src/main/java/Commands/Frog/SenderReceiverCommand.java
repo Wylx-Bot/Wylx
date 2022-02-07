@@ -1,7 +1,11 @@
 package Commands.Frog;
 
 import Core.Commands.ServerCommand;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+
+import java.util.Objects;
 
 
 /**
@@ -26,25 +30,28 @@ public abstract class SenderReceiverCommand extends ServerCommand {
         String senderMention = event.getAuthor().getAsMention();
 
         if(args.length == 1) {
-            event.getChannel().sendMessage(noSpecifiedRecipientMsg.replace("*sender", senderMention)).queue();
+            event.getChannel().sendMessage(noSpecifiedRecipientMsg.replace("@sender", senderMention)).queue();
         }
         else {
-            //if the user has a tag wth multiple words, account for that
-            StringBuilder tagBuilder = new StringBuilder();
-            for(int i=1; i<args.length; i++) {
-                tagBuilder.append(args[i]);
-                if(i != args.length-1) tagBuilder.append(" ");
+
+            for(Member member : event.getGuild().getMembers()) {
+                if(member.getAsMention().equals(args[1])) {
+                    event.getChannel().sendMessage(successfulMsg.replace("@sender", senderMention).replace("@recipient", args[1])).queue();
+                    return;
+                }
             }
 
-            String recipientMention;
-            try {
-                recipientMention = event.getGuild().getMemberByTag(tagBuilder.toString()).getAsMention();
-            } catch (IllegalArgumentException | NullPointerException e) {
-                event.getChannel().sendMessage(recipientNotFoundMsg).queue();
-                return;
-            }
+            event.getChannel().sendMessage(recipientNotFoundMsg.replace("@sender", senderMention)).queue();
 
-            event.getChannel().sendMessage(successfulMsg.replace("*sender", senderMention).replace("*recipient", recipientMention)).queue();
+//            String receiverMention;
+//            try {
+//                event.getGuild().getMemberByTag(tagBuilder.toString());
+//            } catch (IllegalArgumentException | NullPointerException e) {
+//                event.getChannel().sendMessage(recipientNotFoundMsg.replace("@sender", senderMention)).queue();
+//                return;
+//            }
+
+
         }
     }
 }

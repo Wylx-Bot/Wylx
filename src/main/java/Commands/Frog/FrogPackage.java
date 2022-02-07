@@ -10,7 +10,8 @@ public class FrogPackage extends ProcessPackage {
         super(new ServerCommand[]{
                 new BonkCommand(),
                 new FrogFactCommand(),
-                new DrawFrogCardCommand()
+                new DrawFrogCardCommand(),
+                new ValidateCommand()
         }, new SilentEvent[]{});
     }
 
