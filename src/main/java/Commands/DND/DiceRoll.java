@@ -30,7 +30,7 @@ public class DiceRoll extends ThreadedSilentEvent {
 		String[] elms = message.split(" ");
 		int total = 0;
 		int mult = 1;
-		String outputString = "";
+		StringBuilder outputString = new StringBuilder();
 
 		for (String elm : elms) {
 			if (elm.equals("-")) {
@@ -38,12 +38,12 @@ public class DiceRoll extends ThreadedSilentEvent {
 			} else if (elm.equals("+")) {
 				mult = 1;
 			} else if (elm.contains("d")) {
-				outputString += (mult == -1 ? " - " : " + ");
+				outputString.append(mult == -1 ? " - " : " + ");
 				String[] diceParts = elm.split("d");
 				if (diceParts.length > 2) {
 					continue;
 				}
-				outputString += "[";
+				outputString.append("[");
 				int num;
 				int sides;
 				try {
@@ -54,16 +54,16 @@ public class DiceRoll extends ThreadedSilentEvent {
 				}
 				for (int i = 0; i < num; i++) {
 					int rand = random.nextInt(sides) + 1;
-					outputString += rand;
-					if (i != num - 1) outputString += ", ";
+					outputString.append(rand);
+					if (i != num - 1) outputString.append(", ");
 					total += mult * rand;
 				}
-				outputString += "]";
+				outputString.append("]");
 			} else {
 				try {
 					int change = Integer.parseInt(elm);
 					total += mult * Integer.parseInt(elm);
-					outputString += (mult == -1 ? " - " : " + ") + change;
+					outputString.append(mult == -1 ? " - " : " + ").append(change);
 				} catch (NumberFormatException e) {}
 			}
 		}
