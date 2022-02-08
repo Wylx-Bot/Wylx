@@ -2,16 +2,17 @@ package Database;
 
 import org.bson.types.ObjectId;
 
+import java.util.ArrayList;
 import java.util.Map;
 
 public interface ServerSpecificAccessors {
 
-    public int getMusicVolume();
+    int getMusicVolume();
 
-    public Map<String, Boolean> getModules();
+    Map<String, Boolean> getModules();
 
-    public String[] getRoles();
+    ArrayList<String> getRoles();
 
-    public Map<ObjectId, Boolean> timezoneResponses();
+    Map<ObjectId, Boolean> timezoneResponses();
 
 }

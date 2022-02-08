@@ -7,6 +7,8 @@ import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoDatabase;
 import org.bson.Document;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
 public class Setup {
@@ -19,11 +21,7 @@ public class Setup {
                 .applyToConnectionPoolSettings(
                         builder -> builder.maxWaitTime(1000, TimeUnit.MILLISECONDS))
                 .build();
-
-
-        MongoClient mongoClient = MongoClients.create(clientSettings);
-
-        return mongoClient;
+        return MongoClients.create(clientSettings);
     }
 
     public static void readCluster() {
@@ -43,15 +41,10 @@ public class Setup {
         System.out.println(" --- END OF EXISTING DATABASES ---");
     }
 
-    public static void main(String[] args) {
-        DiscordServer example = new DiscordServer(getMongoClient(), "ExampleServer");
-        System.out.println("Music Volume: " + example.getMusicVolume());
-        example.setMusicVolume(100);
-        System.out.println("Music Volume: " + example.getMusicVolume());
-        example.setMusicVolume(0);
-        System.out.println("Music Volume: " + example.getMusicVolume());
-        example.setMusicVolume(50);
-        System.out.println("Music Volume: " + example.getMusicVolume());
-
+    public static ArrayList<DiscordServer> getExistingServers() {
+        MongoClient mongoClient = getMongoClient();
+        ArrayList<DiscordServer> servers = new ArrayList<>();
+        mongoClient.listDatabaseNames().forEach(name -> servers.add(new DiscordServer(mongoClient, name)));
+        return servers;
     }
 }
