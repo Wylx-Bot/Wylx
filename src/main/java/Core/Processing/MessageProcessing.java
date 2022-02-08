@@ -23,67 +23,67 @@ import java.util.Arrays;
 import java.util.HashMap;
 
 public class MessageProcessing extends ListenerAdapter {
-	private static final WylxPlayerManager musicPlayerManager = WylxPlayerManager.getInstance();
-	private static final Logger logger = LoggerFactory.getLogger(MessageProcessing.class);
-	public static final HashMap<String, ServerCommand> commandMap = new HashMap<>();
-	public static final ArrayList<SilentEvent> events = new ArrayList<>();
-	public static final ProcessPackage[] processPackages = {
-			new ServerUtilPackage(),
-			new TTRPGPackage(),
-			new MusicPackage(),
-			new BotUtilPackage(),
-			new FrogPackage()
-	};
+    private static final WylxPlayerManager musicPlayerManager = WylxPlayerManager.getInstance();
+    private static final Logger logger = LoggerFactory.getLogger(MessageProcessing.class);
+    public static final HashMap<String, ServerCommand> commandMap = new HashMap<>();
+    public static final ArrayList<SilentEvent> events = new ArrayList<>();
+    public static final ProcessPackage[] processPackages = {
+            new ServerUtilPackage(),
+            new TTRPGPackage(),
+            new MusicPackage(),
+            new BotUtilPackage(),
+            new FrogPackage()
+    };
 
 
-	static {
-		commandMap.put("help", new Help());
-		for(ProcessPackage processPackage : processPackages){
-			for(ServerCommand command : processPackage.getCommands()){
-				commandMap.putAll(command.getCommandMap());
-			}
-			events.addAll(Arrays.asList(processPackage.getEvents()));
-		}
-	}
+    static {
+        commandMap.put("help", new Help());
+        for(ProcessPackage processPackage : processPackages){
+            for(ServerCommand command : processPackage.getCommands()){
+                commandMap.putAll(command.getCommandMap());
+            }
+            events.addAll(Arrays.asList(processPackage.getEvents()));
+        }
+    }
 
-	@Override
-	public void onMessageReceived(@NotNull MessageReceivedEvent event) {
-		Wylx wylx = Wylx.getInstance();
+    @Override
+    public void onMessageReceived(@NotNull MessageReceivedEvent event) {
+        Wylx wylx = Wylx.getInstance();
 
-		long memberID = event.getAuthor().getIdLong();
-		long guildID = event.getGuild().getIdLong();
+        long memberID = event.getAuthor().getIdLong();
+        long guildID = event.getGuild().getIdLong();
 
-		//Ignore messages from the bot
-		if(memberID == wylx.getBotID() ||
-			!event.getChannel().canTalk() ||
-			!event.isFromGuild()) return;
+        //Ignore messages from the bot
+        if(memberID == wylx.getBotID() ||
+            !event.getChannel().canTalk() ||
+            !event.isFromGuild()) return;
 
-		String prefix = wylx.getPrefixThanksJosh(guildID);
-		String msg = event.getMessage().getContentRaw();
+        String prefix = wylx.getPrefixThanksJosh(guildID);
+        String msg = event.getMessage().getContentRaw();
 
-		// Check Commands if aimed at bot
-		if (msg.startsWith(prefix)) {
-			String[] args = msg.split(" ");
-			String commandString = args[0].replace(prefix, "").toLowerCase();
-			ServerCommand command = commandMap.get(commandString);
+        // Check Commands if aimed at bot
+        if (msg.startsWith(prefix)) {
+            String[] args = msg.split(" ");
+            String commandString = args[0].replace(prefix, "").toLowerCase();
+            ServerCommand command = commandMap.get(commandString);
 
-			if (command != null) {
-				if(command.checkPermission(event)) {
-					logger.debug("Command ({}) Called With {} Args", commandString, args.length);
-					command.runCommand(new CommandContext(event, args, prefix, guildID, memberID,
-							musicPlayerManager.getGuildManager(guildID)));
-					return;
-				} else {
-					event.getMessage().reply("You don't have permission to use this command!").queue();
-				}
-			}
-		}
+            if (command != null) {
+                if(command.checkPermission(event)) {
+                    logger.debug("Command ({}) Called With {} Args", commandString, args.length);
+                    command.runCommand(new CommandContext(event, args, prefix, guildID, memberID,
+                            musicPlayerManager.getGuildManager(guildID)));
+                    return;
+                } else {
+                    event.getMessage().reply("You don't have permission to use this command!").queue();
+                }
+            }
+        }
 
-		for(SilentEvent silentEvent : events){
-			if(silentEvent.check(event)){
-				silentEvent.runEvent(event);
-				return;
-			}
-		}
-	}
+        for(SilentEvent silentEvent : events){
+            if(silentEvent.check(event)){
+                silentEvent.runEvent(event);
+                return;
+            }
+        }
+    }
 }
