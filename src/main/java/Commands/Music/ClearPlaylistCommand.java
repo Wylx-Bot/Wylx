@@ -9,7 +9,7 @@ public class ClearPlaylistCommand extends ServerCommand {
         super("clearplaylist",
                 CommandPermission.EVERYONE,
                 "Clear playlist and stop current track",
-                "cp");
+                "cp", "stop");
     }
 
     @Override
