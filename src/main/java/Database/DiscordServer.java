@@ -3,16 +3,11 @@ package Database;
 import com.mongodb.BasicDBObject;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
-import org.bson.BsonString;
 import org.bson.Document;
 import org.bson.types.ObjectId;
-
-import javax.print.Doc;
 import java.util.*;
 
-import static com.mongodb.client.model.Filters.elemMatch;
 import static com.mongodb.client.model.Filters.exists;
 
 public class DiscordServer implements ServerSpecificAccessors{
@@ -60,7 +55,7 @@ public class DiscordServer implements ServerSpecificAccessors{
             mongoDatabase.createCollection("Serverwide_Settings");
             settings = mongoDatabase.getCollection("Serverwide_Settings");
             ArrayList<Document> init = new ArrayList<>();
-            init.add(new Document().append("Music_Volume", 100)); // Music Setting Document
+            init.add(new Document().append("Music_Volume", 20)); // Music Setting Document
             init.add(new Document().append("Dice Rolling", true) // Modules Setting Document
                                    .append("Music", true)
                                    .append("Roles", true)

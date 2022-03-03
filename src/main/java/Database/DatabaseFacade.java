@@ -8,13 +8,17 @@ import com.mongodb.client.MongoDatabase;
 import org.bson.Document;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
-public class Setup {
+public class DatabaseFacade {
 
-    public static MongoClient getMongoClient() {
-        ConnectionString connectionString = new ConnectionString("mongodb://localhost:27017/?readPreference=primary&appname=MongoDB%20Compass&ssl=false");
+    private static ConnectionString connectionString = new ConnectionString("mongodb://localhost:27017/?readPreference=primary&appname=MongoDB%20Compass&ssl=false");
+    private static MongoClient client = getMongoClient();
+
+    public DatabaseFacade() {
+    }
+
+    private static MongoClient getMongoClient() {
         MongoClientSettings clientSettings = MongoClientSettings.builder()
                 .applyConnectionString(connectionString)
                 .applicationName("Wylx")
@@ -46,5 +50,9 @@ public class Setup {
         ArrayList<DiscordServer> servers = new ArrayList<>();
         mongoClient.listDatabaseNames().forEach(name -> servers.add(new DiscordServer(mongoClient, name)));
         return servers;
+    }
+
+    public static DiscordServer newServer(String severId) {
+        return new DiscordServer(client, severId);
     }
 }
