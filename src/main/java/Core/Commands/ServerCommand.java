@@ -66,10 +66,10 @@ public abstract class ServerCommand {
     }
 
     private static final long[] botAdmins = {
-            326415273827762176L, /* SnakeJ		*/
-            317075202825781248L, /* Jerbilcraft	*/
-            139548522377641984L, /* 1Revenger1	*/
-            749499267995140228L, /* BarleyZP	*/
+        326415273827762176L, /* SnakeJ		*/
+        317075202825781248L, /* Jerbilcraft	*/
+        139548522377641984L, /* 1Revenger1	*/
+        749499267995140228L, /* BarleyZP	*/
     };
 
     public boolean checkPermission(MessageReceivedEvent event) {
