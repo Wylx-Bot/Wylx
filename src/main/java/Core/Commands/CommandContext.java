@@ -1,6 +1,7 @@
 package Core.Commands;
 
 import Core.Music.GuildMusicManager;
+import Database.DiscordServer;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 public record CommandContext(MessageReceivedEvent event,
@@ -8,4 +9,5 @@ public record CommandContext(MessageReceivedEvent event,
                              String prefix,
                              long guildID,
                              long authorID,
-                             GuildMusicManager musicManager) { }
+                             GuildMusicManager musicManager,
+                             DiscordServer db) { }
