@@ -3,13 +3,18 @@ package Commands.Music;
 import Core.Commands.CommandContext;
 import Core.Commands.ServerCommand;
 import Core.Music.MusicUtils;
+import Core.Util.Helper;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
-public class ResumeCommand extends ServerCommand {
-    ResumeCommand() {
-        super("resume",
+import java.time.Duration;
+
+public class NowPlaying extends ServerCommand {
+    NowPlaying() {
+        super("nowplaying",
                 CommandPermission.EVERYONE,
-                "Resume playback if paused");
+                "Show currently playing song",
+                "np");
     }
 
     @Override
@@ -20,7 +25,10 @@ public class ResumeCommand extends ServerCommand {
         } else if (MusicUtils.voiceCommandBlocked(ctx)) {
             event.getChannel().sendMessage("You are not in the same channel as the bot!").queue();
         } else {
-            ctx.musicManager().pause(false);
+            MessageEmbed embed = MusicUtils.createPlayingEmbed(ctx.musicManager().getCurrentTrack(),
+                    "Playing %s", true);
+
+            Helper.selfDestructingMsg(event.getChannel().sendMessageEmbeds(embed), Duration.ofMinutes(1));
         }
     }
 }

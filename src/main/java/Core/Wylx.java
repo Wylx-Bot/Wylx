@@ -1,83 +1,128 @@
 package Core;
 
 import Core.Processing.MessageProcessing;
+import Core.Processing.VoiceChannelProcessing;
 import io.github.cdimascio.dotenv.Dotenv;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.managers.AudioManager;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 
 import javax.security.auth.login.LoginException;
+import java.util.*;
 
 public class Wylx {
-	private static final Wylx INSTANCE = new Wylx();
+    private static final Wylx INSTANCE = new Wylx();
 
-	private JDA jda;
+    private JDA jda;
 
-	private final boolean isRelease;
+    private static final int ACTIVITY_PERIOD = 60000; // 60 seconds
+    private final List<Activity> activities = new ArrayList<>(Arrays.asList(
+        Activity.playing("with half a ship"), 			// Timelord
+        Activity.playing("with other sentient bots"), 	// Dragonite
+        Activity.playing("with the fate of humanity"),
+        Activity.playing("Human Deception Simulator")
+    ));
+    private int activityIndex = 0;
 
-	public static Wylx getInstance() {
-		return INSTANCE;
-	}
+    private final boolean isRelease;
 
-	public static void main(String[] args){
-		Wylx wylx = Wylx.getInstance();
-	}
+    private String betaPrefix;
 
-	private Wylx() {
-		Dotenv env = Dotenv.configure()
-				.ignoreIfMissing()
-				.load();
+    public static Wylx getInstance() {
+        return INSTANCE;
+    }
 
-		isRelease = Boolean.parseBoolean(env.get("RELEASE"));
+    public static void main(String[] args) {}
 
-		try {
-			jda = JDABuilder.createDefault(env.get("DISCORD_TOKEN"))
-					.setActivity(Activity.of(Activity.ActivityType.PLAYING, "with invisible numbers"))
-					.addEventListeners(new MessageProcessing())
-					.enableIntents(GatewayIntent.GUILD_MEMBERS)
-					.build();
-		} catch (LoginException e) {
-			e.printStackTrace();
-			System.exit(-1);
-		}
-	}
+    private Wylx() {
+        Dotenv env = Dotenv.configure()
+                .ignoreIfMissing()
+                .load();
 
-	public boolean isRelease(){
-		return isRelease;
-	}
+        isRelease = Boolean.parseBoolean(env.get("RELEASE"));
+        String token;
+        if (isRelease) {
+            token = env.get("DISCORD_TOKEN");
+        } else {
+            betaPrefix = env.get("BETA_PREFIX");
+            if(betaPrefix == null){
+                betaPrefix = "$";
+            }
 
-	public long getBotID(){
-		return jda.getSelfUser().getIdLong();
-	}
+            token = env.get("BETA_DISCORD_TOKEN");
+            activities.add(Activity.playing("with Wylx!"));
+        }
 
-	public AudioManager getGuildAudioManager(long guildID) {
-		var guild = jda.getGuildById(guildID);
-		if (guild == null) return null;
-		return guild.getAudioManager();
-	}
+        try {
+            jda = JDABuilder.createDefault(token)
+                    .addEventListeners(new MessageProcessing(), new VoiceChannelProcessing())
+                    .build();
+        } catch (LoginException e) {
+            e.printStackTrace();
+            System.exit(-1);
+        }
 
-	public Member getMemberInGuild(long guildID, long userID) {
-		var guild = jda.getGuildById(guildID);
-		var user = jda.getUserById(userID);
-		if (guild == null || user == null) return null;
-		return guild.getMember(user);
-	}
+        Timer activityTimer = new Timer();
+        activityTimer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                setActivity();
+            }
+        }, 0, ACTIVITY_PERIOD);
+    }
 
-	public TextChannel getTextChannel(long channelID) {
-		return jda.getTextChannelById(channelID);
-	}
+    private void setActivity() {
+        jda.getPresence().setActivity(activities.get(activityIndex++));
+        activityIndex %= activities.size();
+    }
 
-	@SuppressWarnings("ConstantConditions")
-	public boolean userInVoiceChannel(long guildID, long channelID, long userID) {
-		var member = getMemberInGuild(guildID, userID);
-		if (member == null) return false;
-		var voiceState = member.getVoiceState();
-		return voiceState != null &&
-				voiceState.inAudioChannel() &&
-				voiceState.getChannel().getIdLong() == channelID;
-	}
+    public boolean isRelease(){
+        return isRelease;
+    }
+
+    public long getBotID(){
+        return jda.getSelfUser().getIdLong();
+    }
+
+    public AudioManager getGuildAudioManager(long guildID) {
+        var guild = jda.getGuildById(guildID);
+        if (guild == null) return null;
+        return guild.getAudioManager();
+    }
+
+    public Member getMemberInGuild(long guildID, long userID) {
+        var guild = jda.getGuildById(guildID);
+        var user = jda.getUserById(userID);
+        if (guild == null || user == null) return null;
+        return guild.getMember(user);
+    }
+
+    public MessageChannel getTextChannel(long channelID) {
+        TextChannel channel = jda.getTextChannelById(channelID);
+        if (channel != null) return channel;
+        else return jda.getThreadChannelById(channelID);
+    }
+
+    @SuppressWarnings("ConstantConditions")
+    public boolean userInVoiceChannel(long guildID, long channelID, long userID) {
+        var member = getMemberInGuild(guildID, userID);
+        if (member == null) return false;
+        var voiceState = member.getVoiceState();
+        return voiceState != null &&
+                voiceState.inAudioChannel() &&
+                voiceState.getChannel().getIdLong() == channelID;
+    }
+
+    public JDA getJDA(){
+        return jda;
+    }
+
+    public String getPrefixThanksJosh(long guildID) {
+        return isRelease() ? ";" : betaPrefix;
+    }
 }

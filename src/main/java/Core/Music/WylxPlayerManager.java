@@ -34,8 +34,7 @@ public class WylxPlayerManager {
         return newManager;
     }
 
-    public void loadTracks (String token, long guildID, AudioLoadResultHandler resultHandler) {
-        GuildMusicManager guildManager = getGuildManager(guildID);
-        playerManager.loadItemOrdered(guildManager, token, resultHandler);
+    public void loadTracks (String token, GuildMusicManager musicManager, AudioLoadResultHandler resultHandler) {
+        playerManager.loadItemOrdered(musicManager, token, resultHandler);
     }
 }

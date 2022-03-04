@@ -1,12 +1,17 @@
 package Core.Processing;
 
-import Commands.DND.DNDPackage;
-import Commands.Management.ManagementPackage;
+import Commands.BotUtil.BotUtilPackage;
+import Commands.DND.TTRPGPackage;
+import Commands.Frog.FrogPackage;
+import Commands.Help;
 import Commands.Music.MusicPackage;
-import Core.Commands.CommandPackage;
+import Commands.ServerUtil.ServerUtilPackage;
+import Core.Commands.CommandContext;
 import Core.Commands.ServerCommand;
 import Core.Events.SilentEvent;
+import Core.Music.WylxPlayerManager;
 import Core.Wylx;
+import Core.ProcessPackage.ProcessPackage;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
@@ -18,57 +23,67 @@ import java.util.Arrays;
 import java.util.HashMap;
 
 public class MessageProcessing extends ListenerAdapter {
-	private static final HashMap<String, ServerCommand> commandMap = new HashMap<>();
-	private static final ArrayList<SilentEvent> events = new ArrayList<>();
+    private static final WylxPlayerManager musicPlayerManager = WylxPlayerManager.getInstance();
+    private static final Logger logger = LoggerFactory.getLogger(MessageProcessing.class);
+    public static final HashMap<String, ServerCommand> commandMap = new HashMap<>();
+    public static final ArrayList<SilentEvent> events = new ArrayList<>();
+    public static final ProcessPackage[] processPackages = {
+            new ServerUtilPackage(),
+            new TTRPGPackage(),
+            new MusicPackage(),
+            new BotUtilPackage(),
+            new FrogPackage()
+    };
 
-	private static final CommandPackage[] commandPackages = {
-			new ManagementPackage(),
-			new DNDPackage(),
-			new MusicPackage(),
-	};
 
+    static {
+        commandMap.put("help", new Help());
+        for(ProcessPackage processPackage : processPackages){
+            for(ServerCommand command : processPackage.getCommands()){
+                commandMap.putAll(command.getCommandMap());
+            }
+            events.addAll(Arrays.asList(processPackage.getEvents()));
+        }
+    }
 
-	private static final Logger logger = LoggerFactory.getLogger(MessageProcessing.class);
+    @Override
+    public void onMessageReceived(@NotNull MessageReceivedEvent event) {
+        Wylx wylx = Wylx.getInstance();
 
-	static {
-		for(CommandPackage commandPackage : commandPackages){
-			for(ServerCommand command : commandPackage.getCommands()){
-				commandMap.put(command.getKeyword(), command);
-			}
-			events.addAll(Arrays.asList(commandPackage.getEvents()));
-		}
-	}
+        long memberID = event.getAuthor().getIdLong();
+        long guildID = event.getGuild().getIdLong();
 
-	@Override
-	public void onMessageReceived(@NotNull MessageReceivedEvent event) {
-		//Ignore messages from the bot
-		if(event.getAuthor().getIdLong() == Wylx.getInstance().getBotID()) return;
+        //Ignore messages from the bot
+        if(memberID == wylx.getBotID() ||
+            !event.getChannel().canTalk() ||
+            !event.isFromGuild()) return;
 
-		String prefix = "$"; // TODO: Get as server preference
-		String msg = event.getMessage().getContentRaw();
+        String prefix = wylx.getPrefixThanksJosh(guildID);
+        String msg = event.getMessage().getContentRaw();
 
-		if(!event.isFromGuild()) return;
-		// Check Commands if aimed at bot
-		if (msg.startsWith(prefix)) {
-			String[] args = msg.split(" ");
-			String commandString = args[0].toLowerCase().replace(prefix, "");
-			ServerCommand command = commandMap.get(commandString);
+        // Check Commands if aimed at bot
+        if (msg.startsWith(prefix)) {
+            String[] args = msg.split(" ");
+            String commandString = args[0].replace(prefix, "").toLowerCase();
+            ServerCommand command = commandMap.get(commandString);
 
-			if (command != null) {
-				if(command.checkPermission(event)) {
-					logger.debug("Command ({}) Called With {} Args", commandString, args.length);
-					command.runCommand(event, args);
-					return;
-				} else {
-					event.getMessage().reply("You don't have permission to use this command!").queue();
-				}
-			}
-		}
-		for(SilentEvent silentEvent : events){
-			if(silentEvent.check(event)){
-				silentEvent.runEvent(event);
-				return;
-			}
-		}
-	}
+            if (command != null) {
+                if(command.checkPermission(event)) {
+                    logger.debug("Command ({}) Called With {} Args", commandString, args.length);
+                    command.runCommand(new CommandContext(event, args, prefix, guildID, memberID,
+                            musicPlayerManager.getGuildManager(guildID)));
+                    return;
+                } else {
+                    event.getMessage().reply("You don't have permission to use this command!").queue();
+                }
+            }
+        }
+
+        for(SilentEvent silentEvent : events){
+            if(silentEvent.check(event)){
+                silentEvent.runEvent(event);
+                return;
+            }
+        }
+    }
 }

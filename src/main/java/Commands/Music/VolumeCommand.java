@@ -1,26 +1,34 @@
 package Commands.Music;
 
+import Core.Commands.CommandContext;
 import Core.Commands.ServerCommand;
 import Core.Music.MusicUtils;
-import Core.Music.WylxPlayerManager;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 public class VolumeCommand extends ServerCommand {
+    private static final String USAGE = "Usage: %{p}volume <number between 0 and 100>";
+
     VolumeCommand () {
-        super("volume", CommandPermission.EVERYONE);
+        super("volume",
+                CommandPermission.EVERYONE,
+                "Set playback volume\n" + USAGE,
+                "v");
     }
 
     @Override
-    public void runCommand(MessageReceivedEvent event, String[] args) {
-        var guildID = event.getGuild().getIdLong();
-        var manager = WylxPlayerManager.getInstance().getGuildManager(event.getGuild().getIdLong());
+    public void runCommand(CommandContext ctx) {
+        MessageReceivedEvent event = ctx.event();
+        String[] args = ctx.args();
 
         if (args.length != 2) {
-            event.getChannel().sendMessage("Usage: $volume <number out of 100>").queue();
+            String message = String.format("Current volume is: %d\n%s",
+                    ctx.musicManager().getVolume(),
+                    ServerCommand.replacePrefix(USAGE, ctx.prefix()));
+            event.getChannel().sendMessage(message).queue();
             return;
         }
 
-        if (!MusicUtils.canUseVoiceCommand(guildID, event.getAuthor().getIdLong())) {
+        if (MusicUtils.voiceCommandBlocked(ctx)) {
             event.getChannel().sendMessage("You are not in the same channel as the bot!").queue();
             return;
         }
@@ -32,6 +40,6 @@ public class VolumeCommand extends ServerCommand {
             return;
         }
 
-        manager.setVolume(number);
+        ctx.musicManager().setVolume(number);
     }
 }

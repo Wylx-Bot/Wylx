@@ -1,5 +1,7 @@
 package Core.Music;
 
+import Core.Commands.CommandContext;
+import Core.Util.ProgressBar;
 import Core.Wylx;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
@@ -10,9 +12,11 @@ import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.regex.Pattern;
 
 public class MusicUtils {
+
+    private static final Pattern argToTimePattern = Pattern.compile("^[+-]?(\\d*:)*\\d+$");
 
     /**
      * Join a voice channel so music can be played
@@ -22,8 +26,8 @@ public class MusicUtils {
      */
     public static boolean joinVoice(TrackContext ctx) {
         var wylx = Wylx.getInstance();
-        var audioManager = wylx.getGuildAudioManager(ctx.guildID);
-        var member = wylx.getMemberInGuild(ctx.guildID, ctx.requesterID);
+        var audioManager = wylx.getGuildAudioManager(ctx.guildID());
+        var member = wylx.getMemberInGuild(ctx.guildID(), ctx.requesterID());
 
         // Bot already in voice
         if (audioManager.isConnected())
@@ -35,25 +39,35 @@ public class MusicUtils {
             return true; // User not in voice channel
 
         audioManager.openAudioConnection(voiceState.getChannel());
+        audioManager.setSelfDeafened(true);
         return false;
     }
 
     /**
      * Check that bot is not in any voice channel or that user is in the same channel as bot
      *
-     * @param guildID guild ID
-     * @param requesterID member ID
+     * @param ctx CommandContext which contains member and guild ID
      * @return True if voice commands are allowed
      */
     @SuppressWarnings("ConstantConditions")
-    public static boolean canUseVoiceCommand(long guildID, long requesterID) {
+    public static boolean voiceCommandBlocked(CommandContext ctx) {
         var wylx = Wylx.getInstance();
-        var audioManager = wylx.getGuildAudioManager(guildID);
+        var audioManager = wylx.getGuildAudioManager(ctx.guildID());
+        var member = wylx.getMemberInGuild(ctx.guildID(), ctx.authorID());
 
-        if (!audioManager.isConnected()) return true;
-        return wylx.userInVoiceChannel(guildID,
+        // Check user is in a voice channel
+        // Note that JDA only caches members in voice channels, so NULL is expected a lot
+        if (member == null || !member.getVoiceState().inAudioChannel())
+            return true;
+
+        // If bot is not in a voice channel, then it's safe to use commands like "play"
+        if (!audioManager.isConnected())
+            return false;
+
+        // Check that bot is in the same channel as user
+        return !wylx.userInVoiceChannel(ctx.guildID(),
                 audioManager.getConnectedChannel().getIdLong(),
-                requesterID);
+                ctx.authorID());
     }
 
     /**
@@ -61,9 +75,10 @@ public class MusicUtils {
      *
      * @param track AudioTrack details
      * @param titleFormat Format for title (Queue or Play)
+     * @param progress Show progress through song
      * @return MessageEmbed that can be sent
      */
-    public static MessageEmbed createPlayingEmbed(AudioTrack track, String titleFormat) {
+    public static MessageEmbed createPlayingEmbed(AudioTrack track, String titleFormat, boolean progress) {
         EmbedBuilder builder = new EmbedBuilder();
         AudioTrackInfo info = track.getInfo();
         TrackContext ctx = (TrackContext) track.getUserData();
@@ -74,13 +89,22 @@ public class MusicUtils {
         if (info.isStream) {
             builder.setFooter("Stream (No Duration)");
         } else {
-            String prettyDur = getPrettyDuration(Duration.ofMillis(info.length));
+            String prettyDur = getPrettyDuration(info.length);
 
-            if (ctx.startMillis != 0) {
-                String prettyStart = getPrettyDuration(Duration.ofMillis(ctx.startMillis));
+            if (ctx.startMillis() != 0) {
+                String prettyStart = getPrettyDuration(ctx.startMillis());
                 builder.setFooter(String.format("Duration: %s - Started at %s", prettyDur, prettyStart));
             } else {
                 builder.setFooter(String.format("Duration: %s", prettyDur));
+            }
+
+            if (progress) {
+                builder.appendDescription("\n");
+                builder.appendDescription(MusicUtils.getPrettyDuration(track.getPosition()));
+                builder.appendDescription(" / ");
+                builder.appendDescription(prettyDur);
+                builder.appendDescription("\n");
+                builder.appendDescription(ProgressBar.progressBar((double) track.getPosition() / track.getDuration()));
             }
         }
 
@@ -95,7 +119,7 @@ public class MusicUtils {
     /**
      * Get pretty text duration from milliseconds
      *
-     * @param dur Millisecond duration to prettify
+     * @param millis Millisecond duration to prettify
      * @return Pretty string
      */
     public static String getPrettyDuration(long millis) {
@@ -110,9 +134,15 @@ public class MusicUtils {
      */
     public static String getPrettyDuration(Duration dur) {
         String str = "";
-        if (dur.toHours() > 0) str += String.format("%dh ", dur.toHours());
-        if (dur.toMinutesPart() > 0) str += String.format("%dm ", dur.toMinutesPart());
-        if (dur.toSecondsPart() > 0) str += String.format("%ds ", dur.toSecondsPart());
+
+        if (dur.isNegative()) {
+            str += "-";
+            dur = dur.abs();
+        }
+
+        if (dur.toHours() != 0) str += String.format("%dh ", dur.toHours());
+        if (dur.toMinutesPart() != 0) str += String.format("%dm ", dur.toMinutesPart());
+        if (dur.toSecondsPart() != 0) str += String.format("%ds ", dur.toSecondsPart());
         if (dur.toSeconds() == 0) str += "0s";
         return str.trim();
     }
@@ -123,32 +153,48 @@ public class MusicUtils {
      * @param string Seconds or HH:MM:SS or MM:SS string
      * @return Duration
      */
-    public static Duration getDurationFromArg(String string) {
-        List<Integer> parsedArgs = Arrays.stream(string.split(":"))
-                .map(Integer::parseInt)
-                .collect(Collectors.toList());
+    public static MusicSeek getDurationFromArg(String string) {
+        if (!argToTimePattern.matcher(string).matches()) {
+            return null;
+        }
 
-        return switch (parsedArgs.size()) {
+        boolean relative = false;
+        long sign = 1;
+        switch (string.charAt(0)) {
+            case '+' -> relative = true;
+            case '-' -> { relative = true; sign = -1; }
+            default -> {}
+        }
+
+        List<Integer> parsedArgs = Arrays.stream(string.split(":"))
+                .map(Integer::parseInt).toList();
+
+        Duration dur = switch (parsedArgs.size()) {
             case 1 -> Duration.ofSeconds(parsedArgs.get(0));
             case 2 -> Duration.ofMinutes(parsedArgs.get(0))
-                    .plus(parsedArgs.get(1), ChronoUnit.SECONDS);
+                    .plus(sign * parsedArgs.get(1), ChronoUnit.SECONDS);
             case 3 -> Duration.ofHours(parsedArgs.get(0))
-                    .plus(parsedArgs.get(1), ChronoUnit.MINUTES)
-                    .plus(parsedArgs.get(2), ChronoUnit.SECONDS);
+                    .plus(sign * parsedArgs.get(1), ChronoUnit.MINUTES)
+                    .plus(sign * parsedArgs.get(2), ChronoUnit.SECONDS);
             default -> Duration.ofSeconds(0);
         };
+
+        return new MusicSeek(relative, dur);
     }
 
     /**
      * Get remaining time in playlist
+     * Returns null if a stream exists in the playlist or manager is looping the current track
      *
      * @param list Playlist
-     * @param playingTrack Currently playing track
+     * @param manager Music manager for guild
      * @return Remaining time as Duration
      */
-    public static Duration getTimeRemaining(Object[] list, AudioTrack playingTrack) {
+    public static Duration getTimeRemaining(Object[] list, GuildMusicManager manager) {
+        AudioTrack playingTrack = manager.getCurrentTrack();
         long millis = playingTrack.getDuration() - playingTrack.getPosition();
         if (playingTrack.getInfo().isStream) return null;
+        if (manager.isLooping()) return null;
 
         for (Object track: list) {
             var currentTrack = (AudioTrack) track;
@@ -159,3 +205,4 @@ public class MusicUtils {
         return Duration.ofMillis(millis);
     }
 }
+
