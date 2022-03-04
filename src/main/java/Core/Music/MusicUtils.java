@@ -50,21 +50,22 @@ public class MusicUtils {
      * @return True if voice commands are allowed
      */
     @SuppressWarnings("ConstantConditions")
-    public static boolean canUseVoiceCommand(CommandContext ctx) {
+    public static boolean voiceCommandBlocked(CommandContext ctx) {
         var wylx = Wylx.getInstance();
         var audioManager = wylx.getGuildAudioManager(ctx.guildID());
         var member = wylx.getMemberInGuild(ctx.guildID(), ctx.authorID());
 
         // Check user is in a voice channel
         // Note that JDA only caches members in voice channels, so NULL is expected a lot
-        if (member == null ||
-            !member.getVoiceState().inAudioChannel()) return false;
+        if (member == null || !member.getVoiceState().inAudioChannel())
+            return true;
 
         // If bot is not in a voice channel, then it's safe to use commands like "play"
-        if (!audioManager.isConnected()) return true;
+        if (!audioManager.isConnected())
+            return false;
 
         // Check that bot is in the same channel as user
-        return wylx.userInVoiceChannel(ctx.guildID(),
+        return !wylx.userInVoiceChannel(ctx.guildID(),
                 audioManager.getConnectedChannel().getIdLong(),
                 ctx.authorID());
     }

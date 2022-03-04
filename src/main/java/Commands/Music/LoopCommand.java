@@ -20,14 +20,14 @@ public class LoopCommand extends ServerCommand {
         String[] args = ctx.args();
 
         if (args.length != 2) {
-            event.getChannel().sendMessage("Usage: $loop <true OR false>").queue();
+            event.getChannel().sendMessage(getDescription(ctx.prefix())).queue();
             return;
         }
 
         if (manager.isNotPlaying()) {
             event.getChannel().sendMessage("Wylx is not playing music right now!").queue();
             return;
-        } else if (!MusicUtils.canUseVoiceCommand(ctx)) {
+        } else if (MusicUtils.voiceCommandBlocked(ctx)) {
             event.getChannel().sendMessage("You are not in the same channel as the bot!").queue();
             return;
         }
@@ -35,13 +35,14 @@ public class LoopCommand extends ServerCommand {
         switch (args[1].toLowerCase()) {
             case "yes", "true" -> {
                 manager.loop(true);
-                event.getChannel().sendMessage("Looping current song. Use $loop false to disable").queue();
+                String msg = String.format("Looping current song. Use %sloop false to disable", ctx.prefix());
+                event.getChannel().sendMessage(msg).queue();
             }
             case "no", "false" -> {
                 manager.loop(false);
                 event.getChannel().sendMessage("Disabled looping").queue();
             }
-            default -> event.getChannel().sendMessage("Unknown argument").queue();
+            default -> event.getChannel().sendMessage(getDescription(ctx.prefix())).queue();
         }
     }
 }

@@ -3,27 +3,25 @@ package Commands.Music;
 import Core.Commands.CommandContext;
 import Core.Commands.ServerCommand;
 import Core.Music.*;
+import Core.Util.Helper;
 import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
 import net.dv8tion.jda.api.entities.Emoji;
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
-import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
+import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
-import net.dv8tion.jda.api.interactions.components.Button;
-import net.dv8tion.jda.api.interactions.components.Component;
-import org.jetbrains.annotations.NotNull;
+import net.dv8tion.jda.api.interactions.components.ItemComponent;
+import net.dv8tion.jda.api.interactions.components.buttons.Button;
 
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -55,7 +53,7 @@ public class PlayCommand extends ServerCommand {
             return;
         }
 
-        if (!MusicUtils.canUseVoiceCommand(ctx)) {
+        if (MusicUtils.voiceCommandBlocked(ctx)) {
             event.getChannel().sendMessage("You are not in the same channel as the bot!").queue();
             return;
         }
@@ -132,8 +130,8 @@ public class PlayCommand extends ServerCommand {
     private void selectSearchResult(AudioPlaylist playlist, MessageReceivedEvent event, GuildMusicManager musicManager) {
         int resNum = Math.min(playlist.getTracks().size(), MAX_SEARCH_TRACKS);
         StringBuilder builder = new StringBuilder();
-        List<Component> components = new ArrayList<>();
-        List<Component> cancelRow = new ArrayList<>();
+        List<ItemComponent> components = new ArrayList<>();
+        List<ItemComponent> cancelRow = new ArrayList<>();
 
         builder.append(String.format("%d results. Please select the closest option or :x: to exit\n\n", resNum));
 
@@ -151,48 +149,31 @@ public class PlayCommand extends ServerCommand {
 
         cancelRow.add(Button.secondary("x", Emoji.fromUnicode("U+274C")));
 
-        AtomicLong msgId = new AtomicLong();
-
-        // Listen for buttons to select search buttons
-        ListenerAdapter adapter = new ListenerAdapter() {
-            @Override
-            public void onButtonClick(@NotNull ButtonClickEvent event) {
-                // Not the message we sent
-                if (event.getMessage().getIdLong() != msgId.longValue()) {
-                    return;
-                }
-
-                // Cancel search
-                if (event.getComponentId().equals("x")) {
-                    event.editMessage("Search cancelled")
-                            .queue(msg -> msg.editOriginalComponents().queue());
+        var toSend = event.getChannel().sendMessage(builder.toString());
+        Helper.createButtonInteraction((ButtonInteractionEvent buttonEvent, Object obj) -> {
+            // Cancel search
+            if (buttonEvent.getComponentId().equals("x")) {
+                buttonEvent.editMessage("Search cancelled")
+                        .flatMap(InteractionHook::editOriginalComponents)
+                        .queue();
+            } else {
                 // User selected option
-                } else {
-                    int idx = Integer.parseInt(event.getComponentId());
-                    AudioTrack nextTrack = playlist.getTracks().get(idx);
-                    musicManager.queue(nextTrack);
-                    event.editMessage(String.format("%s was selected", nextTrack.getInfo().title))
-                            .flatMap(InteractionHook::editOriginalComponents)
-                            .queue();
-                }
-
-                event.getJDA().removeEventListener(this);
+                int idx = Integer.parseInt(buttonEvent.getComponentId());
+                AudioTrack nextTrack = playlist.getTracks().get(idx);
+                musicManager.queue(nextTrack);
+                buttonEvent.editMessage(String.format("%s was selected", nextTrack.getInfo().title))
+                        .flatMap(InteractionHook::editOriginalComponents)
+                        .queue();
             }
-        };
 
-        // Send search options
-        event.getChannel()
-                .sendMessage(builder.toString())
-                .setActionRows(ActionRow.of(components), ActionRow.of(cancelRow))
-                .queue(message -> {
-                    // Remove buttons and search options after ~2 minutes
-                    message.delete().queueAfter(120, TimeUnit.SECONDS,
-                            msg -> event.getJDA().removeEventListener(adapter));
-
-                    msgId.set(message.getIdLong());
-                });
-
-        event.getJDA().addEventListener(adapter);
+            return true;
+        }, (Message message, Boolean timedOut) -> {
+            if (!timedOut) return;
+            message.editMessage("Search timed out")
+                    .map(Message::editMessageComponents)
+                    .queue();
+        }, List.of(ActionRow.of(components),
+                ActionRow.of(cancelRow)), toSend, null);
     }
 
     private void displayUsage(MessageChannel channel) {
