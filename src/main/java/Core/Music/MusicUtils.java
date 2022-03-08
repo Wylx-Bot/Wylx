@@ -206,7 +206,7 @@ public class MusicUtils {
     }
 
     /**
-     * Parses the Spotify link into a track or playlist ID
+     * Parses the Spotify link into a track or playlist ID (with the appropriate identifier of track or playlist)
      * Returns null if invalid URL
      *
      * @param url Spotify track or playlist URL
@@ -216,11 +216,11 @@ public class MusicUtils {
         int end = url.contains("?") ? url.indexOf("?") : url.length();
 
         if (url.contains("track/")) {
-            int start = url.indexOf("track/") + 6;
+            int start = url.indexOf("track/");
             return url.substring(start, end);
 
         } else if (url.contains("playlist/")) {
-            int start = url.indexOf("playlist/" + 9);
+            int start = url.indexOf("playlist/");
             return url.substring(start, end);
         }
 

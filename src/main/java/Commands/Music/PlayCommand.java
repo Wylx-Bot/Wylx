@@ -21,13 +21,16 @@ import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import org.apache.hc.core5.http.ParseException;
 import se.michaelthelin.spotify.SpotifyApi;
 import se.michaelthelin.spotify.exceptions.SpotifyWebApiException;
+import se.michaelthelin.spotify.model_objects.specification.Playlist;
 import se.michaelthelin.spotify.model_objects.specification.Track;
+import se.michaelthelin.spotify.requests.data.playlists.GetPlaylistRequest;
 import se.michaelthelin.spotify.requests.data.tracks.GetTrackRequest;
 
 import java.io.IOException;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -70,37 +73,46 @@ public class PlayCommand extends ServerCommand {
         isSpotify = args[1].contains("spotify");
         isSearch = !isSpotify && (!args[1].contains(".") || !args[1].contains("/"));
 
-        String token;
+        ArrayList<String> tokens = new ArrayList<>();
         // Get start location if user gives time
         Duration dur = Duration.ofSeconds(0);
 
         if (isSearch) {
-            token = "ytsearch:" + event.getMessage().getContentRaw().substring(args[0].length() + 1);
+            tokens.add("ytsearch:" + event.getMessage().getContentRaw().substring(args[0].length() + 1));
         } else {
-            //spotify track
-            //current goal: play one track
+            //spotify
             if(isSpotify) {
                 SpotifyApi spotifyApi = playerManager.getSpotifyApi();
 
-                //get the Track from the URL
-                String trackID = MusicUtils.spotifyUrlToID(args[1]);
-                GetTrackRequest getTrackRequest = spotifyApi.getTrack(trackID).build();
+                String spotifyID = MusicUtils.spotifyUrlToID(args[1]);
 
-                try {
-                    Track track = getTrackRequest.execute();
-                    String searchTerm = track.getName() + " " + track.getArtists()[0].getName();
-                    token = "ytsearch:" + searchTerm;
-
-                } catch (IOException | SpotifyWebApiException | ParseException e) {
-                    System.out.println("Error: " + e.getMessage());
+                if(Objects.equals(spotifyID, null)) {
                     event.getChannel().sendMessage("Error Playing Spotify Track.").queue();
                     displayUsage(event.getChannel());
                     return;
                 }
 
+                //this is a track
+                if(spotifyID.contains("track/")) {
+                    tokens.add(getSpotifyTrackSearchTerms(spotifyApi, spotifyID.substring(6), event));
+                } else {
+                    GetPlaylistRequest getPlaylistRequest = spotifyApi.getPlaylist(spotifyID.substring(9)).build();
+
+                    try {
+                        Playlist playlist = getPlaylistRequest.execute();
+
+
+                    } catch (IOException | SpotifyWebApiException | ParseException e) {
+                        System.out.println("Error: " + e.getMessage());
+                        event.getChannel().sendMessage("Spotify playlist not found.").queue();
+                        displayUsage(event.getChannel());
+                        return;
+                    }
+                }
+
             } else { //Not a spotify track
                 // Replace < and > which avoids embeds on Discord
-                token = args[1].replaceAll("(^<)|(>$)", "");
+                tokens.add(args[1].replaceAll("(^<)|(>$)", ""));
 
                 // Try to use youtube timestamp if present
                 Matcher m = ytTimestamp.matcher(args[1]);
@@ -131,36 +143,39 @@ public class PlayCommand extends ServerCommand {
         );
 
         // Ask Lavaplayer for a track
-        playerManager.loadTracks(token, ctx.musicManager(), new AudioLoadResultHandler() {
-            @Override
-            public void trackLoaded(AudioTrack track) {
-                track.setUserData(trackCtx);
-                ctx.musicManager().queue(track);
-            }
+        for(String token : tokens) {
 
-            @Override
-            public void playlistLoaded(AudioPlaylist playlist) {
-                playlist.getTracks().forEach(track -> track.setUserData(trackCtx));
-                if (isSearch) {
-                    selectSearchResult(playlist, event, ctx.musicManager());
-                } else if (isSpotify) {
-                    AudioTrack nextTrack = playlist.getTracks().get(0);
-                    ctx.musicManager().queue(nextTrack);
-                } else {
-                    ctx.musicManager().queuePlaylist(playlist);
+            playerManager.loadTracks(token, ctx.musicManager(), new AudioLoadResultHandler() {
+                @Override
+                public void trackLoaded(AudioTrack track) {
+                    track.setUserData(trackCtx);
+                    ctx.musicManager().queue(track);
                 }
-            }
 
-            @Override
-            public void noMatches() {
-                event.getChannel().sendMessage("No matches").queue();
-            }
+                @Override
+                public void playlistLoaded(AudioPlaylist playlist) {
+                    playlist.getTracks().forEach(track -> track.setUserData(trackCtx));
+                    if (isSearch) {
+                        selectSearchResult(playlist, event, ctx.musicManager());
+                    } else if (isSpotify) {
+                        AudioTrack nextTrack = playlist.getTracks().get(0);
+                        ctx.musicManager().queue(nextTrack);
+                    } else {
+                        ctx.musicManager().queuePlaylist(playlist);
+                    }
+                }
 
-            @Override
-            public void loadFailed(FriendlyException exception) {
-                event.getChannel().sendMessage("Could not play: " + exception.getMessage()).queue();
-            }
-        });
+                @Override
+                public void noMatches() {
+                    event.getChannel().sendMessage("No matches").queue();
+                }
+
+                @Override
+                public void loadFailed(FriendlyException exception) {
+                    event.getChannel().sendMessage("Could not play: " + exception.getMessage()).queue();
+                }
+            });
+        }
     }
 
     private void selectSearchResult(AudioPlaylist playlist, MessageReceivedEvent event, GuildMusicManager musicManager) {
@@ -217,5 +232,22 @@ public class PlayCommand extends ServerCommand {
                 Usage:
                 $play <link> <Optional: seconds to skip OR HH:MM:SS>
                 $play <search terms>""").queue();
+    }
+
+    //Returns the search terms, null if cannot parse any
+    private String getSpotifyTrackSearchTerms(SpotifyApi spotifyApi, String trackID, MessageReceivedEvent event) {
+        GetTrackRequest getTrackRequest = spotifyApi.getTrack(trackID).build();
+
+        try {
+            Track track = getTrackRequest.execute();
+            String searchTerm = track.getName() + " " + track.getArtists()[0].getName();
+            return "ytsearch:" + searchTerm;
+
+        } catch (IOException | SpotifyWebApiException | ParseException e) {
+            System.out.println("Error: " + e.getMessage());
+            event.getChannel().sendMessage("Error Playing Spotify Track.").queue();
+            displayUsage(event.getChannel());
+            return null;
+        }
     }
 }
