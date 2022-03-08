@@ -18,7 +18,13 @@ import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.ItemComponent;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
+import org.apache.hc.core5.http.ParseException;
+import se.michaelthelin.spotify.SpotifyApi;
+import se.michaelthelin.spotify.exceptions.SpotifyWebApiException;
+import se.michaelthelin.spotify.model_objects.specification.Track;
+import se.michaelthelin.spotify.requests.data.tracks.GetTrackRequest;
 
+import java.io.IOException;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
@@ -58,7 +64,8 @@ public class PlayCommand extends ServerCommand {
             return;
         }
 
-        isSearch = !args[1].contains(".") || !args[1].contains("/");
+        //spotify tracks are not search-based; we just want to pull the first YouTube result
+        isSearch = !args[1].contains("spotify") && (!args[1].contains(".") || !args[1].contains("/"));
 
         String token;
         // Get start location if user gives time
@@ -67,6 +74,29 @@ public class PlayCommand extends ServerCommand {
         if (isSearch) {
             token = "ytsearch:" + event.getMessage().getContentRaw().substring(args[0].length() + 1);
         } else {
+            //spotify track
+            //current goal: play one track
+            if(args[1].contains("spotify")) {
+                SpotifyApi spotifyApi = playerManager.getSpotifyApi();
+
+                event.getChannel().sendMessage(playerManager.getSpotifyApi().getAccessToken()).queue();
+
+                //get the Track from the URL
+                String trackID = SpotifyUtil.spotifyURLToTrackID(args[1]);
+                GetTrackRequest getTrackRequest = spotifyApi.getTrack(trackID).build();
+
+                try {
+                    Track track = getTrackRequest.execute();
+
+                } catch (IOException | SpotifyWebApiException | ParseException e) {
+                    System.out.println("Error: " + e.getMessage());
+                    displayUsage(event.getChannel());
+                    return;
+                }
+
+            }
+
+
             // Replace < and > which avoids embeds on Discord
             token = args[1].replaceAll("(^<)|(>$)", "");
 

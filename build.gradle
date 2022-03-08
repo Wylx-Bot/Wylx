@@ -24,6 +24,7 @@ dependencies {
     implementation("net.dv8tion:JDA:5.0.0-alpha.5")
     implementation("ch.qos.logback:logback-classic:1.2.10+")
     implementation("com.github.walkyst:lavaplayer-fork:61dc03e")
+    implementation('se.michaelthelin.spotify:spotify-web-api-java:7.0.0')
 }
 
 application {
