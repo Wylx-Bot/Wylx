@@ -23,7 +23,7 @@ dependencies {
     implementation("io.github.cdimascio:dotenv-kotlin:6.2.2")
     implementation("net.dv8tion:JDA:5.0.0-alpha.5")
     implementation("ch.qos.logback:logback-classic:1.2.10+")
-    implementation("com.github.walkyst:lavaplayer-fork:61dc03e")
+    implementation("com.github.walkyst:lavaplayer-fork:1a8a1ad952")
     implementation('se.michaelthelin.spotify:spotify-web-api-java:7.0.0')
 }
 
