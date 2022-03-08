@@ -204,5 +204,28 @@ public class MusicUtils {
 
         return Duration.ofMillis(millis);
     }
+
+    /**
+     * Parses the Spotify link into a track or playlist ID
+     * Returns null if invalid URL
+     *
+     * @param url Spotify track or playlist URL
+     * @return Portion of the url corresponding to the song
+     */
+    public static String spotifyUrlToID(String url) {
+        int end = url.contains("?") ? url.indexOf("?") : url.length();
+
+        if (url.contains("track/")) {
+            int start = url.indexOf("track/") + 6;
+            return url.substring(start, end);
+
+        } else if (url.contains("playlist/")) {
+            int start = url.indexOf("playlist/" + 9);
+            return url.substring(start, end);
+        }
+
+        return null;
+
+    }
 }
 

@@ -53,6 +53,7 @@ public class PlayCommand extends ServerCommand {
         var playerManager = WylxPlayerManager.getInstance();
         String[] args = ctx.args();
         boolean isSearch;
+        boolean isSpotify;
 
         if (args.length < 2) {
             displayUsage(event.getChannel());
@@ -65,7 +66,9 @@ public class PlayCommand extends ServerCommand {
         }
 
         //spotify tracks are not search-based; we just want to pull the first YouTube result
-        isSearch = !args[1].contains("spotify") && (!args[1].contains(".") || !args[1].contains("/"));
+
+        isSpotify = args[1].contains("spotify");
+        isSearch = !isSpotify && (!args[1].contains(".") || !args[1].contains("/"));
 
         String token;
         // Get start location if user gives time
@@ -76,51 +79,51 @@ public class PlayCommand extends ServerCommand {
         } else {
             //spotify track
             //current goal: play one track
-            if(args[1].contains("spotify")) {
+            if(isSpotify) {
                 SpotifyApi spotifyApi = playerManager.getSpotifyApi();
 
-                event.getChannel().sendMessage(playerManager.getSpotifyApi().getAccessToken()).queue();
-
                 //get the Track from the URL
-                String trackID = SpotifyUtil.spotifyURLToTrackID(args[1]);
+                String trackID = MusicUtils.spotifyUrlToID(args[1]);
                 GetTrackRequest getTrackRequest = spotifyApi.getTrack(trackID).build();
 
                 try {
                     Track track = getTrackRequest.execute();
+                    String searchTerm = track.getName() + " " + track.getArtists()[0].getName();
+                    token = "ytsearch:" + searchTerm;
 
                 } catch (IOException | SpotifyWebApiException | ParseException e) {
                     System.out.println("Error: " + e.getMessage());
+                    event.getChannel().sendMessage("Error Playing Spotify Track.").queue();
                     displayUsage(event.getChannel());
                     return;
                 }
 
-            }
+            } else { //Not a spotify track
+                // Replace < and > which avoids embeds on Discord
+                token = args[1].replaceAll("(^<)|(>$)", "");
 
+                // Try to use youtube timestamp if present
+                Matcher m = ytTimestamp.matcher(args[1]);
+                if (m.find()) {
+                    int ytDur = Integer.parseInt(m.group());
+                    dur = Duration.ofSeconds(ytDur);
+                }
 
-            // Replace < and > which avoids embeds on Discord
-            token = args[1].replaceAll("(^<)|(>$)", "");
-
-            // Try to use youtube timestamp if present
-            Matcher m = ytTimestamp.matcher(args[1]);
-            if (m.find()) {
-                int ytDur = Integer.parseInt(m.group());
-                dur = Duration.ofSeconds(ytDur);
-            }
-
-            if (args.length == 3) {
-                MusicSeek seek = MusicUtils.getDurationFromArg(args[2]);
-                if (seek == null) {
+                if (args.length == 3) {
+                    MusicSeek seek = MusicUtils.getDurationFromArg(args[2]);
+                    if (seek == null) {
+                        displayUsage(event.getChannel());
+                        return;
+                    }
+                    dur = seek.dur();
+                } else if (args.length > 3) {
                     displayUsage(event.getChannel());
                     return;
                 }
-                dur = seek.dur();
-            } else if (args.length > 3) {
-                displayUsage(event.getChannel());
-                return;
             }
         }
 
-        var context = new TrackContext(
+        var trackCtx = new TrackContext(
                 ctx.guildID(),
                 event.getChannel().getIdLong(),
                 event.getAuthor().getIdLong(),
@@ -131,15 +134,18 @@ public class PlayCommand extends ServerCommand {
         playerManager.loadTracks(token, ctx.musicManager(), new AudioLoadResultHandler() {
             @Override
             public void trackLoaded(AudioTrack track) {
-                track.setUserData(context);
+                track.setUserData(trackCtx);
                 ctx.musicManager().queue(track);
             }
 
             @Override
             public void playlistLoaded(AudioPlaylist playlist) {
-                playlist.getTracks().forEach(track -> track.setUserData(context));
+                playlist.getTracks().forEach(track -> track.setUserData(trackCtx));
                 if (isSearch) {
                     selectSearchResult(playlist, event, ctx.musicManager());
+                } else if (isSpotify) {
+                    AudioTrack nextTrack = playlist.getTracks().get(0);
+                    ctx.musicManager().queue(nextTrack);
                 } else {
                     ctx.musicManager().queuePlaylist(playlist);
                 }
