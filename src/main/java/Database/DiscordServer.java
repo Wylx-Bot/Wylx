@@ -58,24 +58,6 @@ public class DiscordServer{
         }
         return out.toString();
     }
-    
-//    private MongoCollection<Document> getSettingsCollection() {
-//        MongoCollection<Document> settings = mongoDatabase.getCollection(SERVER_SETTINGS_DOC);
-//        if(settings.estimatedDocumentCount() == 0) { // if this is a new database (the bot server settings need to be initialised)
-//            mongoDatabase.createCollection(SERVER_SETTINGS_DOC);
-//            settings = mongoDatabase.getCollection(SERVER_SETTINGS_DOC);
-//            ArrayList<Document> init = new ArrayList<>();
-//            init.add(new Document().append("Music_Volume", 20)); // Music Setting Document
-//            init.add(new Document().append("Dice Rolling", true) // Modules Setting Document
-//                                   .append("Music", true)
-//                                   .append("Roles", true)
-//                                   .append("Timezones", true)
-//                                   .append("Modules_Enabled", 4));
-//            init.add(new Document().append(DocumentIdentifiers.Roles.identifier, Collections.emptyList())); // Role Settings
-//            settings.insertMany(init);
-//        }
-//        return settings;
-//    }
 
     private MongoCollection<Document> getSettingsCollection() {
         MongoCollection<Document> settings = mongoDatabase.getCollection(SERVER_SETTINGS_DOC);
@@ -94,7 +76,7 @@ public class DiscordServer{
 
     /** Returns the setting value in the first doc with a setting of that name or null if no such setting exists
      * @param identifier the preset identifier for a server setting
-     * @return An object of whatever type is stored by MongoDB
+     * @return An object of whatever type is stored by MongoDB or null if none exists yet
      */
     public Object getSetting(DocumentIdentifiers identifier) {
         Document settingDoc = settingsCollection.find(exists(identifier.identifier)).first();
@@ -103,6 +85,10 @@ public class DiscordServer{
         return settingDoc.get(identifier.identifier);
     }
 
+    /** Sets a setting in mongoDB
+     * @param identifier the preset identifier for a server setting
+     * @param data the data for the setting being set, note this must match the type
+     */
     public void setSetting(DocumentIdentifiers identifier, Object data) {
         if(data.getClass() != identifier.dataType)
             throw new IllegalArgumentException("Identifier data type mismatch");
@@ -116,7 +102,10 @@ public class DiscordServer{
         settingsCollection.insertOne(settingDoc);
     }
 
-    public void removeSettingDocument(DocumentIdentifiers identifier) {
+    /** Removes a setting from mongoDB
+     * @param identifier the preset identifier for a server setting
+     */
+    public void removeSetting(DocumentIdentifiers identifier) {
         Document settingDoc = settingsCollection.find(exists(identifier.identifier)).first();
         if(settingDoc == null)
             return;

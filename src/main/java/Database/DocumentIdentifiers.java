@@ -7,7 +7,7 @@ import java.util.Map;
 
 // These identifiers are used in database access to ensure information is located correctly
 public enum DocumentIdentifiers {
-    DiscordUser("Discord_Tag", Database.DiscordUser.class, null),
+    DiscordUser("Discord_Tag", DiscordMember.class, null),
     Modules("Modules_Enabled", Map.class, new HashMap<Long, Boolean>()),
     MusicVolume("Music_Volume", int.class, 100),
     Roles("Public_Roles", List.class, new ArrayList<Long>());
