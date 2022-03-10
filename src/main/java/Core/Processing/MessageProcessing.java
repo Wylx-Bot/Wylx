@@ -14,6 +14,7 @@ import Core.Wylx;
 import Core.ProcessPackage.ProcessPackage;
 import Database.DatabaseFacade;
 import Database.DiscordServer;
+import Database.ServerIdentifiers;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
@@ -37,7 +38,6 @@ public class MessageProcessing extends ListenerAdapter {
             new FrogPackage()
     };
 
-
     static {
         commandMap.put("help", new Help());
         for(ProcessPackage processPackage : processPackages){
@@ -46,6 +46,12 @@ public class MessageProcessing extends ListenerAdapter {
             }
             events.addAll(Arrays.asList(processPackage.getEvents()));
         }
+    }
+
+    private final String betaPrefix;
+
+    public MessageProcessing(String betaPrefix) {
+        this.betaPrefix = betaPrefix;
     }
 
     @Override
@@ -61,8 +67,7 @@ public class MessageProcessing extends ListenerAdapter {
             !event.isFromGuild()) return;
 
         DiscordServer db = DatabaseFacade.newServer(event.getGuild().getId());
-
-        String prefix = wylx.getPrefixThanksJosh(guildID);
+        String prefix = getPrefix(db, wylx);
         String msg = event.getMessage().getContentRaw();
 
         // Check Commands if aimed at bot
@@ -88,10 +93,18 @@ public class MessageProcessing extends ListenerAdapter {
         }
 
         for(SilentEvent silentEvent : events){
-            if(silentEvent.check(event)){
-                silentEvent.runEvent(event);
+            if(silentEvent.check(event, prefix)){
+                silentEvent.runEvent(event, prefix);
                 return;
             }
         }
+    }
+
+    private String getPrefix(DiscordServer server, Wylx wylx) {
+        if (true || wylx.isRelease()) {
+            return server.getSetting(ServerIdentifiers.Prefix);
+        }
+
+        return betaPrefix;
     }
 }

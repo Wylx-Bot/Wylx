@@ -14,8 +14,8 @@ public abstract class SilentEvent {
         this.description = description;
     }
 
-    public abstract boolean check(MessageReceivedEvent event);
-    public abstract void runEvent(MessageReceivedEvent event);
+    public abstract boolean check(MessageReceivedEvent event, String prefix);
+    public abstract void runEvent(MessageReceivedEvent event, String prefix);
 
     public String getName(){
         return this.getClass().getSimpleName();

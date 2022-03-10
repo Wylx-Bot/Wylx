@@ -29,7 +29,6 @@ public class DiscordServer{
         mongoDatabase = mongoClient.getDatabase(databaseName);
         _id = databaseName;
         settingsCollection = getSettingsCollection();
-        initializeSettings();
         userCollection = getUsersCollection();
     }
 
@@ -60,16 +59,18 @@ public class DiscordServer{
     }
 
     private MongoCollection<Document> getSettingsCollection() {
-        MongoCollection<Document> settings = mongoDatabase.getCollection(SERVER_SETTINGS_DOC);
-        if(settings.estimatedDocumentCount() == 0) { // if this is a new database (the bot server settings need to be initialised)
-            mongoDatabase.createCollection(SERVER_SETTINGS_DOC);
-            settings = mongoDatabase.getCollection(SERVER_SETTINGS_DOC);
+        for (String name : mongoDatabase.listCollectionNames()) {
+            if (name.equals(SERVER_SETTINGS_DOC)) {
+                return mongoDatabase.getCollection(SERVER_SETTINGS_DOC);
+            }
         }
-        return settings;
+        mongoDatabase.createCollection(SERVER_SETTINGS_DOC);
+        initializeSettings();
+        return mongoDatabase.getCollection(SERVER_SETTINGS_DOC);
     }
 
     public void initializeSettings() {
-        for(DocumentIdentifiers d : DocumentIdentifiers.values()) {
+        for(ServerIdentifiers d : ServerIdentifiers.values()) {
             setSetting(d, d.defaultValue);
         }
     }
@@ -78,19 +79,20 @@ public class DiscordServer{
      * @param identifier the preset identifier for a server setting
      * @return An object of whatever type is stored by MongoDB or null if none exists yet
      */
-    public Object getSetting(DocumentIdentifiers identifier) {
+    @SuppressWarnings("unchecked")
+    public <T> T getSetting(ServerIdentifiers identifier) {
         Document settingDoc = settingsCollection.find(exists(identifier.identifier)).first();
         if(settingDoc == null)
             return null;
-        return settingDoc.get(identifier.identifier);
+        return settingDoc.get(identifier.identifier, (T) identifier.defaultValue);
     }
 
     /** Sets a setting in mongoDB
      * @param identifier the preset identifier for a server setting
      * @param data the data for the setting being set, note this must match the type
      */
-    public void setSetting(DocumentIdentifiers identifier, Object data) {
-        if(data.getClass() != identifier.dataType)
+    public void setSetting(ServerIdentifiers identifier, Object data) {
+        if (identifier.dataType.cast(data) == null)
             throw new IllegalArgumentException("Identifier data type mismatch");
         Document settingDoc = settingsCollection.find(exists(identifier.identifier)).first();
         if(settingDoc == null)
@@ -105,7 +107,7 @@ public class DiscordServer{
     /** Removes a setting from mongoDB
      * @param identifier the preset identifier for a server setting
      */
-    public void removeSetting(DocumentIdentifiers identifier) {
+    public void removeSetting(ServerIdentifiers identifier) {
         Document settingDoc = settingsCollection.find(exists(identifier.identifier)).first();
         if(settingDoc == null)
             return;
@@ -113,15 +115,16 @@ public class DiscordServer{
     }
 
     private MongoCollection<Document> getUsersCollection() {
-        MongoCollection<Document> users = mongoDatabase.getCollection(USER_SETTINGS_DOC);
-        if(users.estimatedDocumentCount() == 0) { // if this is a new database (the bot server settings need to be initialised)
-            mongoDatabase.createCollection(USER_SETTINGS_DOC);
-            users = mongoDatabase.getCollection(USER_SETTINGS_DOC);
-            ArrayList<Document> init = new ArrayList<>();
-            // I don't think we have to initialise any users but we can here if we want
-            users.insertMany(init);
+        for (String name : mongoDatabase.listCollectionNames()) {
+            if (name.equals(USER_SETTINGS_DOC)) {
+                return mongoDatabase.getCollection(USER_SETTINGS_DOC);
+            }
         }
-        return users;
+//            ArrayList<Document> init = new ArrayList<>();
+//            // I don't think we have to initialise any users but we can here if we want
+//            users.insertMany(init);
+        mongoDatabase.createCollection(USER_SETTINGS_DOC);
+        return mongoDatabase.getCollection(USER_SETTINGS_DOC);
     }
 
     public Map<String, Map<String, String>> getUsers() {
@@ -131,7 +134,7 @@ public class DiscordServer{
             for(String k : user.keySet()) {
                 data.put(k, user.get(k).toString());
             }
-            users.put(data.get(DocumentIdentifiers.DiscordUser.identifier), data);
+            users.put(data.get(UserIdentifiers.DiscordUser.identifier), data);
         }
         return users;
     }
@@ -140,7 +143,7 @@ public class DiscordServer{
         if(getUser(discordTag) != null)
             removeUser(discordTag);
         Document user = new Document();
-        user.append(DocumentIdentifiers.DiscordUser.identifier, discordTag);
+        user.append(UserIdentifiers.DiscordUser.identifier, discordTag);
         for(String k : data.keySet()) {
             user.append(k, data.get(k));
         }
@@ -150,7 +153,7 @@ public class DiscordServer{
     public Map<String, String> getUser(String discordTag) {
         Map<String, String> data = new HashMap<>();
         BasicDBObject matchQuery = new BasicDBObject();
-        matchQuery.put(DocumentIdentifiers.DiscordUser.identifier, discordTag);
+        matchQuery.put(UserIdentifiers.DiscordUser.identifier, discordTag);
         Document user =  userCollection.find(matchQuery).first();
         if(user == null) return null;
         for(String k : user.keySet()) {

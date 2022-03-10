@@ -12,7 +12,8 @@ public class ServerUtilPackage extends ProcessPackage {
                         new ClearCommand(),
                         new ClearToCommand(),
                         new InviteCommand(),
-                        new RepeatCommand()
+                        new RepeatCommand(),
+                        new SetPrefix()
                 }, new SilentEvent[]{}
         );
     }

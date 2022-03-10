@@ -40,27 +40,23 @@ public class Wylx {
     public static void main(String[] args) {}
 
     private Wylx() {
+        String token;
         Dotenv env = Dotenv.configure()
                 .ignoreIfMissing()
                 .load();
 
-        isRelease = Boolean.parseBoolean(env.get("RELEASE"));
-        String token;
+        isRelease = Boolean.parseBoolean(env.get("RELEASE", "False"));
         if (isRelease) {
             token = env.get("DISCORD_TOKEN");
         } else {
-            betaPrefix = env.get("BETA_PREFIX");
-            if(betaPrefix == null){
-                betaPrefix = "$";
-            }
-
+            betaPrefix = env.get("BETA_PREFIX", "$");
             token = env.get("BETA_DISCORD_TOKEN");
             activities.add(Activity.playing("with Wylx!"));
         }
 
         try {
             jda = JDABuilder.createDefault(token)
-                    .addEventListeners(new MessageProcessing(), new VoiceChannelProcessing())
+                    .addEventListeners(new MessageProcessing(betaPrefix), new VoiceChannelProcessing())
                     .build();
         } catch (LoginException e) {
             e.printStackTrace();
@@ -120,9 +116,5 @@ public class Wylx {
 
     public JDA getJDA(){
         return jda;
-    }
-
-    public String getPrefixThanksJosh(long guildID) {
-        return isRelease() ? ";" : betaPrefix;
     }
 }
