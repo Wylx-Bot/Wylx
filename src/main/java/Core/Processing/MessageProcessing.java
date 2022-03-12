@@ -12,7 +12,8 @@ import Core.Events.SilentEvent;
 import Core.Music.WylxPlayerManager;
 import Core.Wylx;
 import Core.ProcessPackage.ProcessPackage;
-import Database.DatabaseFacade;
+import Core.WylxEnvConfig;
+import Database.DatabaseManager;
 import Database.DiscordServer;
 import Database.ServerIdentifiers;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
@@ -48,15 +49,10 @@ public class MessageProcessing extends ListenerAdapter {
         }
     }
 
-    private final String betaPrefix;
-
-    public MessageProcessing(String betaPrefix) {
-        this.betaPrefix = betaPrefix;
-    }
-
     @Override
     public void onMessageReceived(@NotNull MessageReceivedEvent event) {
         Wylx wylx = Wylx.getInstance();
+        DatabaseManager dbManager = wylx.getDb();
 
         long memberID = event.getAuthor().getIdLong();
         long guildID = event.getGuild().getIdLong();
@@ -66,7 +62,7 @@ public class MessageProcessing extends ListenerAdapter {
             !event.getChannel().canTalk() ||
             !event.isFromGuild()) return;
 
-        DiscordServer db = DatabaseFacade.newServer(event.getGuild().getId());
+        DiscordServer db = dbManager.getServer(event.getGuild().getId());
         String prefix = getPrefix(db, wylx);
         String msg = event.getMessage().getContentRaw();
 
@@ -101,10 +97,11 @@ public class MessageProcessing extends ListenerAdapter {
     }
 
     private String getPrefix(DiscordServer server, Wylx wylx) {
-        if (true || wylx.isRelease()) {
+        WylxEnvConfig config = wylx.getWylxConfig();
+        if (config.release) {
             return server.getSetting(ServerIdentifiers.Prefix);
         }
 
-        return betaPrefix;
+        return config.betaPrefix;
     }
 }

@@ -1,24 +1,31 @@
 package Database;
 
+import Core.WylxEnvConfig;
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoDatabase;
+import io.github.cdimascio.dotenv.Dotenv;
 import org.bson.Document;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-public class DatabaseFacade {
+public class DatabaseManager {
 
-    private static ConnectionString connectionString = new ConnectionString("mongodb://localhost:27017/?readPreference=primary&appname=MongoDB%20Compass&ssl=false");
-    private static MongoClient client = getMongoClient();
+    private final ConnectionString connectionString;
+    private final MongoClient client;
+    private final Map<String,DiscordServer> serverDBs = new HashMap<>();
 
-    public DatabaseFacade() {
+    public DatabaseManager(WylxEnvConfig config) {
+        connectionString = new ConnectionString(config.dbURL);
+        client = getMongoClient();
     }
 
-    private static MongoClient getMongoClient() {
+    private MongoClient getMongoClient() {
         MongoClientSettings clientSettings = MongoClientSettings.builder()
                 .applyConnectionString(connectionString)
                 .applicationName("Wylx")
@@ -28,11 +35,10 @@ public class DatabaseFacade {
         return MongoClients.create(clientSettings);
     }
 
-    public static void readCluster() {
-        MongoClient mongoClient = getMongoClient();
+    public void readCluster() {
         System.out.println(" --- EXISTING DATABASES ---");
-        for(String mongoDatabase : mongoClient.listDatabaseNames()) {
-            MongoDatabase database = mongoClient.getDatabase(mongoDatabase);
+        for(String mongoDatabase : client.listDatabaseNames()) {
+            MongoDatabase database = client.getDatabase(mongoDatabase);
             System.out.println(mongoDatabase + ": ");
             for(String mongoCollection : database.listCollectionNames()) {
                 System.out.println("\t" + mongoCollection + ": ");
@@ -45,14 +51,18 @@ public class DatabaseFacade {
         System.out.println(" --- END OF EXISTING DATABASES ---");
     }
 
-    public static ArrayList<DiscordServer> getExistingServers() {
-        MongoClient mongoClient = getMongoClient();
+    public ArrayList<DiscordServer> getExistingServers() {
         ArrayList<DiscordServer> servers = new ArrayList<>();
-        mongoClient.listDatabaseNames().forEach(name -> servers.add(new DiscordServer(mongoClient, name)));
+        client.listDatabaseNames().forEach(name -> servers.add(new DiscordServer(client, name)));
         return servers;
     }
 
-    public static DiscordServer newServer(String severId) {
+    public DiscordServer getServer(String severId) {
+        if (serverDBs.containsKey(severId)) {
+            return serverDBs.get(severId);
+        }
+
+
         return new DiscordServer(client, severId);
     }
 }

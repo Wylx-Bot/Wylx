@@ -2,6 +2,7 @@ package Core;
 
 import Core.Processing.MessageProcessing;
 import Core.Processing.VoiceChannelProcessing;
+import Database.DatabaseManager;
 import io.github.cdimascio.dotenv.Dotenv;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
@@ -10,16 +11,12 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.managers.AudioManager;
-import net.dv8tion.jda.api.requests.GatewayIntent;
 
 import javax.security.auth.login.LoginException;
 import java.util.*;
 
 public class Wylx {
     private static final Wylx INSTANCE = new Wylx();
-
-    private JDA jda;
-
     private static final int ACTIVITY_PERIOD = 60000; // 60 seconds
     private final List<Activity> activities = new ArrayList<>(Arrays.asList(
         Activity.playing("with half a ship"), 			// Timelord
@@ -27,11 +24,11 @@ public class Wylx {
         Activity.playing("with the fate of humanity"),
         Activity.playing("Human Deception Simulator")
     ));
+
+    private JDA jda;
+    private DatabaseManager db;
     private int activityIndex = 0;
-
-    private final boolean isRelease;
-
-    private String betaPrefix;
+    private final WylxEnvConfig wylxConfig;
 
     public static Wylx getInstance() {
         return INSTANCE;
@@ -45,18 +42,19 @@ public class Wylx {
                 .ignoreIfMissing()
                 .load();
 
-        isRelease = Boolean.parseBoolean(env.get("RELEASE", "False"));
-        if (isRelease) {
-            token = env.get("DISCORD_TOKEN");
+        wylxConfig = new WylxEnvConfig(env);
+        if (wylxConfig.release) {
+            token = wylxConfig.releaseDiscordToken;
         } else {
-            betaPrefix = env.get("BETA_PREFIX", "$");
-            token = env.get("BETA_DISCORD_TOKEN");
+            token = wylxConfig.betaDiscordToken;
             activities.add(Activity.playing("with Wylx!"));
         }
 
+        db = new DatabaseManager(wylxConfig);
+
         try {
             jda = JDABuilder.createDefault(token)
-                    .addEventListeners(new MessageProcessing(betaPrefix), new VoiceChannelProcessing())
+                    .addEventListeners(new MessageProcessing(), new VoiceChannelProcessing())
                     .build();
         } catch (LoginException e) {
             e.printStackTrace();
@@ -77,12 +75,16 @@ public class Wylx {
         activityIndex %= activities.size();
     }
 
-    public boolean isRelease(){
-        return isRelease;
-    }
-
     public long getBotID(){
         return jda.getSelfUser().getIdLong();
+    }
+
+    public WylxEnvConfig getWylxConfig() {
+        return wylxConfig;
+    }
+
+    public DatabaseManager getDb() {
+        return db;
     }
 
     public AudioManager getGuildAudioManager(long guildID) {
