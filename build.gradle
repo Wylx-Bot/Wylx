@@ -24,6 +24,7 @@ dependencies {
     implementation("net.dv8tion:JDA:5.0.0-alpha.5")
     implementation("ch.qos.logback:logback-classic:1.2.10+")
     implementation("com.github.walkyst:lavaplayer-fork:61dc03e")
+    implementation("org.mongodb:mongodb-driver-sync:4.4.1")
 }
 
 application {

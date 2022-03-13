@@ -18,10 +18,10 @@ public abstract class ThreadedSilentEvent extends SilentEvent {
     }
 
     @Override
-    public final void runEvent(MessageReceivedEvent event) {
+    public final void runEvent(MessageReceivedEvent event, String prefix) {
         Timer timer = new Timer();
         Thread thread = new Thread(() -> {
-            runEventThread(event);
+            runEventThread(event, prefix);
             timer.cancel();
         });
         thread.start();
@@ -35,5 +35,5 @@ public abstract class ThreadedSilentEvent extends SilentEvent {
         }, timeout);
     }
 
-    protected abstract void runEventThread(MessageReceivedEvent event);
+    protected abstract void runEventThread(MessageReceivedEvent event, String prefix);
 }

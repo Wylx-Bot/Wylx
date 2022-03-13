@@ -12,6 +12,10 @@ import Core.Events.SilentEvent;
 import Core.Music.WylxPlayerManager;
 import Core.Wylx;
 import Core.ProcessPackage.ProcessPackage;
+import Core.WylxEnvConfig;
+import Database.DatabaseManager;
+import Database.DiscordServer;
+import Database.ServerIdentifiers;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
@@ -35,7 +39,6 @@ public class MessageProcessing extends ListenerAdapter {
             new FrogPackage()
     };
 
-
     static {
         commandMap.put("help", new Help());
         for(ProcessPackage processPackage : processPackages){
@@ -49,6 +52,7 @@ public class MessageProcessing extends ListenerAdapter {
     @Override
     public void onMessageReceived(@NotNull MessageReceivedEvent event) {
         Wylx wylx = Wylx.getInstance();
+        DatabaseManager dbManager = wylx.getDb();
 
         long memberID = event.getAuthor().getIdLong();
         long guildID = event.getGuild().getIdLong();
@@ -58,7 +62,8 @@ public class MessageProcessing extends ListenerAdapter {
             !event.getChannel().canTalk() ||
             !event.isFromGuild()) return;
 
-        String prefix = wylx.getPrefixThanksJosh(guildID);
+        DiscordServer db = dbManager.getServer(event.getGuild().getId());
+        String prefix = getPrefix(db, wylx);
         String msg = event.getMessage().getContentRaw();
 
         // Check Commands if aimed at bot
@@ -69,21 +74,34 @@ public class MessageProcessing extends ListenerAdapter {
 
             if (command != null) {
                 if(command.checkPermission(event)) {
+                    CommandContext ctx = new CommandContext(
+                        event, args, prefix, guildID, memberID,
+                        musicPlayerManager.getGuildManager(guildID),
+                        db
+                    );
                     logger.debug("Command ({}) Called With {} Args", commandString, args.length);
-                    command.runCommand(new CommandContext(event, args, prefix, guildID, memberID,
-                            musicPlayerManager.getGuildManager(guildID)));
-                    return;
+                    command.runCommand(ctx);
                 } else {
                     event.getMessage().reply("You don't have permission to use this command!").queue();
                 }
+                return;
             }
         }
 
         for(SilentEvent silentEvent : events){
-            if(silentEvent.check(event)){
-                silentEvent.runEvent(event);
+            if(silentEvent.check(event, prefix)){
+                silentEvent.runEvent(event, prefix);
                 return;
             }
         }
+    }
+
+    private String getPrefix(DiscordServer server, Wylx wylx) {
+        WylxEnvConfig config = wylx.getWylxConfig();
+        if (config.release) {
+            return server.getSetting(ServerIdentifiers.Prefix);
+        }
+
+        return config.betaPrefix;
     }
 }

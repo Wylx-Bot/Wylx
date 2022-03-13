@@ -19,7 +19,7 @@ public class UpdateCommand extends ThreadedCommand {
     public void runCommandThread(CommandContext ctx) {
         MessageReceivedEvent event = ctx.event();
         String[] args = ctx.args();
-        if (args.length == 2 && !Wylx.getInstance().isRelease()) {
+        if (args.length == 2 && !Wylx.getInstance().getWylxConfig().release) {
             event.getChannel().sendMessage("Unable to use different branch on RELEASE").queue();
             return;
         }
