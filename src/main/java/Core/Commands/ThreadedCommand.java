@@ -46,6 +46,12 @@ public abstract class ThreadedCommand extends ServerCommand{
         this.timeout = timeout;
     }
 
+    public ThreadedCommand(String keyword, CommandPermission cmdPerm, String description, long timeout, String... aliases) {
+        super(keyword, cmdPerm, description, aliases);
+        this.timeout = timeout;
+    }
+
+
     @Override
     public final void runCommand(CommandContext ctx) {
         Timer timer = new Timer();

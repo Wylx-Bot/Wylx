@@ -64,7 +64,7 @@ public class GuildMusicManager extends AudioEventAdapter {
         playlist.queuePlaylist(tracks);
     }
 
-    public void queue(AudioTrack newTrack) {
+    public void queue(AudioTrack newTrack, boolean sendEmbeds) {
         var ctx = (TrackContext) newTrack.getUserData();
         var textChannel = Wylx.getInstance().getTextChannel(ctx.channelID());
 
@@ -78,11 +78,13 @@ public class GuildMusicManager extends AudioEventAdapter {
             return;
 
         // Only send if queued instead of played right away
-        MessageEmbed embed = MusicUtils.createPlayingEmbed(newTrack, "Queueing **%s**", false);
-        textChannel.sendMessageEmbeds(embed)
-                .delay(Duration.ofSeconds(60))
-                .flatMap(Message::delete)
-                .queue();
+        if (sendEmbeds) {
+            MessageEmbed embed = MusicUtils.createPlayingEmbed(newTrack, "Queueing **%s**", false);
+            textChannel.sendMessageEmbeds(embed)
+                    .delay(Duration.ofSeconds(60))
+                    .flatMap(Message::delete)
+                    .queue();
+        }
 
         playlist.queue(newTrack);
     }

@@ -2,8 +2,8 @@ package Commands.Music;
 
 import Core.Commands.CommandContext;
 import Core.Commands.ServerCommand;
+import Core.Commands.ThreadedCommand;
 import Core.Music.*;
-import Core.Music.SpotifyTrackAndPlaylistWrappers.SpotifyPlaylistWrapper;
 import Core.Util.Helper;
 import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
@@ -22,10 +22,11 @@ import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import org.apache.hc.core5.http.ParseException;
 import se.michaelthelin.spotify.SpotifyApi;
 import se.michaelthelin.spotify.exceptions.SpotifyWebApiException;
+import se.michaelthelin.spotify.model_objects.specification.Paging;
 import se.michaelthelin.spotify.model_objects.specification.Playlist;
 import se.michaelthelin.spotify.model_objects.specification.PlaylistTrack;
 import se.michaelthelin.spotify.model_objects.specification.Track;
-import se.michaelthelin.spotify.requests.data.playlists.GetPlaylistRequest;
+import se.michaelthelin.spotify.requests.data.playlists.GetPlaylistsItemsRequest;
 import se.michaelthelin.spotify.requests.data.tracks.GetTrackRequest;
 
 import java.io.IOException;
@@ -36,7 +37,7 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class PlayCommand extends ServerCommand {
+public class PlayCommand extends ThreadedCommand {
     private static final int MAX_SEARCH_TRACKS = 5;
     // Find &t=<nums>, but don't capture &t=
     private static final Pattern ytTimestamp = Pattern.compile("(?<=&t=)[0-9]*");
@@ -49,11 +50,12 @@ public class PlayCommand extends ServerCommand {
                         Usage:
                         %{p}play <link> <Optional: seconds to skip OR HH:MM:SS>
                         %{p}play <search terms>""",
+                300000,
                 "p");
     }
 
     @Override
-    public void runCommand(CommandContext ctx) {
+    public void runCommandThread(CommandContext ctx) {
         MessageReceivedEvent event = ctx.event();
         var playerManager = WylxPlayerManager.getInstance();
         String[] args = ctx.args();
@@ -75,15 +77,15 @@ public class PlayCommand extends ServerCommand {
         isSpotify = args[1].contains("spotify");
         isSearch = !isSpotify && (!args[1].contains(".") || !args[1].contains("/"));
 
-        String token;
+        List<String> tokens = new ArrayList<>();
         // Get start location if user gives time
         Duration dur = Duration.ofSeconds(0);
 
         if (isSearch) {
-            token = "ytsearch:" + event.getMessage().getContentRaw().substring(args[0].length() + 1);
+            tokens.add("ytsearch:" + event.getMessage().getContentRaw().substring(args[0].length() + 1));
         } else {
             //spotify
-            if(isSpotify) {
+            if (isSpotify) {
                 SpotifyApi spotifyApi = playerManager.getSpotifyApi();
 
                 String spotifyID = MusicUtils.spotifyUrlToID(args[1]);
@@ -95,17 +97,17 @@ public class PlayCommand extends ServerCommand {
                 }
 
                 //this is a track
-                if(spotifyID.contains("track/")) {
-                    token = getSpotifyTrackSearchTerms(spotifyApi, spotifyID.substring(6), event);
-                } else {
-                    GetPlaylistRequest getPlaylistRequest = spotifyApi.getPlaylist(spotifyID.substring(9)).build();
+                //TODO make sure users can select a timestamp amount into the track
+                if (spotifyID.contains("track/")) {
+                    tokens.add(getSpotifyTrackSearchTerms(spotifyApi, spotifyID.substring(6), event));
+                } else { //this is a playlist
+                    GetPlaylistsItemsRequest getPlaylistItemsRequest = spotifyApi.getPlaylistsItems(spotifyID.substring(9)).build();
 
                     try {
-                        Playlist spotifyPlaylist = getPlaylistRequest.execute();
-                        AudioPlaylist audioPlaylist = new SpotifyPlaylistWrapper(spotifyPlaylist);
-
-                        playerManager.getGuildManager(event.getGuild().getIdLong()).queuePlaylist(audioPlaylist);
-                        return;
+                        Paging<PlaylistTrack> spotifyPlaylistTracks = getPlaylistItemsRequest.execute();
+                        for (PlaylistTrack track : spotifyPlaylistTracks.getItems()) {
+                            tokens.add(getSpotifyTrackSearchTerms(spotifyApi, track.getTrack().getId(), event));
+                        }
 
                     } catch (IOException | SpotifyWebApiException | ParseException e) {
                         System.out.println("Error: " + e.getMessage());
@@ -116,8 +118,9 @@ public class PlayCommand extends ServerCommand {
                 }
 
             } else { //Not a spotify track
+
                 // Replace < and > which avoids embeds on Discord
-                token = args[1].replaceAll("(^<)|(>$)", "");
+                tokens.add(args[1].replaceAll("(^<)|(>$)", ""));
 
                 // Try to use youtube timestamp if present
                 Matcher m = ytTimestamp.matcher(args[1]);
@@ -147,34 +150,36 @@ public class PlayCommand extends ServerCommand {
                 dur.toMillis()
         );
 
-        // Ask Lavaplayer for a track
-        playerManager.loadTracks(token, ctx.musicManager(), new AudioLoadResultHandler() {
-            @Override
-            public void trackLoaded(AudioTrack track) {
-                track.setUserData(trackCtx);
-                ctx.musicManager().queue(track);
-            }
-            @Override
-            public void playlistLoaded(AudioPlaylist playlist) {
-                playlist.getTracks().forEach(track -> track.setUserData(trackCtx));
-                if (isSearch) {
-                    selectSearchResult(playlist, event, ctx.musicManager());
-                } else if (isSpotify) {
-                    AudioTrack nextTrack = playlist.getTracks().get(0);
-                    ctx.musicManager().queue(nextTrack);
-                } else {
-                    ctx.musicManager().queuePlaylist(playlist);
+        for (String token : tokens) {
+            // Ask Lavaplayer for a track
+            playerManager.loadTracks(token, ctx.musicManager(), new AudioLoadResultHandler() {
+                @Override
+                public void trackLoaded(AudioTrack track) {
+                    track.setUserData(trackCtx);
+                    ctx.musicManager().queue(track, true);
                 }
-            }
-            @Override
-            public void noMatches() {
-                event.getChannel().sendMessage("No matches").queue();
-            }
-            @Override
-            public void loadFailed(FriendlyException exception) {
-                event.getChannel().sendMessage("Could not play: " + exception.getMessage()).queue();
-            }
-        });
+                @Override
+                public void playlistLoaded(AudioPlaylist playlist) {
+                    playlist.getTracks().forEach(track -> track.setUserData(trackCtx));
+                    if (isSearch) {
+                        selectSearchResult(playlist, event, ctx.musicManager());
+                    } else if (isSpotify) {
+                        AudioTrack nextTrack = playlist.getTracks().get(0);
+                        ctx.musicManager().queue(nextTrack, false);
+                    } else {
+                        ctx.musicManager().queuePlaylist(playlist);
+                    }
+                }
+                @Override
+                public void noMatches() {
+                    event.getChannel().sendMessage("No matches").queue();
+                }
+                @Override
+                public void loadFailed(FriendlyException exception) {
+                    event.getChannel().sendMessage("Could not play: " + exception.getMessage()).queue();
+                }
+            });
+        }
     }
 
     private void selectSearchResult(AudioPlaylist playlist, MessageReceivedEvent event, GuildMusicManager musicManager) {
@@ -210,7 +215,7 @@ public class PlayCommand extends ServerCommand {
                 // User selected option
                 int idx = Integer.parseInt(buttonEvent.getComponentId());
                 AudioTrack nextTrack = playlist.getTracks().get(idx);
-                musicManager.queue(nextTrack);
+                musicManager.queue(nextTrack, true);
                 buttonEvent.editMessage(String.format("%s was selected", nextTrack.getInfo().title))
                         .flatMap(InteractionHook::editOriginalComponents)
                         .queue();

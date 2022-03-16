@@ -7,6 +7,7 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import se.michaelthelin.spotify.model_objects.specification.Track;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
@@ -225,7 +226,23 @@ public class MusicUtils {
         }
 
         return null;
+    }
 
+    /**
+     * Takes a Spotify Track object and converts it to AudioTrackInfo
+     *
+     * @param spotifyTrack track to convert
+     * @return equivalent AudioTrackInfo
+     */
+    public static AudioTrackInfo SpotifyTrackToAudioTrackInfo(Track spotifyTrack) {
+        return new AudioTrackInfo(
+                spotifyTrack.getName(),
+                spotifyTrack.getArtists()[0].getName(),
+                spotifyTrack.getDurationMs(),
+                spotifyTrack.getId(),
+                true,
+                spotifyTrack.getUri()
+        );
     }
 }
 
