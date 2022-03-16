@@ -79,6 +79,10 @@ public class Wylx {
         return jda.getSelfUser().getIdLong();
     }
 
+    public String getBotIDString() {
+        return jda.getSelfUser().getId();
+    }
+
     public WylxEnvConfig getWylxConfig() {
         return wylxConfig;
     }

@@ -1,5 +1,6 @@
-package Commands.ServerUtil;
+package Commands.Moderation;
 
+import Commands.ServerSettings.SetPrefix;
 import Core.Commands.ServerCommand;
 import Core.Events.SilentEvent;
 import Core.ProcessPackage.ProcessPackage;

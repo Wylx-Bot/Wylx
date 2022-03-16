@@ -5,7 +5,8 @@ import Commands.DND.TTRPGPackage;
 import Commands.Frog.FrogPackage;
 import Commands.Help;
 import Commands.Music.MusicPackage;
-import Commands.ServerUtil.ServerUtilPackage;
+import Commands.Moderation.ServerUtilPackage;
+import Commands.ServerSettings.ServerSettingsPackage;
 import Core.Commands.CommandContext;
 import Core.Commands.ServerCommand;
 import Core.Events.SilentEvent;
@@ -16,6 +17,7 @@ import Core.WylxEnvConfig;
 import Database.DatabaseManager;
 import Database.DiscordServer;
 import Database.ServerIdentifiers;
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
@@ -25,6 +27,8 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class MessageProcessing extends ListenerAdapter {
     private static final WylxPlayerManager musicPlayerManager = WylxPlayerManager.getInstance();
@@ -36,7 +40,8 @@ public class MessageProcessing extends ListenerAdapter {
             new TTRPGPackage(),
             new MusicPackage(),
             new BotUtilPackage(),
-            new FrogPackage()
+            new FrogPackage(),
+            new ServerSettingsPackage(),
     };
 
     static {
@@ -48,6 +53,8 @@ public class MessageProcessing extends ListenerAdapter {
             events.addAll(Arrays.asList(processPackage.getEvents()));
         }
     }
+
+    private final Pattern mentionPattern = Message.MentionType.USER.getPattern();
 
     @Override
     public void onMessageReceived(@NotNull MessageReceivedEvent event) {
@@ -63,23 +70,33 @@ public class MessageProcessing extends ListenerAdapter {
             !event.isFromGuild()) return;
 
         DiscordServer db = dbManager.getServer(event.getGuild().getId());
-        String prefix = getPrefix(db, wylx);
+        String serverPrefix = getPrefix(db, wylx);
         String msg = event.getMessage().getContentRaw();
+        String msgPrefix = null;
+
+        if (msg.startsWith(serverPrefix)) {
+            msgPrefix = serverPrefix;
+        }
+
+        Matcher matcher = mentionPattern.matcher(msg);
+        if (matcher.find() && matcher.start() == 0 && matcher.group(1).equals(wylx.getBotIDString())) {
+            msgPrefix = msg.substring(0, matcher.end());
+        }
 
         // Check Commands if aimed at bot
-        if (msg.startsWith(prefix)) {
+        if (msgPrefix != null) {
+            msg = msg.substring(msgPrefix.length()).trim();
             String[] args = msg.split(" ");
-            String commandString = args[0].replace(prefix, "").toLowerCase();
-            ServerCommand command = commandMap.get(commandString);
+            ServerCommand command = commandMap.get(args[0]);
 
             if (command != null) {
                 if(command.checkPermission(event)) {
                     CommandContext ctx = new CommandContext(
-                        event, args, prefix, guildID, memberID,
+                        event, args, msg, serverPrefix, guildID, memberID,
                         musicPlayerManager.getGuildManager(guildID),
                         db
                     );
-                    logger.debug("Command ({}) Called With {} Args", commandString, args.length);
+                    logger.debug("Command ({}) Called With {} Args", args[0], args.length);
                     command.runCommand(ctx);
                 } else {
                     event.getMessage().reply("You don't have permission to use this command!").queue();
@@ -89,8 +106,8 @@ public class MessageProcessing extends ListenerAdapter {
         }
 
         for(SilentEvent silentEvent : events){
-            if(silentEvent.check(event, prefix)){
-                silentEvent.runEvent(event, prefix);
+            if(silentEvent.check(event, serverPrefix)){
+                silentEvent.runEvent(event, serverPrefix);
                 return;
             }
         }

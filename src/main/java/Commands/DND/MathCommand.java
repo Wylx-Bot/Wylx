@@ -43,9 +43,7 @@ public class MathCommand extends ServerCommand {
     @Override
     public void runCommand(CommandContext ctx) {
         MessageReceivedEvent event = ctx.event();
-        String msg = event.getMessage().getContentRaw();
-
-        msg = msg.substring(ctx.args()[0].length());
+        String msg = ctx.parsedMsg().substring(ctx.args()[0].length());
         if (ctx.args().length == 1) {
             event.getChannel().sendMessage(getDescription(ctx.prefix())).queue();
             return;

@@ -6,6 +6,7 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 public record CommandContext(MessageReceivedEvent event,
                              String[] args,
+                             String parsedMsg,
                              String prefix,
                              long guildID,
                              long authorID,
