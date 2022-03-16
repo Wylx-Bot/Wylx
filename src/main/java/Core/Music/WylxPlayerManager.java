@@ -6,7 +6,6 @@ import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
 import org.apache.hc.core5.http.ParseException;
 import se.michaelthelin.spotify.SpotifyApi;
-import se.michaelthelin.spotify.SpotifyHttpManager;
 import se.michaelthelin.spotify.exceptions.SpotifyWebApiException;
 import se.michaelthelin.spotify.model_objects.credentials.ClientCredentials;
 import se.michaelthelin.spotify.requests.authorization.client_credentials.ClientCredentialsRequest;
@@ -30,7 +29,7 @@ public class WylxPlayerManager {
                 .setClientId("648860ca8d704e4191037e7ef5ac7b34")
                 .setClientSecret("05c19ce2725843fd9c9db52c011af633")
                 .build();
-        spotifyClientCredentials();
+        setSpotifyClientCredentials();
 
         managers = new ConcurrentHashMap<>();
     }
@@ -58,7 +57,7 @@ public class WylxPlayerManager {
         playerManager.loadItemOrdered(musicManager, token, resultHandler);
     }
 
-    private void spotifyClientCredentials() {
+    private void setSpotifyClientCredentials() {
 
         try {
             ClientCredentialsRequest credentialsRequest = spotifyApi.clientCredentials().build();
