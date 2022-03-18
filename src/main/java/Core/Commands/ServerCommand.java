@@ -120,6 +120,7 @@ public abstract class ServerCommand {
     public String getName(){
         return this.getClass().getSimpleName();
     }
+
     public static String replacePrefix(String string, String prefix) {
         return string.replaceAll("%\\{p}", Matcher.quoteReplacement(prefix));
     }
