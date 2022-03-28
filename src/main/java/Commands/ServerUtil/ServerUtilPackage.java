@@ -1,4 +1,4 @@
-package Commands.Moderation;
+package Commands.ServerUtil;
 
 import Commands.ServerSettings.SetPrefix;
 import Core.Commands.ServerCommand;

@@ -5,7 +5,7 @@ import Commands.DND.TTRPGPackage;
 import Commands.Frog.FrogPackage;
 import Commands.Help;
 import Commands.Music.MusicPackage;
-import Commands.Moderation.ServerUtilPackage;
+import Commands.ServerUtil.ServerUtilPackage;
 import Commands.ServerSettings.ServerSettingsPackage;
 import Core.Commands.CommandContext;
 import Core.Commands.ServerCommand;

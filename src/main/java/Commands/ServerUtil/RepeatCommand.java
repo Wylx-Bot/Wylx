@@ -1,4 +1,4 @@
-package Commands.Moderation;
+package Commands.ServerUtil;
 
 import Core.Commands.CommandContext;
 import Core.Commands.ThreadedCommand;
