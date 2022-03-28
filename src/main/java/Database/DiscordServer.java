@@ -86,7 +86,7 @@ public class DiscordServer{
     public <T> T getSetting(ServerIdentifiers identifier) {
         Document settingDoc = settingsCollection.find(exists(identifier.identifier)).first();
         if(settingDoc == null)
-            return null;
+            return (T) identifier.defaultValue;
         return settingDoc.get(identifier.identifier, (T) identifier.defaultValue);
     }
 
