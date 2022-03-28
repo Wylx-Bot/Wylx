@@ -43,16 +43,14 @@ public class MathCommand extends ServerCommand {
     @Override
     public void runCommand(CommandContext ctx) {
         MessageReceivedEvent event = ctx.event();
-        String msg = event.getMessage().getContentRaw();
-
-        msg = msg.substring(ctx.args()[0].length());
+        String msgStr = ctx.parsedMsg().substring(ctx.args()[0].length());
         if (ctx.args().length == 1) {
             event.getChannel().sendMessage(getDescription(ctx.prefix())).queue();
             return;
         }
 
         try {
-            double retVal = doMath(msg);
+            double retVal = doMath(msgStr);
             event.getChannel().sendMessage("Math result: " + decFormat.format(retVal)).queue();
         } catch (MathException exception) {
             event.getChannel().sendMessage("Math Exception: " + exception.getMessage()).queue();

@@ -30,6 +30,10 @@ public class DiscordServer{
         _id = databaseName;
         settingsCollection = getSettingsCollection();
         userCollection = getUsersCollection();
+
+        if (settingsCollection.countDocuments() == 0) {
+            initializeSettings();
+        }
     }
 
     /**
@@ -65,7 +69,6 @@ public class DiscordServer{
             }
         }
         mongoDatabase.createCollection(SERVER_SETTINGS_DOC);
-        initializeSettings();
         return mongoDatabase.getCollection(SERVER_SETTINGS_DOC);
     }
 
@@ -83,7 +86,7 @@ public class DiscordServer{
     public <T> T getSetting(ServerIdentifiers identifier) {
         Document settingDoc = settingsCollection.find(exists(identifier.identifier)).first();
         if(settingDoc == null)
-            return null;
+            return (T) identifier.defaultValue;
         return settingDoc.get(identifier.identifier, (T) identifier.defaultValue);
     }
 

@@ -3,6 +3,7 @@ package Commands.Music;
 import Core.Commands.CommandContext;
 import Core.Commands.ServerCommand;
 import Core.Music.MusicUtils;
+import Database.ServerIdentifiers;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 public class VolumeCommand extends ServerCommand {
@@ -40,6 +41,7 @@ public class VolumeCommand extends ServerCommand {
             return;
         }
 
+        ctx.db().setSetting(ServerIdentifiers.MusicVolume, number);
         ctx.musicManager().setVolume(number);
     }
 }

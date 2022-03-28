@@ -1,11 +1,13 @@
 package Database;
 
+import Core.WylxEnvConfig;
+
 import java.util.*;
 
 // These identifiers are used in database access to ensure information is located correctly
 public enum ServerIdentifiers {
     Modules("Modules_Enabled", Map.class, Collections.emptyMap()),
-    MusicVolume("Music_Volume", Integer.class, 100),
+    MusicVolume("Music_Volume", Integer.class, 20),
     Roles("Public_Roles", List.class, Collections.emptyList()),
     Prefix("Prefix", String.class, ";");
 

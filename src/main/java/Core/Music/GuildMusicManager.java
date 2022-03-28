@@ -2,6 +2,8 @@ package Core.Music;
 
 import Core.Util.Helper;
 import Core.Wylx;
+import Database.DiscordServer;
+import Database.ServerIdentifiers;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter;
@@ -31,13 +33,16 @@ public class GuildMusicManager extends AudioEventAdapter {
     private static final Logger logger = LoggerFactory.getLogger(GuildMusicManager.class);
 
     public GuildMusicManager(long guildID, AudioPlayerManager manager) {
+        Wylx wylx = Wylx.getInstance();
         this.guildID = guildID;
         player = manager.createPlayer();
         player.addListener(this);
-        // TODO: Set volume with preference
-        player.setVolume(20);
 
-        AudioManager audioManager = Wylx.getInstance().getGuildAudioManager(guildID);
+        // Use last saved volume
+        DiscordServer serverDB = wylx.getDb().getServer("" + guildID);
+        player.setVolume(serverDB.getSetting(ServerIdentifiers.MusicVolume));
+
+        AudioManager audioManager = wylx.getGuildAudioManager(guildID);
         audioManager.setSendingHandler(new AudioPlayerSendHandler(player));
     }
 
