@@ -23,32 +23,23 @@ public class SpellCommand extends ServerCommand {
 
 	@Override
 	public void runCommand(CommandContext ctx) {
-		if(ctx.args().length == 1){
-			spellList(ctx);
+		if(ctx.args().length < 2){
+			ctx.event().getMessage().reply(getDescription(ctx.prefix())).queue();
 		} else {
 			spellSearch(ctx);
 		}
-	}
-
-	private void spellList(CommandContext ctx) {
-		// Load spells, error on fail
-		if(!loadSpells()) return;
-		String message = "";
-		for(String name : spellMap.keySet().stream().sorted().toList()){
-			message += name + "\n";
-			if(message.length() > 1900){
-				ctx.event().getChannel().sendMessage(message).queue();
-				message = "";
-			}
-		}
-		ctx.event().getChannel().sendMessage(message).queue();
 	}
 
 	private void spellSearch(CommandContext ctx){
 		// Load spells, error on fail
 		if(!loadSpells()) return;
 		String spellName = ctx.event().getMessage().getContentRaw().toLowerCase().substring(ctx.args()[0].length() + 1);
-		ctx.event().getMessage().reply("search " + spellName).queue();
+
+		// Check to see if the spell exists
+		if(!spellMap.containsKey(spellName)){
+			ctx.event().getMessage().reply("\"" + spellName + "\" not found").queue();
+			return;
+		}
 	}
 
 	// Returns a bool that states if spell loading was successful or not
