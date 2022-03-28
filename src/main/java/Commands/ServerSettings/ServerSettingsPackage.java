@@ -15,6 +15,6 @@ public class ServerSettingsPackage extends ProcessPackage {
 
     @Override
     public String getHeader() {
-        return "For managing and manipulating discord servers";
+        return "Server specific settings for Wylx";
     }
 }

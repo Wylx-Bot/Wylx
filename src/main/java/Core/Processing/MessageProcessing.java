@@ -41,7 +41,7 @@ public class MessageProcessing extends ListenerAdapter {
             new MusicPackage(),
             new BotUtilPackage(),
             new FrogPackage(),
-            new ServerSettingsPackage(),
+            new ServerSettingsPackage()
     };
 
     static {
@@ -71,28 +71,31 @@ public class MessageProcessing extends ListenerAdapter {
 
         DiscordServer db = dbManager.getServer(event.getGuild().getId());
         String serverPrefix = getPrefix(db, wylx);
-        String msg = event.getMessage().getContentRaw();
+        String msgStr = event.getMessage().getContentRaw();
         String msgPrefix = null;
 
-        if (msg.startsWith(serverPrefix)) {
+        // Check for @Wylx
+        Matcher matcher = mentionPattern.matcher(msgStr);
+
+        // Does message start with prefix?
+        if (msgStr.startsWith(serverPrefix)) {
             msgPrefix = serverPrefix;
+
+        // Does message start with @Wylx?
+        } else if (matcher.find() && matcher.start() == 0 && matcher.group(1).equals(wylx.getBotIDString())) {
+            msgPrefix = msgStr.substring(0, matcher.end());
         }
 
-        Matcher matcher = mentionPattern.matcher(msg);
-        if (matcher.find() && matcher.start() == 0 && matcher.group(1).equals(wylx.getBotIDString())) {
-            msgPrefix = msg.substring(0, matcher.end());
-        }
-
-        // Check Commands if aimed at bot
+        // Run command if prefix was used
         if (msgPrefix != null) {
-            msg = msg.substring(msgPrefix.length()).trim();
-            String[] args = msg.split(" ");
+            msgStr = msgStr.substring(msgPrefix.length()).trim();
+            String[] args = msgStr.split(" ");
             ServerCommand command = commandMap.get(args[0]);
 
             if (command != null) {
                 if(command.checkPermission(event)) {
                     CommandContext ctx = new CommandContext(
-                        event, args, msg, serverPrefix, guildID, memberID,
+                        event, args, msgStr, serverPrefix, guildID, memberID,
                         musicPlayerManager.getGuildManager(guildID),
                         db
                     );

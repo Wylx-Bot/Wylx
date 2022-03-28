@@ -38,6 +38,7 @@ public class GuildMusicManager extends AudioEventAdapter {
         player = manager.createPlayer();
         player.addListener(this);
 
+        // Use last saved volume
         DiscordServer serverDB = wylx.getDb().getServer("" + guildID);
         player.setVolume(serverDB.getSetting(ServerIdentifiers.MusicVolume));
 

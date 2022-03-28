@@ -1,6 +1,5 @@
 package Commands.ServerUtil;
 
-import Commands.ServerSettings.SetPrefix;
 import Core.Commands.ServerCommand;
 import Core.Events.SilentEvent;
 import Core.ProcessPackage.ProcessPackage;
@@ -13,8 +12,7 @@ public class ServerUtilPackage extends ProcessPackage {
                         new ClearCommand(),
                         new ClearToCommand(),
                         new InviteCommand(),
-                        new RepeatCommand(),
-                        new SetPrefix()
+                        new RepeatCommand()
                 }, new SilentEvent[]{}
         );
     }
