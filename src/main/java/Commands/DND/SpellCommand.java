@@ -2,7 +2,9 @@ package Commands.DND;
 
 import Core.Commands.CommandContext;
 import Core.Commands.ServerCommand;
+import net.dv8tion.jda.api.EmbedBuilder;
 
+import java.awt.*;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.HashMap;
@@ -10,7 +12,7 @@ import java.util.Scanner;
 
 public class SpellCommand extends ServerCommand {
 	// Spells are stored at their name (lowercase)
-	// Value is a string array (name, source, school, casting time, range, components, duration, description, spell lists)
+	// Value is a string array (0: name, 1: source, 2: level, 3: school, 4: casting time, 5: range, 6: components, 7: duration, 8: description, 9: spell lists)
 	// Spell Map is null until it has been loaded from disk
 	private static HashMap<String, String[]> spellMap = null;
 
@@ -40,6 +42,31 @@ public class SpellCommand extends ServerCommand {
 			ctx.event().getMessage().reply("\"" + spellName + "\" not found").queue();
 			return;
 		}
+
+		// Build embedded to display spell information
+		// (0: name, 1: source, 2: level, 3: school, 4: casting time, 5: range, 6: components, 7: duration, 8: description, 9: spell lists)
+		String[] spellInfo = spellMap.get(spellName);
+		EmbedBuilder spellEmbed = new EmbedBuilder();
+
+		spellEmbed.setTitle(spellInfo[0]);
+		spellEmbed.setColor(colorBySchool(spellInfo[3]));
+		System.out.println(spellInfo[3]);
+
+		ctx.event().getMessage().getChannel().sendMessageEmbeds(spellEmbed.build()).queue();
+	}
+
+	private Color colorBySchool(String school){
+		return switch (school) {
+			case "abjuration" -> Color.WHITE;
+			case "transmutation" -> Color.GREEN;
+			case "conjuration" -> Color.YELLOW;
+			case "divination" -> Color.MAGENTA;
+			case "enchantment" -> Color.PINK;
+			case "evocation" -> Color.ORANGE;
+			case "illusion" -> Color.CYAN;
+			case "necromancy" -> Color.BLACK;
+			default -> Color.GRAY;
+		};
 	}
 
 	// Returns a bool that states if spell loading was successful or not
@@ -62,10 +89,9 @@ public class SpellCommand extends ServerCommand {
 		// Each line is a spell, so load in one spell at a time
 		while(spellScanner.hasNextLine()){
 			String line = spellScanner.nextLine();
-			System.out.println(line);
 			// Lines begin with the name of the spell
 			String key = line.substring(0, line.indexOf(',')).toLowerCase();
-			// (name, source, school, casting time, range, components, duration, description, spell lists)
+			// (0: name, 1: source, 2: level, 3: school, 4: casting time, 5: range, 6: components, 7: duration, 8: description, 9: spell lists)
 			String[] value = line.split(",");
 			spellMap.put(key, value);
 		}
