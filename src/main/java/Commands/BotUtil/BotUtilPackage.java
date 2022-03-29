@@ -2,7 +2,7 @@ package Commands.BotUtil;
 
 import Core.Commands.ServerCommand;
 import Core.Events.SilentEvent;
-import Core.ProcessPackage.ProcessPackage;
+import Core.Processing.ProcessPackage;
 
 public class BotUtilPackage extends ProcessPackage {
     public BotUtilPackage() {
@@ -11,7 +11,8 @@ public class BotUtilPackage extends ProcessPackage {
                         new PingCommand(),
                         new RestartCommand(),
                         new SystemCommand(),
-                        new UpdateCommand()
+                        new UpdateCommand(),
+                        new DeleteMeCommand()
                 }, new SilentEvent[]{});
     }
 

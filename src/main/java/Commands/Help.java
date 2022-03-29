@@ -3,7 +3,7 @@ package Commands;
 import Core.Commands.CommandContext;
 import Core.Commands.ServerCommand;
 import Core.Events.SilentEvent;
-import Core.ProcessPackage.ProcessPackage;
+import Core.Processing.ProcessPackage;
 import Core.Processing.MessageProcessing;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 

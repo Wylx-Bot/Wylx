@@ -2,7 +2,7 @@ package Commands.DND;
 
 import Core.Commands.ServerCommand;
 import Core.Events.SilentEvent;
-import Core.ProcessPackage.ProcessPackage;
+import Core.Processing.ProcessPackage;
 
 public class TTRPGPackage extends ProcessPackage {
     public TTRPGPackage() {

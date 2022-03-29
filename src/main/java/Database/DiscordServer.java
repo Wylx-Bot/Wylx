@@ -1,10 +1,15 @@
 package Database;
 
 import com.mongodb.BasicDBObject;
+import com.mongodb.MongoClientSettings;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import org.bson.BsonReader;
 import org.bson.Document;
+import org.bson.codecs.Codec;
+import org.bson.codecs.configuration.CodecRegistries;
+import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.types.ObjectId;
 import java.util.*;
 
@@ -28,12 +33,23 @@ public class DiscordServer{
         }
         mongoDatabase = mongoClient.getDatabase(databaseName);
         _id = databaseName;
-        settingsCollection = getSettingsCollection();
+        settingsCollection = getSettingsCollection().withCodecRegistry(getServerCodecRegistry());
         userCollection = getUsersCollection();
 
         if (settingsCollection.countDocuments() == 0) {
             initializeSettings();
         }
+    }
+
+    private CodecRegistry getServerCodecRegistry() {
+        ArrayList<Codec<?>> codecs = new ArrayList<>();
+        for(ServerIdentifiers identifier : ServerIdentifiers.values()){
+            if(identifier.defaultValue instanceof Codec<?>) {
+                codecs.add((Codec<?>) identifier.defaultValue);
+            }
+        }
+        return CodecRegistries.fromRegistries(MongoClientSettings.getDefaultCodecRegistry(),
+                                                CodecRegistries.fromCodecs(codecs));
     }
 
     /**
@@ -87,7 +103,14 @@ public class DiscordServer{
         Document settingDoc = settingsCollection.find(exists(identifier.identifier)).first();
         if(settingDoc == null)
             return (T) identifier.defaultValue;
-        return settingDoc.get(identifier.identifier, (T) identifier.defaultValue);
+        if(!settingDoc.get("complex", false))
+            return settingDoc.get(identifier.identifier, (T) identifier.defaultValue);
+
+        BsonReader reader = settingDoc.toBsonDocument().asBsonReader();
+        reader.readStartDocument();
+        reader.readObjectId();
+        reader.readInt32();
+        return ((Codec<T>)identifier.defaultValue).decode(reader, null);
     }
 
     /** Sets a setting in mongoDB
@@ -98,12 +121,10 @@ public class DiscordServer{
         if (identifier.dataType.cast(data) == null)
             throw new IllegalArgumentException("Identifier data type mismatch");
         Document settingDoc = settingsCollection.find(exists(identifier.identifier)).first();
-        if(settingDoc == null)
-            settingDoc = new Document().append(identifier.identifier, data);
-        else {
+        if(settingDoc != null)
             settingsCollection.deleteOne(exists(identifier.identifier));
-            settingDoc.put(identifier.identifier, data);
-        }
+        settingDoc = new Document().append(identifier.identifier, data);
+        settingDoc.put("complex", data instanceof Codec<?>);
         settingsCollection.insertOne(settingDoc);
     }
 

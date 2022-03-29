@@ -2,7 +2,7 @@ package Commands.ServerUtil;
 
 import Core.Commands.ServerCommand;
 import Core.Events.SilentEvent;
-import Core.ProcessPackage.ProcessPackage;
+import Core.Processing.ProcessPackage;
 
 public class ServerUtilPackage extends ProcessPackage {
     public ServerUtilPackage() {

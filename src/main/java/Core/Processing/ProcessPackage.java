@@ -1,4 +1,4 @@
-package Core.ProcessPackage;
+package Core.Processing;
 
 import Core.Commands.ServerCommand;
 import Core.Events.SilentEvent;

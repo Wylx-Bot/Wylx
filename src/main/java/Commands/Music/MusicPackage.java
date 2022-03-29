@@ -2,7 +2,7 @@ package Commands.Music;
 
 import Core.Commands.ServerCommand;
 import Core.Events.SilentEvent;
-import Core.ProcessPackage.ProcessPackage;
+import Core.Processing.ProcessPackage;
 
 public class MusicPackage extends ProcessPackage {
     public MusicPackage() {
