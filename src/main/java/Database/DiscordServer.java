@@ -5,8 +5,7 @@ import com.mongodb.MongoClientSettings;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
-import org.bson.BsonReader;
-import org.bson.Document;
+import org.bson.*;
 import org.bson.codecs.Codec;
 import org.bson.codecs.configuration.CodecRegistries;
 import org.bson.codecs.configuration.CodecRegistry;
@@ -106,10 +105,8 @@ public class DiscordServer{
         if(!settingDoc.get("complex", false))
             return settingDoc.get(identifier.identifier, (T) identifier.defaultValue);
 
-        BsonReader reader = settingDoc.toBsonDocument().asBsonReader();
+        BsonReader reader = settingDoc.get(identifier.identifier, new Document()).toBsonDocument().asBsonReader();
         reader.readStartDocument();
-        reader.readObjectId();
-        reader.readInt32();
         return ((Codec<T>)identifier.defaultValue).decode(reader, null);
     }
 
@@ -117,14 +114,23 @@ public class DiscordServer{
      * @param identifier the preset identifier for a server setting
      * @param data the data for the setting being set, note this must match the type
      */
-    public void setSetting(ServerIdentifiers identifier, Object data) {
+    public <T> void setSetting(ServerIdentifiers identifier, Object data) {
         if (identifier.dataType.cast(data) == null)
             throw new IllegalArgumentException("Identifier data type mismatch");
         Document settingDoc = settingsCollection.find(exists(identifier.identifier)).first();
         if(settingDoc != null)
             settingsCollection.deleteOne(exists(identifier.identifier));
+
+        if(data instanceof Codec<?>){
+            BsonDocument complexDoc = new BsonDocument();
+            BsonWriter complexWriter = new BsonDocumentWriter(complexDoc);
+            complexWriter.writeStartDocument();
+            ((Codec<T>) data).encode(complexWriter, (T) data, null);
+            complexWriter.writeEndDocument();
+            data = complexDoc;
+        }
         settingDoc = new Document().append(identifier.identifier, data);
-        settingDoc.put("complex", data instanceof Codec<?>);
+        settingDoc.put("complex", data instanceof BsonDocument);
         settingsCollection.insertOne(settingDoc);
     }
 

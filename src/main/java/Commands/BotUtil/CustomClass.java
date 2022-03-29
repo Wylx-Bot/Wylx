@@ -46,7 +46,6 @@ public class CustomClass implements Codec<CustomClass> {
 	@Override
 	public void encode(BsonWriter writer, CustomClass value, EncoderContext encoderContext) {
 		if(value != null) {
-			writer.writeInt32(0);
 			writer.writeInt32("one", value.one);
 			writer.writeString("two", value.two);
 		}
