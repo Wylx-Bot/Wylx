@@ -17,8 +17,8 @@ public class MusicPackage extends EventPackage {
             new SeekCommand(),
             new LoopCommand(),
             new NowPlaying(),
-        }, new SilentEvent[]{},
-                true);
+        }, new SilentEvent[]{}
+		);
     }
 
     @Override

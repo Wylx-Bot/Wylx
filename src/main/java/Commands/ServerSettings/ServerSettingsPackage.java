@@ -11,8 +11,7 @@ public class ServerSettingsPackage extends EventPackage {
                         new SetPrefix(),
                         new EnableCommand(),
                         new EnablePackage()
-                }, new SilentEvent[]{},
-                true
+                }, new SilentEvent[]{}
         );
     }
 

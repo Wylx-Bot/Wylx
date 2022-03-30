@@ -128,7 +128,7 @@ public class ServerEventManager implements Codec<ServerEventManager> {
 			String moduleName = module.getClass().getSimpleName().toLowerCase();
 
 			// Load the module that didn't exist
-			setModule(moduleName, module.defaultEnabled, false);
+			setModule(moduleName, true, false);
 		}
 	}
 
@@ -146,7 +146,7 @@ public class ServerEventManager implements Codec<ServerEventManager> {
 			if(moduleMap.containsKey(moduleName)) continue;
 
 			// Load the module that didn't exist
-			setModule(moduleName, module.defaultEnabled, false);
+			setModule(moduleName, true, false);
 		}
 
 		boolean exceptions = reader.readBoolean();

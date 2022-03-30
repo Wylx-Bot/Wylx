@@ -10,12 +10,10 @@ public abstract class EventPackage {
     private final ServerCommand[] commands;
     private final SilentEvent[] silentEvents;
     private final Event[] events;
-    public final boolean defaultEnabled;
 
-    public EventPackage(ServerCommand[] commands, SilentEvent[] silentEvents, boolean defaultEnabled){
+    public EventPackage(ServerCommand[] commands, SilentEvent[] silentEvents){
         this.commands = commands;
         this.silentEvents = silentEvents;
-        this.defaultEnabled = defaultEnabled;
         this.events = Stream.concat(Arrays.stream(commands), Arrays.stream(silentEvents)).toArray(Event[]::new);
     }
 

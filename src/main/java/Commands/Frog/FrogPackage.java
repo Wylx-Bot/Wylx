@@ -12,8 +12,8 @@ public class FrogPackage extends EventPackage {
                 new FrogFactCommand(),
                 new DrawFrogCardCommand(),
                 new ValidateCommand()
-        }, new SilentEvent[]{},
-                true);
+        }, new SilentEvent[]{}
+		);
     }
 
     @Override

@@ -13,8 +13,8 @@ public class BotUtilPackage extends EventPackage {
                         new SystemCommand(),
                         new UpdateCommand(),
                         new Help()
-                }, new SilentEvent[]{},
-                true);
+                }, new SilentEvent[]{}
+		);
     }
 
     @Override

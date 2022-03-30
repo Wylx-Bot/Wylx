@@ -10,8 +10,8 @@ public class TTRPGPackage extends EventPackage {
                 new MathCommand()
         }, new SilentEvent[]{
                 new DiceRoll()
-        },
-            true);
+        }
+		);
     }
 
     @Override
