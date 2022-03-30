@@ -1,7 +1,7 @@
 package Commands.Music;
 
-import Core.Commands.CommandContext;
-import Core.Commands.ServerCommand;
+import Core.Events.Commands.CommandContext;
+import Core.Events.Commands.ServerCommand;
 import Core.Music.*;
 import Core.Util.Helper;
 import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;

@@ -114,6 +114,7 @@ public class DiscordServer{
      * @param identifier the preset identifier for a server setting
      * @param data the data for the setting being set, note this must match the type
      */
+    @SuppressWarnings("unchecked")
     public <T> void setSetting(ServerIdentifiers identifier, Object data) {
         if (identifier.dataType.cast(data) == null)
             throw new IllegalArgumentException("Identifier data type mismatch");

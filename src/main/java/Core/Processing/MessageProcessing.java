@@ -3,13 +3,16 @@ package Core.Processing;
 import Commands.BotUtil.BotUtilPackage;
 import Commands.DND.TTRPGPackage;
 import Commands.Frog.FrogPackage;
-import Commands.Help;
+import Commands.BotUtil.Help;
 import Commands.Music.MusicPackage;
 import Commands.ServerUtil.ServerUtilPackage;
 import Commands.ServerSettings.ServerSettingsPackage;
-import Core.Commands.CommandContext;
-import Core.Commands.ServerCommand;
-import Core.Events.SilentEvent;
+import Core.Events.Commands.CommandContext;
+import Core.Events.Commands.ServerCommand;
+import Core.Events.Event;
+import Core.Events.EventPackage;
+import Core.Events.ServerEventManager;
+import Core.Events.SilentEvents.SilentEvent;
 import Core.Music.WylxPlayerManager;
 import Core.Wylx;
 import Core.WylxEnvConfig;
@@ -33,8 +36,9 @@ public class MessageProcessing extends ListenerAdapter {
     private static final WylxPlayerManager musicPlayerManager = WylxPlayerManager.getInstance();
     private static final Logger logger = LoggerFactory.getLogger(MessageProcessing.class);
     public static final HashMap<String, ServerCommand> commandMap = new HashMap<>();
-    public static final ArrayList<SilentEvent> events = new ArrayList<>();
-    public static final ProcessPackage[] processPackages = {
+    public static final ArrayList<SilentEvent> silentEvents = new ArrayList<>();
+    public static final HashMap<String, Event> eventMap = new HashMap<>();
+    public static final EventPackage[] eventPackages = {
             new ServerUtilPackage(),
             new TTRPGPackage(),
             new MusicPackage(),
@@ -44,12 +48,14 @@ public class MessageProcessing extends ListenerAdapter {
     };
 
     static {
-        commandMap.put("help", new Help());
-        for(ProcessPackage processPackage : processPackages){
-            for(ServerCommand command : processPackage.getCommands()){
+        for(EventPackage eventPackage : eventPackages){
+            for(ServerCommand command : eventPackage.getCommands()){
                 commandMap.putAll(command.getCommandMap());
             }
-            events.addAll(Arrays.asList(processPackage.getEvents()));
+            silentEvents.addAll(Arrays.asList(eventPackage.getSilentEvents()));
+            for(Event event : eventPackage.getEvents()){
+                eventMap.putAll(event.getEventMap());
+            }
         }
     }
 
@@ -69,6 +75,7 @@ public class MessageProcessing extends ListenerAdapter {
             !event.isFromGuild()) return;
 
         DiscordServer db = dbManager.getServer(event.getGuild().getId());
+        ServerEventManager eventManager = ServerEventManager.getServerEventManager(event.getGuild().getId());
         String serverPrefix = getPrefix(db, wylx);
         String msgStr = event.getMessage().getContentRaw();
         String msgPrefix = null;
@@ -91,7 +98,7 @@ public class MessageProcessing extends ListenerAdapter {
             String[] args = msgStr.split(" ");
             ServerCommand command = commandMap.get(args[0]);
 
-            if (command != null) {
+            if (command != null && eventManager.checkEvent(command)) {
                 if(command.checkPermission(event)) {
                     CommandContext ctx = new CommandContext(
                         event, args, msgStr, serverPrefix, guildID, memberID,
@@ -107,8 +114,8 @@ public class MessageProcessing extends ListenerAdapter {
             }
         }
 
-        for(SilentEvent silentEvent : events){
-            if(silentEvent.check(event, serverPrefix)){
+        for(SilentEvent silentEvent : silentEvents){
+            if(eventManager.checkEvent(silentEvent) && silentEvent.check(event, serverPrefix)){
                 silentEvent.runEvent(event, serverPrefix);
                 return;
             }

@@ -1,9 +1,10 @@
-package Commands;
+package Commands.BotUtil;
 
-import Core.Commands.CommandContext;
-import Core.Commands.ServerCommand;
-import Core.Events.SilentEvent;
-import Core.Processing.ProcessPackage;
+import Core.Events.Commands.CommandContext;
+import Core.Events.Commands.ServerCommand;
+import Core.Events.Event;
+import Core.Events.SilentEvents.SilentEvent;
+import Core.Events.EventPackage;
 import Core.Processing.MessageProcessing;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
@@ -30,27 +31,16 @@ public class Help extends ServerCommand {
         if(args.length == 1) {
             StringBuilder helpMessage = new StringBuilder();
             helpMessage.append("```diff\n");
-            for (ProcessPackage processPackage : MessageProcessing.processPackages) {
-                helpMessage.append(processPackage.getDescription());
+            for (EventPackage eventPackage : MessageProcessing.eventPackages) {
+                helpMessage.append(eventPackage.getDescription());
             }
             helpMessage.append("```");
             event.getChannel().sendMessage(helpMessage).queue();
             return;
-        } else {
-            //Check command map for the arg to see if they provided the keyword for a command
-            if(MessageProcessing.commandMap.containsKey(args[1].toLowerCase())){
-                ServerCommand command = MessageProcessing.commandMap.get(args[1]);
-                event.getChannel().sendMessage(command.getName() + ": " + command.getDescription(ctx.prefix())).queue();
-                return;
-            }
-
-            //Check SilentEvents to see if they provided the name of an event
-            for(SilentEvent silentEvent : MessageProcessing.events){
-                if(silentEvent.getName().equalsIgnoreCase(args[1])){
-                    event.getChannel().sendMessage(silentEvent.getName() + ": " + silentEvent.getDescription()).queue();
-                    return;
-                }
-            }
+        } else if(MessageProcessing.eventMap.containsKey(args[1])){
+            Event serverEvent = MessageProcessing.commandMap.get(args[1]);
+            event.getChannel().sendMessage(serverEvent.getKeyword() + ": " + serverEvent.getDescription(ctx.prefix())).queue();
+            return;
         }
 
         event.getChannel().sendMessage("Unable to find command: " + args[1]).queue();

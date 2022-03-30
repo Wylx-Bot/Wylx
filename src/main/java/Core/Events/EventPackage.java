@@ -1,15 +1,22 @@
-package Core.Processing;
+package Core.Events;
 
-import Core.Commands.ServerCommand;
-import Core.Events.SilentEvent;
+import Core.Events.Commands.ServerCommand;
+import Core.Events.SilentEvents.SilentEvent;
 
-public abstract class ProcessPackage {
+import java.util.Arrays;
+import java.util.stream.Stream;
+
+public abstract class EventPackage {
     private final ServerCommand[] commands;
-    private final SilentEvent[] events;
+    private final SilentEvent[] silentEvents;
+    private final Event[] events;
+    public final boolean defaultEnabled;
 
-    public ProcessPackage(ServerCommand[] commands, SilentEvent[] events){
+    public EventPackage(ServerCommand[] commands, SilentEvent[] silentEvents, boolean defaultEnabled){
         this.commands = commands;
-        this.events = events;
+        this.silentEvents = silentEvents;
+        this.defaultEnabled = defaultEnabled;
+        this.events = Stream.concat(Arrays.stream(commands), Arrays.stream(silentEvents)).toArray(Event[]::new);
     }
 
     public String getName(){
@@ -24,22 +31,17 @@ public abstract class ProcessPackage {
         descriptionBuilder.append(getName()).append(" - ");
         descriptionBuilder.append(getHeader()).append("\n");
 
-        for(ServerCommand command : commands){
+        for(Event event : events){
             descriptionBuilder.append("-\t");
-            descriptionBuilder.append(command.getKeyword());
-            if(command.getAliases().length > 0){
+            descriptionBuilder.append(event.getKeyword());
+            if(event.getAliases().length > 0){
                 descriptionBuilder.append(" (aka: ");
-                String[] aliases = command.getAliases();
+                String[] aliases = event.getAliases();
                 for(int i = 0; i < aliases.length - 1; i++){
                     descriptionBuilder.append(aliases[i]).append(", ");
                 }
                 descriptionBuilder.append(aliases[aliases.length - 1]).append(")");
             }
-            descriptionBuilder.append("\n");
-        }
-        for(SilentEvent event : events){
-            descriptionBuilder.append("-\t");
-            descriptionBuilder.append(event.getName());
             descriptionBuilder.append("\n");
         }
 
@@ -50,7 +52,11 @@ public abstract class ProcessPackage {
         return commands;
     }
 
-    public SilentEvent[] getEvents() {
+    public SilentEvent[] getSilentEvents() {
+        return silentEvents;
+    }
+
+    public Event[] getEvents(){
         return events;
     }
 }

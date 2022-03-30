@@ -1,10 +1,10 @@
 package Commands.ServerUtil;
 
-import Core.Commands.ServerCommand;
-import Core.Events.SilentEvent;
-import Core.Processing.ProcessPackage;
+import Core.Events.Commands.ServerCommand;
+import Core.Events.SilentEvents.SilentEvent;
+import Core.Events.EventPackage;
 
-public class ServerUtilPackage extends ProcessPackage {
+public class ServerUtilPackage extends EventPackage {
     public ServerUtilPackage() {
         super(
                 new ServerCommand[]{
@@ -13,7 +13,8 @@ public class ServerUtilPackage extends ProcessPackage {
                         new ClearToCommand(),
                         new InviteCommand(),
                         new RepeatCommand()
-                }, new SilentEvent[]{}
+                }, new SilentEvent[]{},
+                true
         );
     }
 

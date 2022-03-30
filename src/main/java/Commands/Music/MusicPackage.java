@@ -1,10 +1,10 @@
 package Commands.Music;
 
-import Core.Commands.ServerCommand;
-import Core.Events.SilentEvent;
-import Core.Processing.ProcessPackage;
+import Core.Events.Commands.ServerCommand;
+import Core.Events.SilentEvents.SilentEvent;
+import Core.Events.EventPackage;
 
-public class MusicPackage extends ProcessPackage {
+public class MusicPackage extends EventPackage {
     public MusicPackage() {
         super(new ServerCommand[]{
             new PlayCommand(),
@@ -17,7 +17,8 @@ public class MusicPackage extends ProcessPackage {
             new SeekCommand(),
             new LoopCommand(),
             new NowPlaying(),
-        }, new SilentEvent[]{});
+        }, new SilentEvent[]{},
+                true);
     }
 
     @Override

@@ -1,10 +1,10 @@
 package Commands.BotUtil;
 
-import Core.Commands.ServerCommand;
-import Core.Events.SilentEvent;
-import Core.Processing.ProcessPackage;
+import Core.Events.Commands.ServerCommand;
+import Core.Events.SilentEvents.SilentEvent;
+import Core.Events.EventPackage;
 
-public class BotUtilPackage extends ProcessPackage {
+public class BotUtilPackage extends EventPackage {
     public BotUtilPackage() {
         super(
                 new ServerCommand[]{
@@ -12,8 +12,9 @@ public class BotUtilPackage extends ProcessPackage {
                         new RestartCommand(),
                         new SystemCommand(),
                         new UpdateCommand(),
-                        new DeleteMeCommand()
-                }, new SilentEvent[]{});
+                        new Help()
+                }, new SilentEvent[]{},
+                true);
     }
 
     @Override

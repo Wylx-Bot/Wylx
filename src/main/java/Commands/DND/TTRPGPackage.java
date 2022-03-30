@@ -1,16 +1,17 @@
 package Commands.DND;
 
-import Core.Commands.ServerCommand;
-import Core.Events.SilentEvent;
-import Core.Processing.ProcessPackage;
+import Core.Events.Commands.ServerCommand;
+import Core.Events.SilentEvents.SilentEvent;
+import Core.Events.EventPackage;
 
-public class TTRPGPackage extends ProcessPackage {
+public class TTRPGPackage extends EventPackage {
     public TTRPGPackage() {
         super(new ServerCommand[]{
                 new MathCommand()
         }, new SilentEvent[]{
                 new DiceRoll()
-        });
+        },
+            true);
     }
 
     @Override
