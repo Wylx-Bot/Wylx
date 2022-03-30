@@ -8,7 +8,9 @@ public class ServerSettingsPackage extends EventPackage {
     public ServerSettingsPackage() {
         super(
                 new ServerCommand[]{
-                        new SetPrefix()
+                        new SetPrefix(),
+                        new EnableCommand(),
+                        new EnablePackage()
                 }, new SilentEvent[]{},
                 true
         );

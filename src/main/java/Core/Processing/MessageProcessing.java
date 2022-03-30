@@ -40,11 +40,12 @@ public class MessageProcessing extends ListenerAdapter {
     public static final HashMap<String, Event> eventMap = new HashMap<>();
     public static final EventPackage[] eventPackages = {
             new ServerUtilPackage(),
-            new TTRPGPackage(),
+            new ServerSettingsPackage(),
             new MusicPackage(),
+            new TTRPGPackage(),
             new BotUtilPackage(),
             new FrogPackage(),
-            new ServerSettingsPackage()
+
     };
 
     static {

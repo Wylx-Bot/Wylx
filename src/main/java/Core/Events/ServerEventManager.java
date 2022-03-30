@@ -96,7 +96,7 @@ public class ServerEventManager implements Codec<ServerEventManager> {
 		if(write) serverDB.setSetting(ServerIdentifiers.Modules, this);
 	}
 
-	private void setEvent(String eventName, boolean value) throws IllegalArgumentException{
+	public void setEvent(String eventName, boolean value) throws IllegalArgumentException{
 		setEvent(eventName, value, true);
 	}
 
