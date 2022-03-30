@@ -58,6 +58,14 @@ public class ServerEventManager implements Codec<ServerEventManager> {
 		return masterEventMap.get(eventName);
 	}
 
+	public Boolean checkPackage(EventPackage eventPackage) {
+		return checkPackage(eventPackage.getClass().getSimpleName().toLowerCase());
+	}
+
+	public Boolean checkPackage(String packageName){
+		return moduleMap.get(packageName);
+	}
+
 	public void setModule(String moduleName, boolean value) throws IllegalArgumentException{
 		setModule(moduleName, value, true);
 	}

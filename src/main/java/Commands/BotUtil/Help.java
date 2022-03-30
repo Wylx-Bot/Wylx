@@ -32,7 +32,7 @@ public class Help extends ServerCommand {
             StringBuilder helpMessage = new StringBuilder();
             helpMessage.append("```diff\n");
             for (EventPackage eventPackage : MessageProcessing.eventPackages) {
-                helpMessage.append(eventPackage.getDescription());
+                helpMessage.append(eventPackage.getDescription(ctx));
             }
             helpMessage.append("```");
             event.getChannel().sendMessage(helpMessage).queue();

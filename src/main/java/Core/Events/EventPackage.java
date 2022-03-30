@@ -1,7 +1,10 @@
 package Core.Events;
 
+import Commands.ServerSettings.ServerSettingsPackage;
+import Core.Events.Commands.CommandContext;
 import Core.Events.Commands.ServerCommand;
 import Core.Events.SilentEvents.SilentEvent;
+import net.dv8tion.jda.api.entities.User;
 
 import java.util.Arrays;
 import java.util.stream.Stream;
@@ -23,10 +26,14 @@ public abstract class EventPackage {
 
     public abstract String getHeader();
 
-    public final String getDescription(){
+    public final String getDescription(CommandContext ctx){
         StringBuilder descriptionBuilder = new StringBuilder();
         descriptionBuilder.append("+");
-        descriptionBuilder.append(getName()).append(" - ");
+        descriptionBuilder.append(getName());
+        ServerEventManager eventManager = ServerEventManager.getServerEventManager(ctx.event().getGuild().getId());
+        boolean packageEnabled = eventManager.checkPackage(this);
+        descriptionBuilder.append(packageEnabled ? " (Enabled) " : " (Disabled) ");
+        descriptionBuilder.append(" - ");
         descriptionBuilder.append(getHeader()).append("\n");
 
         for(Event event : events){
@@ -40,6 +47,8 @@ public abstract class EventPackage {
                 }
                 descriptionBuilder.append(aliases[aliases.length - 1]).append(")");
             }
+            boolean eventEnabled = eventManager.checkEvent(event);
+            if(eventEnabled != packageEnabled) descriptionBuilder.append(eventEnabled ? " (Enabled) " : " (Disabled) ");
             descriptionBuilder.append("\n");
         }
 
