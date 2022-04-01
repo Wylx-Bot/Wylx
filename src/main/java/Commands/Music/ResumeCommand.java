@@ -7,9 +7,9 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 public class ResumeCommand extends ServerCommand {
     ResumeCommand() {
-        super("resume",
+        super("resuwume",
                 CommandPermission.EVERYONE,
-                "Resume pwayback if pawsed");
+                "Resume pwayback if pawsed", "resume");
     }
 
     @Override

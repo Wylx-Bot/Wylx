@@ -10,7 +10,7 @@ import java.util.Random;
 public class DrawFrogCardCommand extends ServerCommand {
 
     public DrawFrogCardCommand() {
-        super("drawfrogcard", CommandPermission.EVERYONE, "Dwaws a fwog cawd. (functions wike a standawd deck of 52 cawds)");
+        super("druwafwogcawd", CommandPermission.EVERYONE, "Dwaws a fwog cawd. (functions wike a standawd deck of 52 cawds)", "drawfrogcard");
     }
 
     @Override

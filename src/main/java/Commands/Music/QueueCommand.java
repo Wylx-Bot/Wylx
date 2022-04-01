@@ -21,10 +21,10 @@ public class QueueCommand extends ServerCommand {
     private static final int PAGE_COUNT = 10;
 
     QueueCommand() {
-        super("queue",
+        super("quwue",
                 CommandPermission.EVERYONE,
                 "View cuwwent queue of songs waiting to be pwayed",
-                "q");
+                "q", "queue");
     }
 
     @Override

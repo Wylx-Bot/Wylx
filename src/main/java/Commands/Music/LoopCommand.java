@@ -8,10 +8,10 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 public class LoopCommand extends ServerCommand {
     LoopCommand() {
-        super("loop",
+        super("woop",
                 CommandPermission.EVERYONE,
                 "Loop cuwwent twack\n" +
-                        "usage: %{p}woop <twue/yes or fawse/no>");
+                        "usage: %{p}woop <twue/yes or fawse/no>", "loop");
     }
 
     @Override

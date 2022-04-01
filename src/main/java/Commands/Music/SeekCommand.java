@@ -11,7 +11,7 @@ import java.time.Duration;
 
 public class SeekCommand extends ServerCommand {
     SeekCommand() {
-        super("seek",
+        super("sweek",
                 CommandPermission.EVERYONE,
                 """
                         Sweek to wocation in cuwwent twack. U can use + ow - to seek wewative to cuwwent pwace
@@ -20,7 +20,7 @@ public class SeekCommand extends ServerCommand {
                         %{p}sweek Sweconds
                         %{p}sweek HH:MM:SS OW MM:SS>
                         %{p}sweek +/-Seweconds OW +/- HH:MM:SS OW +/- MM:SS
-                        """);
+                        """, "seek");
     }
 
     @Override

@@ -66,7 +66,7 @@ public class DiceRoll extends ThreadedSilentEvent {
             }
         }
         event.getMessage().reply("Resuwult ```diff\n" +
-                "- " + (total == 1 ? "(╥_╥)" : total == 20 ? "– ̗̀ (ᵕ꒳ᵕ) ̖́ –" : total) + "\n" +
+                "- " + (total == 1 ? "owo" : total == 20 ? "uwu" : total) + "\n" +
                 outputString + "\n" +
                 "```").queue();
 

@@ -7,9 +7,9 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 public class PauseCommand extends ServerCommand {
     PauseCommand() {
-        super("pause",
+        super("paws",
                 CommandPermission.EVERYONE,
-                "Paws cuwwent song");
+                "Paws cuwwent song", "pause");
     }
 
     @Override

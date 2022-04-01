@@ -11,10 +11,10 @@ import java.time.Duration;
 
 public class NowPlaying extends ServerCommand {
     NowPlaying() {
-        super("nowplaying",
+        super("nwowpwaying",
                 CommandPermission.EVERYONE,
                 "Show cuwwentwy pwaying song",
-                "np");
+                "np", "nowplaying");
     }
 
     @Override

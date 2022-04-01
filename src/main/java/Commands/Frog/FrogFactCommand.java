@@ -15,7 +15,7 @@ public class FrogFactCommand extends ServerCommand {
     private List<String> allFacts = new ArrayList<>();
 
     public FrogFactCommand() {
-        super("frogfact", CommandPermission.EVERYONE, "Get a wandom fwog fact");
+        super("fwogfwact", CommandPermission.EVERYONE, "Get a wandom fwog fact", "frogfact");
     }
 
     @Override

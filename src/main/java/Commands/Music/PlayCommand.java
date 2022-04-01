@@ -31,14 +31,14 @@ public class PlayCommand extends ServerCommand {
     private static final Pattern ytTimestamp = Pattern.compile("(?<=&t=)[0-9]*");
 
     public PlayCommand() {
-        super("play",
+        super("pway",
                 CommandPermission.EVERYONE,
                 """
                         Pway ow queue a song to pway
                         Uwusage:
                         %{p}pway <wink> <optionaw: seconds to skip or hh:mm:ss>
                         %{p}pway <seawch tewms>""",
-                "p");
+                "p", "play");
     }
 
     @Override

@@ -7,9 +7,9 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 public class SkipCommand extends ServerCommand {
     public SkipCommand() {
-        super("skip",
+        super("skwip",
                 CommandPermission.EVERYONE,
-                "Stop cuwwent twack and pway next in queue");
+                "Stop cuwwent twack and pway next in queue", "skip");
     }
 
     @Override

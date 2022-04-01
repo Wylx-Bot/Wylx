@@ -32,9 +32,9 @@ public class MathCommand extends ServerCommand {
     }
 
     MathCommand() {
-        super("math", CommandPermission.EVERYONE,
+        super("mawth", CommandPermission.EVERYONE,
                 "Evawuates math. Suppowted opewatows awe `*,/,+,-,^,(,)`\n" +
-                        "Impwicit muwtipwication (ie. `5(2)` instead of `5 * (2)`) ish not awwowed");
+                        "Impwicit muwtipwication (ie. `5(2)` instead of `5 * (2)`) ish not awwowed", "math");
 
         decFormat.setDecimalSeparatorAlwaysShown(false);
         decFormat.setMaximumFractionDigits(10);

@@ -10,10 +10,10 @@ public class VolumeCommand extends ServerCommand {
     private static final String USAGE = "Uwsage: %{p}vowume <numbew between 0 and 100>";
 
     VolumeCommand () {
-        super("volume",
+        super("vwowume",
                 CommandPermission.EVERYONE,
                 "Set pwayback vowume\n" + USAGE,
-                "v");
+                "v", "volume");
     }
 
     @Override
