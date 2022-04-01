@@ -54,7 +54,7 @@ public class PlayCommand extends ServerCommand {
         }
 
         if (MusicUtils.voiceCommandBlocked(ctx)) {
-            event.getChannel().sendMessage("You are not in the same channel as the bot!").queue();
+            event.getChannel().sendMessage("U awe not in da same channew as da bot!").queue();
             return;
         }
 
