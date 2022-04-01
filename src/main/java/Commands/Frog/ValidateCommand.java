@@ -9,11 +9,11 @@ public class ValidateCommand extends SenderReceiverCommand {
                         Remind anothew usew that dey mattew to u
                         Usage: %{p}vawidate <usew tag>
                         """,
-                new String[]{"@sendew wants evewyone to know that dey awe woved and appweciated"},
-                new String[]{"@sendew wants @wecipient to know that dey awe woved and appweciated",
-                "Henlo @wecipient: @sendew thinks that u'we doing a gweat job",
-                "@wecipient: @sendew wants u to know that u make them smiwe",
-                "@sendew thinks @wecipient ish wooking fabuwous today"}
+                new String[]{"@sender wants evewyone to know that dey awe woved and appweciated"},
+                new String[]{"@sender wants @recipient to know that dey awe woved and appweciated",
+                "Henlo @recipient: @sender thwinks that u'we doing a gweat job",
+                "@recipient: @sender wants u to know that u make them smiwe",
+                "@sender thinks @recipient ish wooking fabuwous today"}
         );
     }
 

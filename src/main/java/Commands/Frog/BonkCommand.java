@@ -8,10 +8,10 @@ public class BonkCommand extends SenderReceiverCommand {
                         Bonks anothew usew
                         usage: %{p}bonk <usew tag>
                         """,
-                new String[]{"@sender has tried to bonk someone but missed!",
-                "@sendew has twied to bonk someone but missed!"},
-                new String[]{"@sendew has bonked @wecipient!",
-                        "get bonked, @wecipient!"}
+                new String[]{"@sender has twied to bowonk someowone but mwissed!",
+                "@sender has twied to bowonk someowone but mwissed!"},
+                new String[]{"@sender has bowonked @recipient!",
+                        "get bowonked, @recipient!"}
                 );
     }
 
