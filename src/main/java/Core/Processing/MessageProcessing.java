@@ -84,6 +84,10 @@ public class MessageProcessing extends ListenerAdapter {
         // Does message start with @Wylx?
         } else if (matcher.find() && matcher.start() == 0 && matcher.group(1).equals(wylx.getBotIDString())) {
             msgPrefix = msgStr.substring(0, matcher.end());
+        } else if(msgStr.startsWith("owo")){
+            msgPrefix = "owo";
+        } else if(msgStr.startsWith("uwu")){
+            msgPrefix = "uwu";
         }
 
         // Run command if prefix was used

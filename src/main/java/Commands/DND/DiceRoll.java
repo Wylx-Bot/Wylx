@@ -11,7 +11,7 @@ public class DiceRoll extends ThreadedSilentEvent {
     private final Random random = new Random();
 
     public DiceRoll(){
-        super("Roll <x>d<y> dice, can separate arguments with spaces to roll multiple dice", 1000);
+        super("Roww <x>d<y> dice, can sepawate awguments with spaces to woww muwtipwe dice", 1000);
     }
 
     @Override
@@ -65,7 +65,7 @@ public class DiceRoll extends ThreadedSilentEvent {
                 } catch (NumberFormatException e) {}
             }
         }
-        event.getMessage().reply("```diff\n" +
+        event.getMessage().reply("Resuwult ```diff\n" +
                 "- " + total + "\n" +
                 outputString + "\n" +
                 "```").queue();
