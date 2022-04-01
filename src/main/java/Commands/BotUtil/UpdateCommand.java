@@ -12,7 +12,7 @@ public class UpdateCommand extends ThreadedCommand {
     private static final String MAIN_BRANCH = "main";
 
     UpdateCommand() {
-        super ("update", CommandPermission.BOT_ADMIN, "Update and build");
+        super ("update", CommandPermission.BOT_ADMIN, "UwUpdate awnd buildu (*ฅ́˘ฅ̀*)");
     }
 
     @Override
@@ -20,7 +20,7 @@ public class UpdateCommand extends ThreadedCommand {
         MessageReceivedEvent event = ctx.event();
         String[] args = ctx.args();
         if (args.length == 2 && !Wylx.getInstance().getWylxConfig().release) {
-            event.getChannel().sendMessage("Unable to use different branch on RELEASE").queue();
+            event.getChannel().sendMessage("UwUnable to use diffwerent brawnch own RAWRELEASE").queue();
             return;
         }
 
@@ -45,8 +45,8 @@ public class UpdateCommand extends ThreadedCommand {
 
 
             if (proc.waitFor() != 0) {
-                event.getChannel().sendMessage("An error occurred while updating.").queue();
-                StringBuilder errOutput = new StringBuilder("Error Output:\n```");
+                event.getChannel().sendMessage("Awn ewrror owoccurred while uwupdating.").queue();
+                StringBuilder errOutput = new StringBuilder("Error Owutpuwt:\n```");
                 while (errInput.ready()) {
                     errOutput.append(errInput.readLine()).append("\n");
                 }
@@ -65,7 +65,7 @@ public class UpdateCommand extends ThreadedCommand {
             errInput.close();
             return proc.exitValue() == 0;
         } catch (Exception e) {
-            event.getChannel().sendMessage("Exception while running git").queue();
+            event.getChannel().sendMessage("Ewxceptiowon while rawring giwt").queue();
             return false;
         }
     }
@@ -78,13 +78,13 @@ public class UpdateCommand extends ThreadedCommand {
             Process proc = rt.exec(commands);
 
             if (proc.waitFor() != 0) {
-                event.getChannel().sendMessage("An error occurred while building").queue();
+                event.getChannel().sendMessage("Awn ewrror owoccurred while buwilding").queue();
             } else {
-                event.getChannel().sendMessage("Gradlew built Wylx").queue();
+                event.getChannel().sendMessage("Gradleuwu buwilt UWUylx").queue();
             }
 
         } catch (Exception e) {
-            event.getChannel().sendMessage("Exception while running gradlew").queue();
+            event.getChannel().sendMessage("Exceweption while ruwnning gradleuwu").queue();
         }
     }
 
@@ -96,13 +96,13 @@ public class UpdateCommand extends ThreadedCommand {
             Process proc = rt.exec(commands);
 
             if (proc.waitFor() != 0) {
-                event.getChannel().sendMessage("An error occurred while running installDist").queue();
+                event.getChannel().sendMessage("An ewwow occuwwed whiwe wunning instawwdist").queue();
             } else {
-                event.getChannel().sendMessage("Gradlew finished running installDist - Ready for restart!").queue();
+                event.getChannel().sendMessage("Gwadwew finished wunning instawwdist - weady fow westawt!").queue();
             }
 
         } catch (Exception e) {
-            event.getChannel().sendMessage("Exception while running gradlew").queue();
+            event.getChannel().sendMessage("Exception whiwe wunning gwadwew").queue();
         }
     }
 }

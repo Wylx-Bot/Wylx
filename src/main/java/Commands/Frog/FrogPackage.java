@@ -11,7 +11,8 @@ public class FrogPackage extends ProcessPackage {
                 new BonkCommand(),
                 new FrogFactCommand(),
                 new DrawFrogCardCommand(),
-                new ValidateCommand()
+                new ValidateCommand(),
+                new PetCommand(),
         }, new SilentEvent[]{});
     }
 

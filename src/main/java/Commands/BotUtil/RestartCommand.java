@@ -7,7 +7,7 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 public class RestartCommand extends ServerCommand {
     private static final int RESTART_EXIT_STATUS = 200;
     RestartCommand() {
-        super("restart", CommandPermission.BOT_ADMIN, "Restart the bot...remotely!");
+        super("restwrart", CommandPermission.BOT_ADMIN, "Restrawrt the bawt...remowtely! (❀˘꒳˘)♡(˘꒳˘❀)", "restart");
     }
 
 
@@ -17,8 +17,8 @@ public class RestartCommand extends ServerCommand {
         // TODO: Do cool stuff like...idk...
         // TODO: I don't actually know?
 
-        logger.info("Restarting Wylx due to user command!");
-        event.getChannel().sendMessage("Restarting Wylx...").queue();
+        logger.info("Restrawrting UWUylx duwe to uwser commawnd! ( ͡o ᵕ ͡o )");
+        event.getChannel().sendMessage("Restrawrting UWUylx... ( ͡o ᵕ ͡o )").queue();
         System.exit(RESTART_EXIT_STATUS);
     }
 }

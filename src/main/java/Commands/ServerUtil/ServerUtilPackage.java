@@ -19,6 +19,6 @@ public class ServerUtilPackage extends ProcessPackage {
 
     @Override
     public String getHeader() {
-        return "For managing and manipulating discord servers";
+        return "Fow managing awnd manipuwating discowd sewvews ( ͡o ꒳ ͡o )";
     }
 }

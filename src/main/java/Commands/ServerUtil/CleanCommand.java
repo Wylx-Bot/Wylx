@@ -14,9 +14,9 @@ import java.util.List;
 
 public class CleanCommand extends ServerCommand {
     public CleanCommand() {
-        super("clean", CommandPermission.DISCORD_PERM, Permission.MESSAGE_MANAGE,
-                "Cleans the channel of bot interactions for the last X messages (20 by default), Requires Manage Messages" +
-                "\nUsage: %{p}clean <Optional: number of messages to scrape>");
+        super("cwean", CommandPermission.DISCORD_PERM, Permission.MESSAGE_MANAGE,
+                "Cweans the channew of bot intewactions fow the wast x messawges (20 by defauwt), wequiwes manage messawges" +
+                "\nUwUsage: %{p}cwean <OwOptiownal: nuwumber owf messawges towo scrawpe>", "clean");
     }
 
     @Override
@@ -35,7 +35,7 @@ public class CleanCommand extends ServerCommand {
         try{
             int scrape = Integer.parseInt(args[1]);
             if(scrape > 20) {
-                Helper.validate("Are you sure you want to clean " + scrape + " messages", event,
+                Helper.validate("Awe uwu suwe uwu wawnt tuwu cwean " + scrape + " messawges... uwu knowo I miwght wike thowse :crying_cat_face:", event,
                         () -> cleanMessages(event.getChannel().getHistory(), scrape, ctx.prefix()));
             } else {
                 event.getChannel().deleteMessageById(event.getMessageId()).queue();

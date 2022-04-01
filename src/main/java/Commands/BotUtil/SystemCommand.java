@@ -22,7 +22,7 @@ public class SystemCommand extends ServerCommand {
     private static final long MILLI_PER_DAYS = MILLI_PER_HOURS * 24;
 
     public SystemCommand() {
-        super("system", CommandPermission.EVERYONE, "Provides information on the host machine of the bot");
+        super("suwystem", CommandPermission.EVERYONE, "Pwovides infowmation own the howost machine of the bowt (⁄˘⁄ ⁄ ω⁄ ⁄ ˘⁄)♡");
     }
 
     private String getCommitID() {
@@ -32,7 +32,7 @@ public class SystemCommand extends ServerCommand {
             Process proc = rt.exec(commands);
 
             if (proc.waitFor() != 0) {
-                return "Unknown";
+                return "Unknowon";
             }
 
             BufferedReader stdInput = new BufferedReader(new
@@ -42,7 +42,7 @@ public class SystemCommand extends ServerCommand {
             stdInput.close();
             return commit;
         } catch (Exception e) {
-            return "Unknown";
+            return "Unknowon";
         }
     }
 
@@ -65,7 +65,7 @@ public class SystemCommand extends ServerCommand {
         embed.setColor(event.getGuild().getSelfMember().getColor());
 
         try {
-            embed.setTitle(String.format("System: %s", InetAddress.getLocalHost().getHostName()));
+            embed.setTitle(String.format("suwystem: %s ★⌒ヽ(˘꒳˘ *)", InetAddress.getLocalHost().getHostName()));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -77,12 +77,12 @@ public class SystemCommand extends ServerCommand {
         var uptime = ManagementFactory.getRuntimeMXBean().getUptime();
 
         String builder =
-                String.format("**OS**: %s\n", System.getProperty("os.name")) +
-                String.format("**Commit**: %s\n", commitID) +
-                String.format("**Threads**: %d\n", rt.availableProcessors()) +
-                String.format("**Memory**: %dMB of %dMB\n", usedMem, maxMem) +
+                String.format("**OWOS**: %s\n", System.getProperty("os.name")) +
+                String.format("**Cuwummit**: %s\n", commitID) +
+                String.format("**Threwads**: %d\n", rt.availableProcessors()) +
+                String.format("**UwUory**: %dUwUB of %dUwUB\n", usedMem, maxMem) +
                 ProgressBar.progressBar(ratio) + "\n\n" +
-                String.format("**Bot Uptime**: %d Days, %d Hours, and %d minutes",
+                String.format("**Bot Uptime**: %d Dawys, %d Hourawrs, and %d minuwutes",
                         milliToDays(uptime), milliToHours(uptime), milliToMinutes(uptime));
 
         embed.setDescription(builder);
