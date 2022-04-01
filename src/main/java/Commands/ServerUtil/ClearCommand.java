@@ -14,7 +14,7 @@ import java.util.List;
 public class ClearCommand extends ServerCommand {
     public ClearCommand() {
         super("cweaw", CommandPermission.DISCORD_PERM, Permission.MESSAGE_MANAGE,
-                "Dewete the mowost wecent x messawges fwom the channew, wequiwes manage messawges pewm (⁄˘⁄ ⁄ ω⁄ ⁄ ˘⁄)♡" +
+                "Dewete the mowost wecent x messawges fwom the channew, wequiwes manage messawges pewm *uwu*" +
                 "\nUsage: %{p}cweaw <messages tuwu dewete>", "clear");
     }
 

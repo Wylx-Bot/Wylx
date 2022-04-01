@@ -23,7 +23,7 @@ public class RepeatCommand extends ThreadedCommand {
         try{
             x = Integer.parseInt(args[1]);
         } catch(NumberFormatException nfe) {
-            event.getMessage().reply("Unabwe tuwu tuwn \" + awgs[1] + \" tuwu a numbew\\nusage $wepeat <int x> <stw msg> (。U⁄ ⁄ω⁄ ⁄ U。)").queue();
+            event.getMessage().reply("Unabwe tuwu tuwn \" + awgs[1] + \" tuwu a numbew\\nusage $wepeat <int x> <stw msg> UWU)").queue();
             return;
         }
 

@@ -17,7 +17,6 @@ public class BotUtilPackage extends ProcessPackage {
 
     @Override
     public String getHeader() {
-        return "Commawnds fow intewacting with awnd checking uwp owon UwUywx itsewf (ᵘﻌᵘ) " +
-                "\n in case uwu wawnt tuwu know how i'm doing wight now :kissing_cat:";
+        return "Commawnds fow intewacting with awnd checking uwp owon UwUywx itsewf uwu in case uwu wawnt tuwu know how i'm doing wight now";
     }
 }

@@ -19,6 +19,6 @@ public class ServerUtilPackage extends ProcessPackage {
 
     @Override
     public String getHeader() {
-        return "Fow managing awnd manipuwating discowd sewvews ( ͡o ꒳ ͡o )";
+        return "Fow managing awnd manipuwating discowd sewvews owo";
     }
 }

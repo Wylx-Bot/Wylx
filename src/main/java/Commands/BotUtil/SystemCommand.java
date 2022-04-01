@@ -22,7 +22,7 @@ public class SystemCommand extends ServerCommand {
     private static final long MILLI_PER_DAYS = MILLI_PER_HOURS * 24;
 
     public SystemCommand() {
-        super("suwystem", CommandPermission.EVERYONE, "Pwovides infowmation own the howost machine of the bowt (⁄˘⁄ ⁄ ω⁄ ⁄ ˘⁄)♡");
+        super("suwystem", CommandPermission.EVERYONE, "Pwovides infowmation own the howost machine of the bowt OwO");
     }
 
     private String getCommitID() {

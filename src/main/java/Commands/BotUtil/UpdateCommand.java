@@ -12,7 +12,7 @@ public class UpdateCommand extends ThreadedCommand {
     private static final String MAIN_BRANCH = "main";
 
     UpdateCommand() {
-        super ("update", CommandPermission.BOT_ADMIN, "UwUpdate awnd buildu (*ฅ́˘ฅ̀*)");
+        super ("update", CommandPermission.BOT_ADMIN, "UwUpdate awnd buildu *uwu*");
     }
 
     @Override
