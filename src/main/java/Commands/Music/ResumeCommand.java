@@ -7,18 +7,18 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 public class ResumeCommand extends ServerCommand {
     ResumeCommand() {
-        super("resume",
+        super("resuwume",
                 CommandPermission.EVERYONE,
-                "Resume playback if paused");
+                "Resume pwayback if pawsed", "resume");
     }
 
     @Override
     public void runCommand(CommandContext ctx) {
         MessageReceivedEvent event = ctx.event();
         if (ctx.musicManager().isNotPlaying()) {
-            event.getChannel().sendMessage("Wylx is not playing music right now!").queue();
+            event.getChannel().sendMessage("Uwylx ish not pwaying music wight now!").queue();
         } else if (MusicUtils.voiceCommandBlocked(ctx)) {
-            event.getChannel().sendMessage("You are not in the same channel as the bot!").queue();
+            event.getChannel().sendMessage("U awe not in da same channew as da bot!").queue();
         } else {
             ctx.musicManager().pause(false);
         }

@@ -11,12 +11,13 @@ public class FrogPackage extends ProcessPackage {
                 new BonkCommand(),
                 new FrogFactCommand(),
                 new DrawFrogCardCommand(),
-                new ValidateCommand()
+                new ValidateCommand(),
+                new PetCommand(),
         }, new SilentEvent[]{});
     }
 
     @Override
     public String getHeader() {
-        return "Frog facts, frog playing cards, and other wholesome things";
+        return "Fwog facts, fwog pwaying cawds, and othew whowesome things";
     }
 }

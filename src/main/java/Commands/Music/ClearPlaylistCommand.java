@@ -6,10 +6,10 @@ import Core.Commands.ServerCommand;
 public class ClearPlaylistCommand extends ServerCommand {
     ClearPlaylistCommand() {
         // TODO: Change perm
-        super("clearplaylist",
+        super("cwearpwaywist",
                 CommandPermission.EVERYONE,
-                "Clear playlist and stop current track",
-                "cp", "stop");
+                "Cweaw pwaywist and stop cuwwent twack",
+                "cp", "stop", "clearplaylist");
     }
 
     @Override

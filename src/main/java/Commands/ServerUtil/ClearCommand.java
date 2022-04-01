@@ -13,9 +13,9 @@ import java.util.List;
 
 public class ClearCommand extends ServerCommand {
     public ClearCommand() {
-        super("clear", CommandPermission.DISCORD_PERM, Permission.MESSAGE_MANAGE,
-                "Delete the most recent X messages from the channel, Requires Manage Messages Perm" +
-                "\nUsage: %{p}clear <messages to delete>");
+        super("cweaw", CommandPermission.DISCORD_PERM, Permission.MESSAGE_MANAGE,
+                "Dewete the mowost wecent x messawges fwom the channew, wequiwes manage messawges pewm *uwu*" +
+                "\nUsage: %{p}cweaw <messages tuwu dewete>", "clear");
     }
 
     @Override
@@ -30,7 +30,7 @@ public class ClearCommand extends ServerCommand {
         try {
             int toDelete = Integer.parseInt(args[1]);
             if(toDelete > 10) {
-                Helper.validate("Are you sure you want to delete " + toDelete + " messages", event,
+                Helper.validate("Awe uwu suwe uwu wawnt tuwu dewete " + toDelete + " messawges... uwu knowo I miwght wike thowse :crying_cat_face:", event,
                         () -> clearMessages(event.getChannel().getHistory(), toDelete + 2));
             } else {
                 clearMessages(event.getChannel().getHistory(), toDelete + 1);

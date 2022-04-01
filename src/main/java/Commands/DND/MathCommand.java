@@ -32,9 +32,9 @@ public class MathCommand extends ServerCommand {
     }
 
     MathCommand() {
-        super("math", CommandPermission.EVERYONE,
-                "Evaluates Math. Supported operators are `*,/,+,-,^,(,)`\n" +
-                        "Implicit multiplication (ie. `5(2)` instead of `5 * (2)`) is not allowed");
+        super("mawth", CommandPermission.EVERYONE,
+                "Evawuates math. Suppowted opewatows awe `*,/,+,-,^,(,)`\n" +
+                        "Impwicit muwtipwication (ie. `5(2)` instead of `5 * (2)`) ish not awwowed", "math");
 
         decFormat.setDecimalSeparatorAlwaysShown(false);
         decFormat.setMaximumFractionDigits(10);
@@ -51,9 +51,9 @@ public class MathCommand extends ServerCommand {
 
         try {
             double retVal = doMath(msgStr);
-            event.getChannel().sendMessage("Math result: " + decFormat.format(retVal)).queue();
+            event.getChannel().sendMessage("Math wesuwt:" + decFormat.format(retVal)).queue();
         } catch (MathException exception) {
-            event.getChannel().sendMessage("Math Exception: " + exception.getMessage()).queue();
+            event.getChannel().sendMessage("Math Exceuwuption: " + exception.getMessage()).queue();
         }
     }
 
@@ -77,7 +77,7 @@ public class MathCommand extends ServerCommand {
                         int lastIdx = getEndParen(toSolve, i);
 
                         if (lastIdx == -1) {
-                            throw new MathException("Expected closing parenthesis");
+                            throw new MathException("Expected cwosing pawenthesis");
                         }
 
                         curVal = doMath(toSolve.substring(i + 1, lastIdx));
@@ -117,7 +117,7 @@ public class MathCommand extends ServerCommand {
                         case '/' -> op = MathOp.Div;
                         case '^' -> op = MathOp.Sqr;
                         case ')' -> state = MathState.Op;
-                        default -> throw new MathException("Expected operator (Got character `" + chr + "` instead)");
+                        default -> throw new MathException("Expected opewatow (got chawactew `" + chr + "` instead)");
                     }
             }
         }

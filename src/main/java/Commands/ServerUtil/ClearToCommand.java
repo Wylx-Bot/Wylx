@@ -14,8 +14,8 @@ import java.util.function.Consumer;
 
 public class ClearToCommand extends ServerCommand {
     public ClearToCommand() {
-        super("clearto", CommandPermission.DISCORD_PERM, Permission.MESSAGE_MANAGE,
-                "Clears to the provided message id or the replied to message (inclusive)");
+        super("cweawto", CommandPermission.DISCORD_PERM, Permission.MESSAGE_MANAGE,
+                "Cweaws tuwu the pwovided message id ow the wepwied tuwu message (incwusive) ( ᵘ ꒳ ᵘ ✼)", "clearto");
     }
 
     @Override
@@ -45,7 +45,7 @@ public class ClearToCommand extends ServerCommand {
 
             retrieveTo(messageID, history, (retrieved) -> {
                 if(retrieved.size() > 10){
-                    Helper.validate("Are you sure you want to delete " + retrieved.size() + " messages",
+                    Helper.validate("Awe uwu suwe uwu wawnt tuwu dewete " + retrieved.size() + " messawges... uwu knowo I miwght wike thowse :crying_cat_face:",
                             event,
                             () -> event.getChannel().purgeMessages(retrieved));
                 } else {
@@ -53,7 +53,7 @@ public class ClearToCommand extends ServerCommand {
                 }
             });
         }, (failure) -> {
-            event.getMessage().reply("That message doesn't exist here!").queue();
+            event.getMessage().reply("Thawt message doesn't exist hewe!").queue();
         });
     }
 
