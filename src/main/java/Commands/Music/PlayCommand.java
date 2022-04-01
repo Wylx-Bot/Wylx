@@ -34,10 +34,10 @@ public class PlayCommand extends ServerCommand {
         super("play",
                 CommandPermission.EVERYONE,
                 """
-                        Play or queue a song to play
-                        Usage:
-                        %{p}play <link> <Optional: seconds to skip OR HH:MM:SS>
-                        %{p}play <search terms>""",
+                        Pway ow queue a song to pway
+                        Uwusage:
+                        %{p}pway <wink> <optionaw: seconds to skip or hh:mm:ss>
+                        %{p}pway <seawch tewms>""",
                 "p");
     }
 
@@ -117,12 +117,12 @@ public class PlayCommand extends ServerCommand {
 
             @Override
             public void noMatches() {
-                event.getChannel().sendMessage("No matches").queue();
+                event.getChannel().sendMessage("No muwuatches").queue();
             }
 
             @Override
             public void loadFailed(FriendlyException exception) {
-                event.getChannel().sendMessage("Could not play: " + exception.getMessage()).queue();
+                event.getChannel().sendMessage("Couwld nowt pway: " + exception.getMessage()).queue();
             }
         });
     }
@@ -133,7 +133,7 @@ public class PlayCommand extends ServerCommand {
         List<ItemComponent> components = new ArrayList<>();
         List<ItemComponent> cancelRow = new ArrayList<>();
 
-        builder.append(String.format("%d results. Please select the closest option or :x: to exit\n\n", resNum));
+        builder.append(String.format("%d wesuwts. Pwease sewect da cwosest option ow :x: to exit\n\n", resNum));
 
         for (int i = 0; i < resNum; i++) {
             AudioTrackInfo info = playlist.getTracks().get(i).getInfo();
@@ -153,7 +153,7 @@ public class PlayCommand extends ServerCommand {
         Helper.createButtonInteraction((ButtonInteractionEvent buttonEvent, Object obj) -> {
             // Cancel search
             if (buttonEvent.getComponentId().equals("x")) {
-                buttonEvent.editMessage("Search cancelled")
+                buttonEvent.editMessage("Seawch cancewwed")
                         .flatMap(InteractionHook::editOriginalComponents)
                         .queue();
             } else {
@@ -161,7 +161,7 @@ public class PlayCommand extends ServerCommand {
                 int idx = Integer.parseInt(buttonEvent.getComponentId());
                 AudioTrack nextTrack = playlist.getTracks().get(idx);
                 musicManager.queue(nextTrack);
-                buttonEvent.editMessage(String.format("%s was selected", nextTrack.getInfo().title))
+                buttonEvent.editMessage(String.format("%s uwas sewectwed", nextTrack.getInfo().title))
                         .flatMap(InteractionHook::editOriginalComponents)
                         .queue();
             }
@@ -169,7 +169,7 @@ public class PlayCommand extends ServerCommand {
             return true;
         }, (Message message, Boolean timedOut) -> {
             if (!timedOut) return;
-            message.editMessage("Search timed out")
+            message.editMessage("Seawch timed owout")
                     .map(Message::editMessageComponents)
                     .queue();
         }, List.of(ActionRow.of(components),
@@ -178,8 +178,8 @@ public class PlayCommand extends ServerCommand {
 
     private void displayUsage(MessageChannel channel) {
         channel.sendMessage("""
-                Usage:
-                $play <link> <Optional: seconds to skip OR HH:MM:SS>
-                $play <search terms>""").queue();
+                Uwusage:
+                $pway <wink> <optionaw: seconds to skip or hh:mm:ss>
+                $pway <seawch tewms>""").queue();
     }
 }

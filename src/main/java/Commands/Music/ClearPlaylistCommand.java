@@ -8,7 +8,7 @@ public class ClearPlaylistCommand extends ServerCommand {
         // TODO: Change perm
         super("clearplaylist",
                 CommandPermission.EVERYONE,
-                "Clear playlist and stop current track",
+                "Cweaw pwaywist and stop cuwwent twack",
                 "cp", "stop");
     }
 

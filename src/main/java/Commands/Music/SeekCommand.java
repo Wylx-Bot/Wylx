@@ -14,12 +14,12 @@ public class SeekCommand extends ServerCommand {
         super("seek",
                 CommandPermission.EVERYONE,
                 """
-                        Seek to location in current track. You can use + or - to seek relative to current place
+                        Sweek to wocation in cuwwent twack. U can use + ow - to seek wewative to cuwwent pwace
                         
-                        Usage:
-                        %{p}seek Seconds
-                        %{p}seek HH:MM:SS OR MM:SS>
-                        %{p}seek +/-Seconds OR +/- HH:MM:SS OR +/- MM:SS
+                        Uwsage:
+                        %{p}sweek Sweconds
+                        %{p}sweek HH:MM:SS OW MM:SS>
+                        %{p}sweek +/-Seweconds OW +/- HH:MM:SS OW +/- MM:SS
                         """);
     }
 
@@ -31,10 +31,10 @@ public class SeekCommand extends ServerCommand {
         }
 
         if (ctx.musicManager().isNotPlaying()) {
-            event.getChannel().sendMessage("Wylx is not playing music right now!").queue();
+            event.getChannel().sendMessage("Uwylx ish not pwaying music wight now!").queue();
             return;
         } else if (MusicUtils.voiceCommandBlocked(ctx)) {
-            event.getChannel().sendMessage("You are not in the same channel as the bot!").queue();
+            event.getChannel().sendMessage("U awe not in da same channew as da bot!").queue();
             return;
         }
 
@@ -49,9 +49,9 @@ public class SeekCommand extends ServerCommand {
         ctx.musicManager().seek(seekLoc);
         String msg;
         if (seekLoc.relative()) {
-            msg = String.format("Seeking %s", prettyTime);
+            msg = String.format("Seweking %s", prettyTime);
         } else {
-            msg = String.format("Now playing at %s", prettyTime);
+            msg = String.format("Nowo pwaying awt %s", prettyTime);
         }
 
         Helper.selfDestructingMsg(event.getChannel().sendMessage(msg), Duration.ofMinutes(1));
