@@ -20,7 +20,7 @@ public class SetPrefix extends ServerCommand {
         String[] pawsable = new String[]{"uwu", "owo", "UwU", "OwO", "rawr", "RAWR", "XD", ":3", ""};
         Random random = new Random();
         String pick = pawsable[random.nextInt(pawsable.length)];
-        ctx.event().getMessage().reply("Uwu cawn't change thawt...\n But i cawn *wink*\n Changing pwefix tuwu" + pick).queue();
+        ctx.event().getMessage().reply("Uwu cawn't change thawt...\n But i cawn *wink*\n Changing pwefix tuwu " + pick).queue();
         db.setSetting(ServerIdentifiers.Prefix, pick);
     }
 }
