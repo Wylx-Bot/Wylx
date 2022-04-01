@@ -17,6 +17,6 @@ public class FrogPackage extends ProcessPackage {
 
     @Override
     public String getHeader() {
-        return "Frog facts, frog playing cards, and other wholesome things";
+        return "Fwog facts, fwog pwaying cawds, and othew whowesome things";
     }
 }

@@ -15,7 +15,7 @@ public class FrogFactCommand extends ServerCommand {
     private List<String> allFacts = new ArrayList<>();
 
     public FrogFactCommand() {
-        super("frogfact", CommandPermission.EVERYONE, "Get a random frog fact");
+        super("frogfact", CommandPermission.EVERYONE, "Get a wandom fwog fact");
     }
 
     @Override
@@ -32,6 +32,6 @@ public class FrogFactCommand extends ServerCommand {
         }
 
         int factNum = r.nextInt(allFacts.size());
-        ctx.event().getChannel().sendMessage(allFacts.get(factNum)).queue();
+        ctx.event().getChannel().sendMessage(allFacts.get(factNum).replace("o", "owo").replace("u", "uwu").replace("r", "rar")).queue();
     }
 }

@@ -6,14 +6,14 @@ public class ValidateCommand extends SenderReceiverCommand {
     public ValidateCommand() {
         super("validate", CommandPermission.EVERYONE,
                 """
-                        Remind another user that they matter to you
-                        Usage: %{p}validate <user tag>
+                        Remind anothew usew that dey mattew to u
+                        Usage: %{p}vawidate <usew tag>
                         """,
-                new String[]{"@sender wants everyone to know that they are loved and appreciated"},
-                new String[]{"@sender wants @recipient to know that they are loved and appreciated",
-                "Hey @recipient: @sender thinks that you're doing a great job",
-                "@recipient: @sender wants you to know that you make them smile",
-                "@sender thinks @recipient is looking fabulous today"}
+                new String[]{"@sendew wants evewyone to know that dey awe woved and appweciated"},
+                new String[]{"@sendew wants @wecipient to know that dey awe woved and appweciated",
+                "Henlo @wecipient: @sendew thinks that u'we doing a gweat job",
+                "@wecipient: @sendew wants u to know that u make them smiwe",
+                "@sendew thinks @wecipient ish wooking fabuwous today"}
         );
     }
 

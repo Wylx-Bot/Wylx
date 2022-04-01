@@ -15,6 +15,6 @@ public class TTRPGPackage extends ProcessPackage {
 
     @Override
     public String getHeader() {
-        return "Useful for TTRPG sessions and environments";
+        return "Uwuseful for TTRPG sessiowons and enviuwunments";
     }
 }
