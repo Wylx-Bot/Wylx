@@ -7,18 +7,18 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 public class SkipCommand extends ServerCommand {
     public SkipCommand() {
-        super("skwip",
+        super("skip",
                 CommandPermission.EVERYONE,
-                "Stop cuwwent twack and pway next in queue", "skip");
+                "Stop current track and play next in queue");
     }
 
     @Override
     public void runCommand(CommandContext ctx) {
         MessageReceivedEvent event = ctx.event();
         if (ctx.musicManager().isNotPlaying()) {
-            event.getChannel().sendMessage("Uwylx ish not pwaying music wight now!").queue();
+            event.getChannel().sendMessage("Wylx is not playing music right now!").queue();
         } else if (MusicUtils.voiceCommandBlocked(ctx)) {
-            event.getChannel().sendMessage("U awe not in da same channew as da bot!").queue();
+            event.getChannel().sendMessage("You are not in the same channel as the bot!").queue();
         } else {
             ctx.musicManager().skip();
         }

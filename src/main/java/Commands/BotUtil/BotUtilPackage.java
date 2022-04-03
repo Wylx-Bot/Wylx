@@ -17,6 +17,6 @@ public class BotUtilPackage extends ProcessPackage {
 
     @Override
     public String getHeader() {
-        return "Commawnds fow intewacting with awnd checking uwp owon UwUywx itsewf uwu in case uwu wawnt tuwu know how i'm doing wight now";
+        return "Commands for interacting with and checking up on Wylx itself";
     }
 }

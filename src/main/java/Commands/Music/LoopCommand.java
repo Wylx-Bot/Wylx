@@ -8,10 +8,9 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 public class LoopCommand extends ServerCommand {
     LoopCommand() {
-        super("woop",
+        super("loop",
                 CommandPermission.EVERYONE,
-                "Loop cuwwent twack\n" +
-                        "usage: %{p}woop <twue/yes or fawse/no>", "loop");
+                "Loop current track\nUsage: %{p}loop <true/yes OR false/no>");
     }
 
     @Override
@@ -26,22 +25,22 @@ public class LoopCommand extends ServerCommand {
         }
 
         if (manager.isNotPlaying()) {
-            event.getChannel().sendMessage("Uwylx ish not pwaying music wight now!").queue();
+            event.getChannel().sendMessage("Wylx is not playing music right now!").queue();
             return;
         } else if (MusicUtils.voiceCommandBlocked(ctx)) {
-            event.getChannel().sendMessage("U awe not in da same channew as da bot!").queue();
+            event.getChannel().sendMessage("You are not in the same channel as the bot!").queue();
             return;
         }
 
         switch (args[1].toLowerCase()) {
             case "yes", "true" -> {
                 manager.loop(true);
-                String msg = String.format("Looping cuwwent song. Use %swoop fawse to disabwe", ctx.prefix());
+                String msg = String.format("Looping current song. Use %sloop false to disable", ctx.prefix());
                 event.getChannel().sendMessage(msg).queue();
             }
             case "no", "false" -> {
                 manager.loop(false);
-                event.getChannel().sendMessage("Disabwed wooping").queue();
+                event.getChannel().sendMessage("Disabled looping").queue();
             }
             default -> event.getChannel().sendMessage(getDescription(ctx.prefix())).queue();
         }

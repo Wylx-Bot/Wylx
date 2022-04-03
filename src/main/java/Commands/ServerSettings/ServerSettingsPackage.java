@@ -15,6 +15,6 @@ public class ServerSettingsPackage extends ProcessPackage {
 
     @Override
     public String getHeader() {
-        return "Sewvew specific settings fow UWUywx... liwke what yuwu liwke hewre";
+        return "Server specific settings for Wylx";
     }
 }

@@ -8,7 +8,7 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 public class RepeatCommand extends ThreadedCommand {
     public RepeatCommand() {
         super("repeat", CommandPermission.DISCORD_PERM, Permission.ADMINISTRATOR,
-                "%{p}rawrepeat <int x> <stw msg> wepeats message msg x times, onwy accessibwe tuwu admins");
+                "%{p}repeat <int x> <str msg> Repeats message msg x times, only accessible to admins");
     }
 
     @Override
@@ -17,13 +17,13 @@ public class RepeatCommand extends ThreadedCommand {
         String[] args = ctx.args();
         int x;
         if(args.length < 3){
-            event.getMessage().reply("UwUsage $rawrpeat <int x> <stw msg>").queue();
+            event.getMessage().reply("Usage $repeat <int x> <str msg>").queue();
             return;
         }
         try{
             x = Integer.parseInt(args[1]);
         } catch(NumberFormatException nfe) {
-            event.getMessage().reply("Unabwe tuwu tuwn \" + awgs[1] + \" tuwu a numbew\\nusage $wepeat <int x> <stw msg> UWU)").queue();
+            event.getMessage().reply("Unable to turn " + args[1] + " to a number\nUsage $repeat <int x> <str msg>").queue();
             return;
         }
 

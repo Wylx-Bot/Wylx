@@ -6,21 +6,18 @@ import Database.DiscordServer;
 import Database.ServerIdentifiers;
 import net.dv8tion.jda.api.Permission;
 
-import java.util.Random;
-
 public class SetPrefix extends ServerCommand {
     public SetPrefix() {
-        super("setpwefix", CommandPermission.DISCORD_PERM, Permission.ADMINISTRATOR,
-                "set pwefix fow sewvew ღ(U꒳Uღ)", "setprefix");
+        super("setprefix", CommandPermission.DISCORD_PERM, Permission.ADMINISTRATOR,
+                "set prefix for server");
     }
 
     @Override
     public void runCommand(CommandContext ctx) {
         DiscordServer db = ctx.db();
-        String[] pawsable = new String[]{"uwu", "owo", "UwU", "OwO", "rawr", "RAWR", "XD", ":3", ""};
-        Random random = new Random();
-        String pick = pawsable[random.nextInt(pawsable.length)];
-        ctx.event().getMessage().reply("Uwu cawn't change thawt...\n But i cawn *wink*\n Changing pwefix tuwu" + pick).queue();
-        db.setSetting(ServerIdentifiers.Prefix, pick);
+        String[] args = ctx.args();
+        if (args.length != 2) return;
+        ctx.event().getMessage().reply("Changing prefix to " + args[1]).queue();
+        db.setSetting(ServerIdentifiers.Prefix, args[1]);
     }
 }

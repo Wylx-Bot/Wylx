@@ -11,22 +11,22 @@ import java.time.Duration;
 
 public class NowPlaying extends ServerCommand {
     NowPlaying() {
-        super("nwowpwaying",
+        super("nowplaying",
                 CommandPermission.EVERYONE,
-                "Show cuwwentwy pwaying song",
-                "np", "nowplaying");
+                "Show currently playing song",
+                "np");
     }
 
     @Override
     public void runCommand(CommandContext ctx) {
         MessageReceivedEvent event = ctx.event();
         if (ctx.musicManager().isNotPlaying()) {
-            event.getChannel().sendMessage("Uwylx ish not pwaying music wight now!").queue();
+            event.getChannel().sendMessage("Wylx is not playing music right now!").queue();
         } else if (MusicUtils.voiceCommandBlocked(ctx)) {
-            event.getChannel().sendMessage("U awe not in da same channew as da bot!").queue();
+            event.getChannel().sendMessage("You are not in the same channel as the bot!").queue();
         } else {
             MessageEmbed embed = MusicUtils.createPlayingEmbed(ctx.musicManager().getCurrentTrack(),
-                    "Pwaying %s", true);
+                    "Playing %s", true);
 
             Helper.selfDestructingMsg(event.getChannel().sendMessageEmbeds(embed), Duration.ofMinutes(1));
         }

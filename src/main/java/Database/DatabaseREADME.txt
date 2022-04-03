@@ -1,4 +1,4 @@
-Da database used fow wywx ish mongodb and da java intewaction wibwawy ish downwoaded by gwadwe
-by defauwt da database used ish a wocaw host databse fwom https://www.mongodb.com/pwoducts/compass
-to stawt da database downwoad and wun mongodb compass then using defauwt setting stawt a wocaw database
-if a diffewent mongodb database ish to be used aww da wouwd need to be changed ish da "connection stwing" in da database facade cwass
+The database used for Wylx is MongoDB and the java interaction library is downloaded by gradle
+By default the database used is a local host databse from https://www.mongodb.com/products/compass
+To start the database download and run MongoDB Compass then using default setting start a local database
+If a different MongoDB database is to be used all the would need to be changed is the "Connection String" in the Database Facade Class

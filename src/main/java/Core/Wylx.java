@@ -19,9 +19,10 @@ public class Wylx {
     private static final Wylx INSTANCE = new Wylx();
     private static final int ACTIVITY_PERIOD = 60000; // 60 seconds
     private final List<Activity> activities = new ArrayList<>(Arrays.asList(
-        Activity.playing("with youw heawt uwu"), 			// Timelord
-        Activity.playing("on uwu street"), 	// Dragonite
-        Activity.playing("with cat girls")
+        Activity.playing("with half a ship"), 			// Timelord
+        Activity.playing("with other sentient bots"), 	// Dragonite
+        Activity.playing("with the fate of humanity"),
+        Activity.playing("Human Deception Simulator")
     ));
 
     private JDA jda;
