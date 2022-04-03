@@ -11,7 +11,7 @@ import java.util.regex.Matcher;
 
 public class Help extends ServerCommand {
     public Help() {
-        super("helwp", CommandPermission.EVERYONE, "Pwovides wists awnd descwiptions of commands ( ᴜ ω ᴜ )", "help");
+        super("help", CommandPermission.EVERYONE, "Provides lists and descriptions of commands");
     }
 
     @Override
@@ -21,20 +21,20 @@ public class Help extends ServerCommand {
 
         //If there are more than two args the user provided invalid input, correct them
         if(args.length > 2){
-            event.getMessage().reply("Usage: %{p}helwp <Keywoord>".replaceAll("%\\{p}",
+            event.getMessage().reply("Usage: %{p}help <Keyword>".replaceAll("%\\{p}",
                     Matcher.quoteReplacement(ctx.prefix()))).queue();
             return;
         }
 
         //If there is only one arg print out the complete list of commands
         if(args.length == 1) {
-            StringBuilder helwpMessawge = new StringBuilder();
-            helwpMessawge.append("```diff\n");
+            StringBuilder helpMessage = new StringBuilder();
+            helpMessage.append("```diff\n");
             for (ProcessPackage processPackage : MessageProcessing.processPackages) {
-                helwpMessawge.append(processPackage.getDescription());
+                helpMessage.append(processPackage.getDescription());
             }
-            helwpMessawge.append("```");
-            event.getChannel().sendMessage(helwpMessawge).queue();
+            helpMessage.append("```");
+            event.getChannel().sendMessage(helpMessage).queue();
             return;
         } else {
             //Check command map for the arg to see if they provided the keyword for a command
@@ -53,6 +53,6 @@ public class Help extends ServerCommand {
             }
         }
 
-        event.getChannel().sendMessage("Unawble tuwu find commawnd: " + args[1]).queue();
+        event.getChannel().sendMessage("Unable to find command: " + args[1]).queue();
     }
 }

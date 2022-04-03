@@ -31,14 +31,14 @@ public class PlayCommand extends ServerCommand {
     private static final Pattern ytTimestamp = Pattern.compile("(?<=&t=)[0-9]*");
 
     public PlayCommand() {
-        super("pway",
+        super("play",
                 CommandPermission.EVERYONE,
                 """
-                        Pway ow queue a song to pway
-                        Uwusage:
-                        %{p}pway <wink> <optionaw: seconds to skip or hh:mm:ss>
-                        %{p}pway <seawch tewms>""",
-                "p", "play");
+                        Play or queue a song to play
+                        Usage:
+                        %{p}play <link> <Optional: seconds to skip OR HH:MM:SS>
+                        %{p}play <search terms>""",
+                "p");
     }
 
     @Override
@@ -54,7 +54,7 @@ public class PlayCommand extends ServerCommand {
         }
 
         if (MusicUtils.voiceCommandBlocked(ctx)) {
-            event.getChannel().sendMessage("U awe not in da same channew as da bot!").queue();
+            event.getChannel().sendMessage("You are not in the same channel as the bot!").queue();
             return;
         }
 
@@ -117,12 +117,12 @@ public class PlayCommand extends ServerCommand {
 
             @Override
             public void noMatches() {
-                event.getChannel().sendMessage("No muwuatches").queue();
+                event.getChannel().sendMessage("No matches").queue();
             }
 
             @Override
             public void loadFailed(FriendlyException exception) {
-                event.getChannel().sendMessage("Couwld nowt pway: " + exception.getMessage()).queue();
+                event.getChannel().sendMessage("Could not play: " + exception.getMessage()).queue();
             }
         });
     }
@@ -133,7 +133,7 @@ public class PlayCommand extends ServerCommand {
         List<ItemComponent> components = new ArrayList<>();
         List<ItemComponent> cancelRow = new ArrayList<>();
 
-        builder.append(String.format("%d wesuwts. Pwease sewect da cwosest option ow :x: to exit\n\n", resNum));
+        builder.append(String.format("%d results. Please select the closest option or :x: to exit\n\n", resNum));
 
         for (int i = 0; i < resNum; i++) {
             AudioTrackInfo info = playlist.getTracks().get(i).getInfo();
@@ -153,7 +153,7 @@ public class PlayCommand extends ServerCommand {
         Helper.createButtonInteraction((ButtonInteractionEvent buttonEvent, Object obj) -> {
             // Cancel search
             if (buttonEvent.getComponentId().equals("x")) {
-                buttonEvent.editMessage("Seawch cancewwed")
+                buttonEvent.editMessage("Search cancelled")
                         .flatMap(InteractionHook::editOriginalComponents)
                         .queue();
             } else {
@@ -161,7 +161,7 @@ public class PlayCommand extends ServerCommand {
                 int idx = Integer.parseInt(buttonEvent.getComponentId());
                 AudioTrack nextTrack = playlist.getTracks().get(idx);
                 musicManager.queue(nextTrack);
-                buttonEvent.editMessage(String.format("%s uwas sewectwed", nextTrack.getInfo().title))
+                buttonEvent.editMessage(String.format("%s was selected", nextTrack.getInfo().title))
                         .flatMap(InteractionHook::editOriginalComponents)
                         .queue();
             }
@@ -169,7 +169,7 @@ public class PlayCommand extends ServerCommand {
             return true;
         }, (Message message, Boolean timedOut) -> {
             if (!timedOut) return;
-            message.editMessage("Seawch timed owout")
+            message.editMessage("Search timed out")
                     .map(Message::editMessageComponents)
                     .queue();
         }, List.of(ActionRow.of(components),
@@ -178,8 +178,8 @@ public class PlayCommand extends ServerCommand {
 
     private void displayUsage(MessageChannel channel) {
         channel.sendMessage("""
-                Uwusage:
-                $pway <wink> <optionaw: seconds to skip or hh:mm:ss>
-                $pway <seawch tewms>""").queue();
+                Usage:
+                $play <link> <Optional: seconds to skip OR HH:MM:SS>
+                $play <search terms>""").queue();
     }
 }

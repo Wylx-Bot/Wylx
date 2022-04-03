@@ -21,10 +21,10 @@ public class QueueCommand extends ServerCommand {
     private static final int PAGE_COUNT = 10;
 
     QueueCommand() {
-        super("quwue",
+        super("queue",
                 CommandPermission.EVERYONE,
-                "View cuwwent queue of songs waiting to be pwayed",
-                "q", "queue");
+                "View current queue of songs waiting to be played",
+                "q");
     }
 
     @Override
@@ -33,7 +33,7 @@ public class QueueCommand extends ServerCommand {
         GuildMusicManager manager = ctx.musicManager();
 
         if (manager.isNotPlaying()) {
-            event.getChannel().sendMessage("Uwlyx ish not pwaying anything!").queue();
+            event.getChannel().sendMessage("Wylx is not playing anything!").queue();
             return;
         }
 
@@ -48,7 +48,7 @@ public class QueueCommand extends ServerCommand {
             Integer page = (Integer) object;
             // Not playing anymore, remove buttons and empty message
             if (manager.isNotPlaying()) {
-                buttonEvent.editMessage("Uwlyx ish not pwaying anymowe!")
+                buttonEvent.editMessage("Wylx is not playing anymore!")
                         .flatMap(InteractionHook::editOriginalComponents).queue();
                 return true;
             }
@@ -56,10 +56,10 @@ public class QueueCommand extends ServerCommand {
             Object[] list = manager.getQueue();
 
             switch (buttonEvent.getComponentId()) {
-                case "fwirst" -> page = 0;
-                case "preweviowus" -> --page;
-                case "newext" -> ++page;
-                case "wast" -> page = list.length / PAGE_COUNT;
+                case "first" -> page = 0;
+                case "previous" -> --page;
+                case "next" -> ++page;
+                case "last" -> page = list.length / PAGE_COUNT;
             }
 
             // Bind page number between 0-max
@@ -81,23 +81,23 @@ public class QueueCommand extends ServerCommand {
         Duration remaining = MusicUtils.getTimeRemaining(list, manager);
 
         // Header
-        builder.append(String.format("__Pwage **%d** of **%d**__\n", page + 1, (list.length / 10) + 1));
-        builder.append(String.format("Now pwaying **%s** bwy **%s** : ",
+        builder.append(String.format("__Page **%d** of **%d**__\n", page + 1, (list.length / 10) + 1));
+        builder.append(String.format("Now playing **%s** by **%s** : ",
                 currentPlaying.getInfo().title,
                 currentPlaying.getInfo().author));
 
         if (currentPlaying.getInfo().isStream) {
-            builder.append("Wive");
+            builder.append("Live");
         } else if (manager.isLooping()) {
-            builder.append("Wooping");
+            builder.append("Looping");
         } else {
             builder.append(MusicUtils.getPrettyDuration(Duration.ofMillis(
                     currentPlaying.getDuration() - currentPlaying.getPosition()
             )));
         }
 
-        builder.append(String.format("\nTwime Weft: %s - Swongs Weft: %d\n\n",
-                remaining == null ? "Unknowon" : MusicUtils.getPrettyDuration(remaining),
+        builder.append(String.format("\nTime Left: %s - Songs Left: %d\n\n",
+                remaining == null ? "Unknown" : MusicUtils.getPrettyDuration(remaining),
                 list.length));
 
         // Body with all other songs in queue
@@ -105,7 +105,7 @@ public class QueueCommand extends ServerCommand {
         for (int i = PAGE_COUNT * page; i < maxIdx; i++) {
             AudioTrack nextTrack = (AudioTrack) list[i];
             String timeString = nextTrack.getInfo().isStream ?
-                    "Wive" :
+                    "Live" :
                     MusicUtils.getPrettyDuration(nextTrack.getDuration());
 
             builder.append(String.format("`[%d]` %s by %s : %s\n",

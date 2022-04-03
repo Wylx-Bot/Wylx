@@ -7,7 +7,7 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 public class PingCommand extends ThreadedCommand {
     public PingCommand() {
-        super("ping", CommandPermission.EVERYONE, "Pwovides the piwng fwom the bowt tuwu discowd uwu");
+        super("ping", CommandPermission.EVERYONE, "Provides the ping from the bot to discord");
     }
 
     @Override
@@ -15,7 +15,7 @@ public class PingCommand extends ThreadedCommand {
         MessageReceivedEvent event = ctx.event();
         JDA jda = event.getJDA();
         jda.getRestPing().queue(time -> {
-            String msg = String.format("Powng! REST wesponse time was %d ms. UwUebsowcket piwng iws %s ms owo\n",
+            String msg = String.format("Pong! REST response time was %d ms. Websocket ping is %s ms\n",
                     time, jda.getGatewayPing());
             event.getChannel().sendMessage(msg).queue();
         });

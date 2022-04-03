@@ -22,6 +22,6 @@ public class MusicPackage extends ProcessPackage {
 
     @Override
     public String getHeader() {
-        return "Commands fow using Uwylx to pway music in youw sewvew";
+        return "Commands for using Wylx to play music in your server";
     }
 }
