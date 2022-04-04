@@ -7,12 +7,13 @@ import Core.Events.EventPackage;
 public class FrogPackage extends EventPackage {
 
     public FrogPackage() {
-        super(new ServerCommand[]{
-                new BonkCommand(),
-                new FrogFactCommand(),
-                new DrawFrogCardCommand(),
-                new ValidateCommand()
-        }, new SilentEvent[]{}
+        super(
+                new ServerCommand[]{
+                    new BonkCommand(),
+                    new FrogFactCommand(),
+                    new DrawFrogCardCommand(),
+                    new ValidateCommand()
+                }, new SilentEvent[]{}
 		);
     }
 

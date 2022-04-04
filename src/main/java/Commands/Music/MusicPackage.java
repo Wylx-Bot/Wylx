@@ -6,18 +6,19 @@ import Core.Events.EventPackage;
 
 public class MusicPackage extends EventPackage {
     public MusicPackage() {
-        super(new ServerCommand[]{
-            new PlayCommand(),
-            new SkipCommand(),
-            new ClearPlaylistCommand(),
-            new VolumeCommand(),
-            new PauseCommand(),
-            new ResumeCommand(),
-            new QueueCommand(),
-            new SeekCommand(),
-            new LoopCommand(),
-            new NowPlaying(),
-        }, new SilentEvent[]{}
+        super(
+                new ServerCommand[]{
+                    new PlayCommand(),
+                    new SkipCommand(),
+                    new ClearPlaylistCommand(),
+                    new VolumeCommand(),
+                    new PauseCommand(),
+                    new ResumeCommand(),
+                    new QueueCommand(),
+                    new SeekCommand(),
+                    new LoopCommand(),
+                    new NowPlaying(),
+                }, new SilentEvent[]{}
 		);
     }
 

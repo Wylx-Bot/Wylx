@@ -6,11 +6,12 @@ import Core.Events.EventPackage;
 
 public class TTRPGPackage extends EventPackage {
     public TTRPGPackage() {
-        super(new ServerCommand[]{
-                new MathCommand()
-        }, new SilentEvent[]{
-                new DiceRoll()
-        }
+        super(
+                new ServerCommand[]{
+                    new MathCommand()
+                }, new SilentEvent[]{
+                    new DiceRoll()
+                }
 		);
     }
 

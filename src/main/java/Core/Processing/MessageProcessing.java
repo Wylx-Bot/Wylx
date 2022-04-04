@@ -45,7 +45,6 @@ public class MessageProcessing extends ListenerAdapter {
             new TTRPGPackage(),
             new BotUtilPackage(),
             new FrogPackage(),
-
     };
 
     static {
