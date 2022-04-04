@@ -1,7 +1,6 @@
 package Commands.DND;
 
-import Core.Events.ThreadedSilentEvent;
-import Core.Wylx;
+import Core.Events.SilentEvents.ThreadedSilentEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import java.util.Random;

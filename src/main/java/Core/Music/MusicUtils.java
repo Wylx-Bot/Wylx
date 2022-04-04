@@ -1,6 +1,6 @@
 package Core.Music;
 
-import Core.Commands.CommandContext;
+import Core.Events.Commands.CommandContext;
 import Core.Util.ProgressBar;
 import Core.Wylx;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;

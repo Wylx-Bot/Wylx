@@ -1,8 +1,9 @@
-package Core.Events;
+package Core.Events.SilentEvents;
 
+import Core.Events.Event;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
-public abstract class SilentEvent {
+public abstract class SilentEvent extends Event {
     private final String description;
 
     @Deprecated
@@ -17,10 +18,16 @@ public abstract class SilentEvent {
     public abstract boolean check(MessageReceivedEvent event, String prefix);
     public abstract void runEvent(MessageReceivedEvent event, String prefix);
 
-    public String getName(){
+    @Override
+    public String getKeyword(){
         return this.getClass().getSimpleName();
     }
-    public String getDescription(){
+    @Override
+    public String getDescription(String alias){
         return description;
+    }
+    @Override
+    public String[] getAliases() {
+        return new String[0];
     }
 }

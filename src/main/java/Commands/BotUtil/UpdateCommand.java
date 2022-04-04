@@ -1,7 +1,7 @@
 package Commands.BotUtil;
 
-import Core.Commands.CommandContext;
-import Core.Commands.ThreadedCommand;
+import Core.Events.Commands.CommandContext;
+import Core.Events.Commands.ThreadedCommand;
 import Core.Wylx;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 

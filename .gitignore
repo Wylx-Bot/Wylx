@@ -3,3 +3,4 @@ src/main/resources/token.txt
 build/
 .gradle/
 **/.env
+/src/main/resources/spells.csv

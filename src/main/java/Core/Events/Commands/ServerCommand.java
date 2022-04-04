@@ -1,4 +1,5 @@
-package Core.Commands;
+package Core.Events.Commands;
+import Core.Events.Event;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.slf4j.Logger;
@@ -7,7 +8,7 @@ import org.slf4j.LoggerFactory;
 import java.util.HashMap;
 import java.util.regex.Matcher;
 
-public abstract class ServerCommand {
+public abstract class ServerCommand extends Event {
 
     public enum CommandPermission {
         EVERYONE,
@@ -61,6 +62,7 @@ public abstract class ServerCommand {
         }
     }
 
+    @Override
     public String getKeyword(){
         return keyword;
     }
@@ -102,6 +104,7 @@ public abstract class ServerCommand {
         return false;
     }
 
+    @Override
     public final String[] getAliases(){
         return aliases;
     }
@@ -124,6 +127,7 @@ public abstract class ServerCommand {
         return string.replaceAll("%\\{p}", Matcher.quoteReplacement(prefix));
     }
 
+    @Override
     public String getDescription(String prefix) {
         return replacePrefix(description, prefix);
     }
