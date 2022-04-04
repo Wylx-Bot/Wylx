@@ -28,11 +28,11 @@ public abstract class EventPackage {
 
     public final String getDescription(CommandContext ctx){
         StringBuilder descriptionBuilder = new StringBuilder();
-        descriptionBuilder.append("+");
-        descriptionBuilder.append(getName());
+        descriptionBuilder.append("+ ");
         ServerEventManager eventManager = ServerEventManager.getServerEventManager(ctx.event().getGuild().getId());
         boolean packageEnabled = eventManager.checkPackage(this);
-        descriptionBuilder.append(packageEnabled ? " (Enabled) " : " (Disabled) ");
+        descriptionBuilder.append(packageEnabled ? "" : "(Disabled) ");
+        descriptionBuilder.append(getName());
         descriptionBuilder.append(" - ");
         descriptionBuilder.append(getHeader()).append("\n");
 
