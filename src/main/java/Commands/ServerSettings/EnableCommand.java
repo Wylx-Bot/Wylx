@@ -24,14 +24,14 @@ public class EnableCommand extends ServerCommand {
 		}
 
 		ServerEventManager eventManager = ServerEventManager.getServerEventManager(ctx.event().getGuild().getId());
-		String eventName = ctx.args()[1];
+		String eventName;
 
 		try{
 			eventName = MessageProcessing.eventMap.get(ctx.args()[1].toLowerCase()).getClass().getSimpleName().toLowerCase(Locale.ROOT);;
 			boolean value = Boolean.parseBoolean(ctx.args()[2]);
 			eventManager.setEvent(eventName, value);
-		} catch (Exception e){
-			ctx.event().getChannel().sendMessage("Event \"" + eventName + "\" does not exist").queue();
+		} catch (IllegalArgumentException e){
+			ctx.event().getChannel().sendMessage(e.getMessage()).queue();
 			return;
 		}
 

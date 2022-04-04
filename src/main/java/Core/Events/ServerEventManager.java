@@ -86,14 +86,12 @@ public class ServerEventManager implements Codec<ServerEventManager> {
 		if(currentValue != null && currentValue == value) return;
 
 		// Write the value to the module map
-		moduleMap.remove(moduleName);
 		moduleMap.put(moduleName, value);
 
 		for(Event event : module.getEvents()){
 			String eventName = event.getClass().getSimpleName().toLowerCase();
 
 			// Write changes to the map so the change to enabled status is reflected
-			masterEventMap.remove(eventName);
 			masterEventMap.put(eventName, value);
 
 			// If there was an exception for this event remove that exception
@@ -110,7 +108,7 @@ public class ServerEventManager implements Codec<ServerEventManager> {
 
 	private void setEvent(String eventName, boolean value, boolean write) throws IllegalArgumentException{
 		// If the event doesn't exist we can set anything with it
-		if(!masterEventMap.containsKey(eventName)) throw new IllegalArgumentException("Specified event does not exist");
+		if(!masterEventMap.containsKey(eventName)) throw new IllegalArgumentException("Specified event: `" + eventName +  "` does not exist");
 
 		// If the values are already the same do nothing
 		Boolean currentValue = masterEventMap.get(eventName);

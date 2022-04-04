@@ -40,13 +40,19 @@ public class DiscordServer{
         }
     }
 
+    // Generates list of all codecs needed for encoding and decoding data from the database
     private CodecRegistry getServerCodecRegistry() {
+        // List of the gathered custom codecs
         ArrayList<Codec<?>> codecs = new ArrayList<>();
+
+        // Go through items in the database to see if they have a custom codec, if the do add their codec to the codecs
         for(ServerIdentifiers identifier : ServerIdentifiers.values()){
             if(identifier.defaultValue instanceof Codec<?>) {
                 codecs.add((Codec<?>) identifier.defaultValue);
             }
         }
+
+        // Create one collection that is the combination of default codecs and our custom codecs
         return CodecRegistries.fromRegistries(MongoClientSettings.getDefaultCodecRegistry(),
                                                 CodecRegistries.fromCodecs(codecs));
     }
