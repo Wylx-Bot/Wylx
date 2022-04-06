@@ -17,12 +17,10 @@ import static com.mongodb.client.model.Filters.exists;
 
 public class DiscordServer{
     private static final String SERVER_SETTINGS_DOC = "Server_Settings";
-    private static final String USER_SETTINGS_DOC = "User_Settings";
 
     private final String _id;
     private final MongoDatabase mongoDatabase;
     private final MongoCollection<Document> settingsCollection;
-    private final MongoCollection<Document> userCollection;
 
     public DiscordServer(MongoClient mongoClient, String databaseName) {
         try {
@@ -33,7 +31,6 @@ public class DiscordServer{
         mongoDatabase = mongoClient.getDatabase(databaseName);
         _id = databaseName;
         settingsCollection = getSettingsCollection().withCodecRegistry(getServerCodecRegistry());
-        userCollection = getUsersCollection();
 
         if (settingsCollection.countDocuments() == 0) {
             initializeSettings();
@@ -149,23 +146,5 @@ public class DiscordServer{
         if(settingDoc == null)
             return;
         settingsCollection.deleteOne(exists(identifier.identifier));
-    }
-
-    private MongoCollection<Document> getUsersCollection() {
-        for (String name : mongoDatabase.listCollectionNames()) {
-            if (name.equals(USER_SETTINGS_DOC)) {
-                return mongoDatabase.getCollection(USER_SETTINGS_DOC);
-            }
-        }
-        mongoDatabase.createCollection(USER_SETTINGS_DOC);
-        return mongoDatabase.getCollection(USER_SETTINGS_DOC);
-    }
-
-    public Map<ObjectId, Boolean> timezoneResponses() {
-        Map<ObjectId, Boolean> timezones = new HashMap<>();
-        for (Document o : userCollection.find()) {
-            timezones.put((ObjectId) o.get("_id"), (Boolean) o.get("Print_Timezone"));
-        }
-        return timezones;
     }
 }
