@@ -18,7 +18,6 @@ public class DatabaseManager {
 
     private final ConnectionString connectionString;
     private final MongoClient client;
-    private final Map<String,DiscordServer> serverDBs = new HashMap<>();
 
     public DatabaseManager(WylxEnvConfig config) {
         connectionString = new ConnectionString(config.dbURL);
@@ -58,11 +57,6 @@ public class DatabaseManager {
     }
 
     public DiscordServer getServer(String severId) {
-        if (serverDBs.containsKey(severId)) {
-            return serverDBs.get(severId);
-        }
-
-
         return new DiscordServer(client, severId);
     }
 }
