@@ -1,4 +1,4 @@
-package Core.Commands;
+package Core.Events.Commands;
 
 import net.dv8tion.jda.api.Permission;
 

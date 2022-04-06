@@ -1,7 +1,7 @@
 package Commands.Frog;
 
-import Core.Commands.CommandContext;
-import Core.Commands.ServerCommand;
+import Core.Events.Commands.CommandContext;
+import Core.Events.Commands.ServerCommand;
 
 import java.io.File;
 import java.io.IOException;

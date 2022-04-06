@@ -1,7 +1,7 @@
 package Commands.BotUtil;
 
-import Core.Commands.CommandContext;
-import Core.Commands.ServerCommand;
+import Core.Events.Commands.CommandContext;
+import Core.Events.Commands.ServerCommand;
 import Core.Util.ProgressBar;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;

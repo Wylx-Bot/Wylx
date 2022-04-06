@@ -1,18 +1,20 @@
 package Commands.BotUtil;
 
-import Core.Commands.ServerCommand;
-import Core.Events.SilentEvent;
-import Core.ProcessPackage.ProcessPackage;
+import Core.Events.Commands.ServerCommand;
+import Core.Events.SilentEvents.SilentEvent;
+import Core.Events.EventPackage;
 
-public class BotUtilPackage extends ProcessPackage {
+public class BotUtilPackage extends EventPackage {
     public BotUtilPackage() {
         super(
                 new ServerCommand[]{
                         new PingCommand(),
                         new RestartCommand(),
                         new SystemCommand(),
-                        new UpdateCommand()
-                }, new SilentEvent[]{});
+                        new UpdateCommand(),
+                        new Help()
+                }, new SilentEvent[]{}
+		);
     }
 
     @Override
