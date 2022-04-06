@@ -161,47 +161,6 @@ public class DiscordServer{
         return mongoDatabase.getCollection(USER_SETTINGS_DOC);
     }
 
-    public Map<String, Map<String, String>> getUsers() {
-        Map<String, Map<String, String>> users = new HashMap<>();
-        for(Document user : userCollection.find()) {
-            Map<String, String> data = new HashMap<>();
-            for(String k : user.keySet()) {
-                data.put(k, user.get(k).toString());
-            }
-            users.put(data.get(UserIdentifiers.DiscordUser.identifier), data);
-        }
-        return users;
-    }
-
-    public void addUser(String discordTag, Map<String, String> data) {
-        if(getUser(discordTag) != null)
-            removeUser(discordTag);
-        Document user = new Document();
-        user.append(UserIdentifiers.DiscordUser.identifier, discordTag);
-        for(String k : data.keySet()) {
-            user.append(k, data.get(k));
-        }
-        userCollection.insertOne(user);
-    }
-
-    public Map<String, String> getUser(String discordTag) {
-        Map<String, String> data = new HashMap<>();
-        BasicDBObject matchQuery = new BasicDBObject();
-        matchQuery.put(UserIdentifiers.DiscordUser.identifier, discordTag);
-        Document user =  userCollection.find(matchQuery).first();
-        if(user == null) return null;
-        for(String k : user.keySet()) {
-            data.put(k, user.get(k).toString());
-        }
-        return data;
-    }
-
-    public void removeUser(String discordTag) {
-        BasicDBObject matchQuery = new BasicDBObject();
-        matchQuery.put("Discord_Tag", discordTag);
-        userCollection.deleteOne(matchQuery);
-    }
-
     public Map<ObjectId, Boolean> timezoneResponses() {
         Map<ObjectId, Boolean> timezones = new HashMap<>();
         for (Document o : userCollection.find()) {
