@@ -1,5 +1,6 @@
 package Core.Fight;
 
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
 
 import java.util.HashMap;
@@ -10,7 +11,7 @@ public class FightUserManager {
     private final HashMap<Long, Boolean> fightMap = new HashMap<>();
     private final ReentrantLock lock = new ReentrantLock();
 
-    public boolean userIsFighting(User user) {
+    public boolean userIsFighting(Member user) {
         lock.lock();
         boolean result = fightMap.getOrDefault(user.getIdLong(), false);
         lock.unlock();
