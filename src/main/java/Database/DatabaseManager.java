@@ -59,4 +59,8 @@ public class DatabaseManager {
     public DiscordServer getServer(String severId) {
         return new DiscordServer(client, severId);
     }
+
+    public DiscordUser getUser(String userID){
+        return new DiscordUser(client, userID);
+    }
 }
