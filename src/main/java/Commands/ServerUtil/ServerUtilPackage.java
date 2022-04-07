@@ -14,7 +14,7 @@ public class ServerUtilPackage extends EventPackage {
                         new InviteCommand(),
                         new RepeatCommand()
                 }, new SilentEvent[]{}
-		);
+        );
     }
 
     @Override
