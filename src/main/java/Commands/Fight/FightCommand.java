@@ -66,7 +66,7 @@ public class FightCommand extends ThreadedCommand {
         FightUserStats player1Stats = new FightUserStats(player1);
         FightUserStats player2Stats = new FightUserStats(player2);
 
-        String headerStr = String.format("__**%s** [lvl: %d] vs **%s**__ [lvl: %d]",
+        String headerStr = String.format("__**%s** [lvl: %d] vs **%s** [lvl: %d]__",
                 player1.getEffectiveName(), player1Stats.getLvl(),
                 player2.getEffectiveName(), player2Stats.getLvl());
 
