@@ -18,7 +18,8 @@ public class DatabaseManager {
 
     private final ConnectionString connectionString;
     private final MongoClient client;
-    private final HashMap<String, DiscordElement<?>> cache = new HashMap<>();
+    private final HashMap<String, DiscordServer> serverCache = new HashMap<>();
+    private final HashMap<String, DiscordUser> userCache = new HashMap<>();
 
     public DatabaseManager(WylxEnvConfig config) {
         connectionString = new ConnectionString(config.dbURL);
@@ -58,18 +59,16 @@ public class DatabaseManager {
     }
 
     public DiscordServer getServer(String serverId) {
-        String token = "server" + serverId;
-        if(!cache.containsKey(token))
-            cache.put(token, new DiscordServer(client, serverId));
+        if(!serverCache.containsKey(serverId))
+            serverCache.put(serverId, new DiscordServer(client, serverId));
 
-        return (DiscordServer) cache.get(token);
+        return serverCache.get(serverId);
     }
 
     public DiscordUser getUser(String userID){
-        String token = "server" + userID;
-        if(!cache.containsKey(token))
-            cache.put(token, new DiscordServer(client, userID));
+        if(!userCache.containsKey(userID))
+            userCache.put(userID, new DiscordUser(client, userID));
 
-        return (DiscordUser) cache.get(token);
+        return userCache.get(userID);
     }
 }
