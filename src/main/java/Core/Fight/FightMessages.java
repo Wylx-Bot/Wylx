@@ -47,6 +47,11 @@ public class FightMessages {
 
     };
 
+    // User tries attacking everyone
+    public static String[] everyoneMessages = {
+
+    };
+
     // User attacking Wylx (or another Bot)
     public static String[] botMessages = {
 
