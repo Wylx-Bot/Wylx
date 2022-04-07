@@ -1,10 +1,14 @@
 package Database;
 
 import com.mongodb.BasicDBObject;
+import com.mongodb.MongoClientSettings;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
-import org.bson.Document;
+import org.bson.*;
+import org.bson.codecs.Codec;
+import org.bson.codecs.configuration.CodecRegistries;
+import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.types.ObjectId;
 import java.util.*;
 
@@ -28,12 +32,29 @@ public class DiscordServer{
         }
         mongoDatabase = mongoClient.getDatabase(databaseName);
         _id = databaseName;
-        settingsCollection = getSettingsCollection();
+        settingsCollection = getSettingsCollection().withCodecRegistry(getServerCodecRegistry());
         userCollection = getUsersCollection();
 
         if (settingsCollection.countDocuments() == 0) {
             initializeSettings();
         }
+    }
+
+    // Generates list of all codecs needed for encoding and decoding data from the database
+    private CodecRegistry getServerCodecRegistry() {
+        // List of the gathered custom codecs
+        ArrayList<Codec<?>> codecs = new ArrayList<>();
+
+        // Go through items in the database to see if they have a custom codec, if the do add their codec to the codecs
+        for(ServerIdentifiers identifier : ServerIdentifiers.values()){
+            if(identifier.defaultValue instanceof Codec<?>) {
+                codecs.add((Codec<?>) identifier.defaultValue);
+            }
+        }
+
+        // Create one collection that is the combination of default codecs and our custom codecs
+        return CodecRegistries.fromRegistries(MongoClientSettings.getDefaultCodecRegistry(),
+                                                CodecRegistries.fromCodecs(codecs));
     }
 
     /**
@@ -87,23 +108,36 @@ public class DiscordServer{
         Document settingDoc = settingsCollection.find(exists(identifier.identifier)).first();
         if(settingDoc == null)
             return (T) identifier.defaultValue;
-        return settingDoc.get(identifier.identifier, (T) identifier.defaultValue);
+        if(!settingDoc.get("complex", false))
+            return settingDoc.get(identifier.identifier, (T) identifier.defaultValue);
+
+        BsonReader reader = settingDoc.get(identifier.identifier, new Document()).toBsonDocument().asBsonReader();
+        reader.readStartDocument();
+        return ((Codec<T>)identifier.defaultValue).decode(reader, null);
     }
 
     /** Sets a setting in mongoDB
      * @param identifier the preset identifier for a server setting
      * @param data the data for the setting being set, note this must match the type
      */
-    public void setSetting(ServerIdentifiers identifier, Object data) {
+    @SuppressWarnings("unchecked")
+    public <T> void setSetting(ServerIdentifiers identifier, Object data) {
         if (identifier.dataType.cast(data) == null)
             throw new IllegalArgumentException("Identifier data type mismatch");
         Document settingDoc = settingsCollection.find(exists(identifier.identifier)).first();
-        if(settingDoc == null)
-            settingDoc = new Document().append(identifier.identifier, data);
-        else {
+        if(settingDoc != null)
             settingsCollection.deleteOne(exists(identifier.identifier));
-            settingDoc.put(identifier.identifier, data);
+
+        if(data instanceof Codec<?>){
+            BsonDocument complexDoc = new BsonDocument();
+            BsonWriter complexWriter = new BsonDocumentWriter(complexDoc);
+            complexWriter.writeStartDocument();
+            ((Codec<T>) data).encode(complexWriter, (T) data, null);
+            complexWriter.writeEndDocument();
+            data = complexDoc;
         }
+        settingDoc = new Document().append(identifier.identifier, data);
+        settingDoc.put("complex", data instanceof BsonDocument);
         settingsCollection.insertOne(settingDoc);
     }
 

@@ -1,4 +1,4 @@
-package Core.Events;
+package Core.Events.SilentEvents;
 
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 

@@ -1,7 +1,7 @@
 package Commands.ServerUtil;
 
-import Core.Commands.CommandContext;
-import Core.Commands.ServerCommand;
+import Core.Events.Commands.CommandContext;
+import Core.Events.Commands.ServerCommand;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 public class InviteCommand extends ServerCommand {

@@ -1,7 +1,7 @@
 package Commands.ServerSettings;
 
-import Core.Commands.CommandContext;
-import Core.Commands.ServerCommand;
+import Core.Events.Commands.CommandContext;
+import Core.Events.Commands.ServerCommand;
 import Database.DiscordServer;
 import Database.ServerIdentifiers;
 import net.dv8tion.jda.api.Permission;

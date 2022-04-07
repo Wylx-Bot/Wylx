@@ -1,18 +1,20 @@
 package Commands.Frog;
 
-import Core.Commands.ServerCommand;
-import Core.Events.SilentEvent;
-import Core.ProcessPackage.ProcessPackage;
+import Core.Events.Commands.ServerCommand;
+import Core.Events.SilentEvents.SilentEvent;
+import Core.Events.EventPackage;
 
-public class FrogPackage extends ProcessPackage {
+public class FrogPackage extends EventPackage {
 
     public FrogPackage() {
-        super(new ServerCommand[]{
-                new BonkCommand(),
-                new FrogFactCommand(),
-                new DrawFrogCardCommand(),
-                new ValidateCommand()
-        }, new SilentEvent[]{});
+        super(
+                new ServerCommand[]{
+                    new BonkCommand(),
+                    new FrogFactCommand(),
+                    new DrawFrogCardCommand(),
+                    new ValidateCommand()
+                }, new SilentEvent[]{}
+        );
     }
 
     @Override

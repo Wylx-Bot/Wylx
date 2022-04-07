@@ -1,23 +1,25 @@
 package Commands.Music;
 
-import Core.Commands.ServerCommand;
-import Core.Events.SilentEvent;
-import Core.ProcessPackage.ProcessPackage;
+import Core.Events.Commands.ServerCommand;
+import Core.Events.SilentEvents.SilentEvent;
+import Core.Events.EventPackage;
 
-public class MusicPackage extends ProcessPackage {
+public class MusicPackage extends EventPackage {
     public MusicPackage() {
-        super(new ServerCommand[]{
-            new PlayCommand(),
-            new SkipCommand(),
-            new ClearPlaylistCommand(),
-            new VolumeCommand(),
-            new PauseCommand(),
-            new ResumeCommand(),
-            new QueueCommand(),
-            new SeekCommand(),
-            new LoopCommand(),
-            new NowPlaying(),
-        }, new SilentEvent[]{});
+        super(
+                new ServerCommand[]{
+                    new PlayCommand(),
+                    new SkipCommand(),
+                    new ClearPlaylistCommand(),
+                    new VolumeCommand(),
+                    new PauseCommand(),
+                    new ResumeCommand(),
+                    new QueueCommand(),
+                    new SeekCommand(),
+                    new LoopCommand(),
+                    new NowPlaying(),
+                }, new SilentEvent[]{}
+		);
     }
 
     @Override

@@ -1,4 +1,4 @@
-package Core.Commands;
+package Core.Events.Commands;
 
 import Core.Music.GuildMusicManager;
 import Database.DiscordServer;
