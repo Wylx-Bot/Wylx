@@ -14,7 +14,7 @@ public class BotUtilPackage extends EventPackage {
                         new UpdateCommand(),
                         new Help()
                 }, new SilentEvent[]{}
-		);
+        );
     }
 
     @Override

@@ -7,7 +7,6 @@ import Commands.BotUtil.Help;
 import Commands.Music.MusicPackage;
 import Commands.ServerUtil.ServerUtilPackage;
 import Commands.ServerSettings.ServerSettingsPackage;
-import Commands.TimeConversion.TimePackage;
 import Core.Events.Commands.CommandContext;
 import Core.Events.Commands.ServerCommand;
 import Core.Events.Event;
@@ -44,7 +43,6 @@ public class MessageProcessing extends ListenerAdapter {
             new ServerSettingsPackage(),
             new MusicPackage(),
             new TTRPGPackage(),
-            new TimePackage(),
             new BotUtilPackage(),
             new FrogPackage(),
     };
