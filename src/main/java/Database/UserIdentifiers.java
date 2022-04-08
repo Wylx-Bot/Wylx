@@ -1,5 +1,9 @@
 package Database;
 
+import org.bson.codecs.Codec;
+
+import java.lang.reflect.InvocationTargetException;
+
 public enum UserIdentifiers implements DiscordIdentifiers{
     Timezone("Timezone", String.class, "LOL");
 
@@ -25,6 +29,14 @@ public enum UserIdentifiers implements DiscordIdentifiers{
 
     @Override
     public Object getDefaultValue() {
-        return defaultValue;
+        if(!(defaultValue instanceof Codec<?>))
+            return defaultValue;
+        else {
+            try {
+                return dataType.getDeclaredConstructor().newInstance();
+            } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+                return null;
+            }
+        }
     }
 }

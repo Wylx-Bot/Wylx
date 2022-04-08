@@ -1,7 +1,9 @@
 package Database;
 
 import Core.Events.ServerEventManager;
+import org.bson.codecs.Codec;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 // These identifiers are used in database access to ensure information is located correctly
@@ -32,7 +34,15 @@ public enum ServerIdentifiers implements DiscordIdentifiers{
 
     @Override
     public Object getDefaultValue() {
-        return defaultValue;
+        if(!(defaultValue instanceof Codec<?>))
+            return defaultValue;
+        else {
+            try {
+                return dataType.getDeclaredConstructor().newInstance();
+            } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+                return null;
+            }
+        }
     }
 }
 
