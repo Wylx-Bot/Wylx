@@ -9,11 +9,9 @@ import Core.Fight.FightUserStats;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
-import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -21,8 +19,8 @@ import java.util.regex.Pattern;
 public class FightCommand extends ThreadedCommand {
 
     private final Random random = new Random();
-    private FightUserManager isFightingList = new FightUserManager();
-    private int[] damageArray = { 25, 30, 40, 50, 60, 75, 80, 90, 99, 100, 125, 150, 175, 200, 250 };
+    private final FightUserManager isFightingList = new FightUserManager();
+    private final int[] damageArray = { 25, 30, 40, 50, 60, 75, 80, 90, 99, 100, 125, 150, 175, 200, 250 };
 
     private final Pattern mentionPattern = Message.MentionType.USER.getPattern();
 
@@ -35,6 +33,8 @@ public class FightCommand extends ThreadedCommand {
         MessageReceivedEvent event = ctx.event();
         Message msg = ctx.event().getMessage();
         Member player1 = msg.getMember(), player2;
+
+        assert player1 != null;
 
         if (msg.mentionsEveryone()) {
             msg.reply("How are you supposed to fight everyone here? That seems *really* difficult...").queue();
@@ -63,6 +63,7 @@ public class FightCommand extends ThreadedCommand {
             return;
         }
 
+        // Prevent the user from fighting multiple times
         isFightingList.setUserIsFighting(player1, true);
         isFightingList.setUserIsFighting(player2, true);
 
@@ -92,9 +93,10 @@ public class FightCommand extends ThreadedCommand {
             return;
         }
 
-
+        // Do fight loop and decide victor
         fight (ctx, player1Stats, player2Stats);
 
+        // Fight is done, save and let other fights occur
         player1Stats.save();
         player2Stats.save();
         isFightingList.setUserIsFighting(player1, false);
@@ -102,15 +104,15 @@ public class FightCommand extends ThreadedCommand {
     }
 
     private void fight(CommandContext ctx, FightUserStats player1, FightUserStats player2) {
+        ArrayList<Message> messages = new ArrayList<>();    // Messages to delete
+        MessageChannel channel = ctx.event().getChannel();
+        FightUserStats attacker, defender;
+
+        // Use difference in speed when checking which player should go first
         double speedDiff = player1.getMult(FightStatTypes.SPEED) - player2.getMult(FightStatTypes.SPEED);
         boolean player1Turn = random.nextDouble() < (speedDiff + 0.5);
 
-        ArrayList<Message> messages = new ArrayList<>();    // Messages to delete
-        MessageChannel channel = ctx.event().getChannel();
-        FightUserStats attacker = null;
-        FightUserStats defender = null;
-
-        while (player1.hp > 0 && player2.hp > 0) {
+        do {
             attacker = player1Turn ? player1 : player2;
             defender = player1Turn ? player2 : player1;
 
@@ -125,7 +127,7 @@ public class FightCommand extends ThreadedCommand {
 
             attackMessage = attackMessage.replace("{p1}", String.format("**%s**", attacker.user.getEffectiveName()));
             attackMessage = attackMessage.replace("{p2}", String.format("**%s**", defender.user.getEffectiveName()));
-            attackMessage = attackMessage.replace("{r}", Integer.toString(random.nextInt(2,10)));
+            attackMessage = attackMessage.replace("{r}", Integer.toString(random.nextInt(8) + 2));
 
             String msgStr = String.format("%s! [-%d] [%d hp left]", attackMessage, damage, defender.hp);
             Message msgObj = channel.sendMessage(msgStr).complete();
@@ -138,7 +140,7 @@ public class FightCommand extends ThreadedCommand {
             } catch (Exception e) {
                 // NOOP
             }
-        }
+        } while (player1.hp > 0 && player2.hp > 0);
 
         int exp = (int) (random.nextDouble() * 10) + 15;
         int attackerExp = (int) (exp * 2 * attacker.getMult(FightStatTypes.EXP));

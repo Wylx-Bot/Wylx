@@ -14,6 +14,6 @@ public class FightPackage extends EventPackage {
 
     @Override
     public String getHeader() {
-        return "Useful for TTRPG sessions and environments";
+        return "Four shalt thou not count, neither count thou two, excepting that thou then proceed to three";
     }
 }
