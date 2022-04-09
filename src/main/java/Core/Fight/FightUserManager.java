@@ -18,9 +18,9 @@ public class FightUserManager {
         return result;
     }
 
-    public void serverIsFighting(long serverId, boolean isFighting) {
+    public void setUserIsFighting(Member user, boolean isFighting) {
         lock.lock();
-        fightMap.put(serverId, isFighting);
+        fightMap.put(user.getIdLong(), isFighting);
         lock.unlock();
     }
 

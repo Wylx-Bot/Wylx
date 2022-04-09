@@ -3,6 +3,7 @@ package Commands.Fight;
 import Core.Events.Commands.CommandContext;
 import Core.Events.Commands.ThreadedCommand;
 import Core.Fight.FightMessages;
+import Core.Fight.FightStatTypes;
 import Core.Fight.FightUserManager;
 import Core.Fight.FightUserStats;
 import net.dv8tion.jda.api.entities.Member;
@@ -62,13 +63,11 @@ public class FightCommand extends ThreadedCommand {
             return;
         }
 
-        // TODO: Get stats
+        isFightingList.setUserIsFighting(player1, true);
+        isFightingList.setUserIsFighting(player2, true);
+
         FightUserStats player1Stats = FightUserStats.getUserStats(player1);
         FightUserStats player2Stats = FightUserStats.getUserStats(player2);
-
-        System.out.println(player1Stats);
-        System.out.println(player2Stats);
-        System.out.println(player1Stats == player2Stats);
 
         String headerStr = String.format("__**%s** [lvl: %d] vs **%s** [lvl: %d]__",
                 player1.getEffectiveName(), player1Stats.getLvl(),
@@ -76,28 +75,37 @@ public class FightCommand extends ThreadedCommand {
 
         msg.getChannel().sendMessage(headerStr).complete();
 
-
         if (player2.getUser().isBot() || msg.getAuthor().isBot()) {
             // TODO: Fancy bot message
             msg.reply("One of the users is a bot!").queue();
 
+            isFightingList.setUserIsFighting(player1, false);
+            isFightingList.setUserIsFighting(player2, false);
             return;
         }
 
-//        if (player1.getIdLong() == player2.getIdLong()) {
-//            msg.reply("You can't fight yourself!").queue();
-//            return;
-//        }
+        if (player1.getIdLong() == player2.getIdLong()) {
+            msg.reply("You can't fight yourself!").queue();
+
+            isFightingList.setUserIsFighting(player1, false);
+            isFightingList.setUserIsFighting(player2, false);
+            return;
+        }
 
 
         fight (ctx, player1Stats, player2Stats);
 
-        // TODO: Save stats
+        player1Stats.save();
+        player2Stats.save();
+        isFightingList.setUserIsFighting(player1, false);
+        isFightingList.setUserIsFighting(player2, false);
     }
 
     private void fight(CommandContext ctx, FightUserStats player1, FightUserStats player2) {
-        boolean player1Turn = random.nextBoolean();
-        ArrayList<Message> messages = new ArrayList<>();
+        double speedDiff = player1.getMult(FightStatTypes.SPEED) - player2.getMult(FightStatTypes.SPEED);
+        boolean player1Turn = random.nextDouble() < (speedDiff + 0.5);
+
+        ArrayList<Message> messages = new ArrayList<>();    // Messages to delete
         MessageChannel channel = ctx.event().getChannel();
         FightUserStats attacker = null;
         FightUserStats defender = null;
@@ -106,7 +114,7 @@ public class FightCommand extends ThreadedCommand {
             attacker = player1Turn ? player1 : player2;
             defender = player1Turn ? player2 : player1;
 
-            int damage = damageArray[random.nextInt(damageArray.length)];
+            int damage = (int) (damageArray[random.nextInt(damageArray.length)] * attacker.getMult(FightStatTypes.DAMAGE));
             defender.hp -= Math.min(damage, defender.hp);
 
             String attackMessage = FightMessages.attackMessages[random.nextInt(FightMessages.attackMessages.length)];
@@ -123,6 +131,8 @@ public class FightCommand extends ThreadedCommand {
             Message msgObj = channel.sendMessage(msgStr).complete();
             messages.add(msgObj);
 
+            player1Turn = !player1Turn;
+
             try {
                 Thread.sleep(1200);
             } catch (Exception e) {
@@ -131,21 +141,31 @@ public class FightCommand extends ThreadedCommand {
         }
 
         int exp = (int) (random.nextDouble() * 10) + 15;
-        String fightEnd = String.format("%s won and gained %d EXP!\n%s lost but gained %d EXP.\n\n",
-                attacker.user.getEffectiveName(), exp * 2,
-                defender.user.getEffectiveName(), exp / 3);
+        int attackerExp = (int) (exp * 2 * attacker.getMult(FightStatTypes.EXP));
+        int defenderExp = (int) (exp / 3 * defender.getMult(FightStatTypes.EXP));
 
-        if (attacker.addExp(exp * 2)) {
+        String fightEnd = String.format("%s won and gained %d EXP!\n%s lost but gained %d EXP.\n\n",
+                attacker.user.getEffectiveName(), attackerExp,
+                defender.user.getEffectiveName(), defenderExp);
+
+        if (attacker.addExp(attackerExp)) {
             fightEnd += String.format("%s leveled up! New level %d\n",
                     attacker.user.getEffectiveName(), attacker.getLvl());
         }
 
-        if (defender.addExp(exp / 3)) {
+        if (defender.addExp(defenderExp)) {
             fightEnd += String.format("%s leveled up! New level %d",
                     defender.user.getEffectiveName(), attacker.getLvl());
         }
 
         channel.sendMessage(fightEnd).complete();
+
+        try {
+            Thread.sleep(30000);
+        } catch (InterruptedException e) {
+            // NOOP
+        }
+
         channel.purgeMessages(messages);
     }
 }
