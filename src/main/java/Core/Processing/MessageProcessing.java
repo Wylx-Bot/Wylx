@@ -5,6 +5,7 @@ import Commands.DND.TTRPGPackage;
 import Commands.Fight.FightPackage;
 import Commands.Frog.FrogPackage;
 import Commands.Music.MusicPackage;
+import Commands.Roles.RolePackage;
 import Commands.ServerUtil.ServerUtilPackage;
 import Commands.ServerSettings.ServerSettingsPackage;
 import Core.Events.Commands.CommandContext;
@@ -46,6 +47,7 @@ public class MessageProcessing extends ListenerAdapter {
             new BotUtilPackage(),
             new FrogPackage(),
             new FightPackage(),
+            new RolePackage(),
     };
 
     static {
