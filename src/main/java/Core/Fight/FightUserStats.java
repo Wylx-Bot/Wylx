@@ -54,6 +54,7 @@ public class FightUserStats implements Codec<FightUserStats> {
         return level;
     }
 
+    // Returns level of a skill
     public int getStatLvl(FightStatTypes stat) {
         return switch (stat) {
             case HP -> this.hpLevel;
@@ -63,7 +64,8 @@ public class FightUserStats implements Codec<FightUserStats> {
         };
     }
 
-    public double getMult(FightStatTypes stat) {
+    // Returns multiplier based off of the level of the skill
+    public double getStatMultiplier(FightStatTypes stat) {
         return FightUtil.calcMultiplier(getStatLvl(stat));
     }
 

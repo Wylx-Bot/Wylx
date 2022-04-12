@@ -110,14 +110,14 @@ public class FightCommand extends ThreadedCommand {
         FightUserStats attacker, defender;
 
         // Use difference in speed when checking which player should go first
-        double speedDiff = player1.getMult(FightStatTypes.SPEED) - player2.getMult(FightStatTypes.SPEED);
+        double speedDiff = player1.getStatMultiplier(FightStatTypes.SPEED) - player2.getStatMultiplier(FightStatTypes.SPEED);
         boolean player1Turn = random.nextDouble() < (speedDiff + 0.5);
 
         do {
             attacker = player1Turn ? player1 : player2;
             defender = player1Turn ? player2 : player1;
 
-            int damage = (int) (damageArray[random.nextInt(damageArray.length)] * attacker.getMult(FightStatTypes.DAMAGE));
+            int damage = (int) (damageArray[random.nextInt(damageArray.length)] * attacker.getStatMultiplier(FightStatTypes.DAMAGE));
             defender.hp -= Math.min(damage, defender.hp);
 
             String attackMessage = FightMessages.attackMessages[random.nextInt(FightMessages.attackMessages.length)];
@@ -144,8 +144,8 @@ public class FightCommand extends ThreadedCommand {
         } while (player1.hp > 0 && player2.hp > 0);
 
         int exp = (int) (random.nextDouble() * 10) + 15;
-        int attackerExp = (int) (exp * 2 * attacker.getMult(FightStatTypes.EXP));
-        int defenderExp = (int) (exp / 3 * defender.getMult(FightStatTypes.EXP));
+        int attackerExp = (int) (exp * 2 * attacker.getStatMultiplier(FightStatTypes.EXP));
+        int defenderExp = (int) (exp / 3 * defender.getStatMultiplier(FightStatTypes.EXP));
 
         String fightEnd = String.format("%s won and gained %d EXP!\n%s lost but gained %d EXP.\n\n",
                 attacker.user.getEffectiveName(), attackerExp,
