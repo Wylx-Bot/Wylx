@@ -4,6 +4,7 @@ import Core.Events.Commands.CommandContext;
 import Core.Events.Commands.ServerCommand;
 import Core.Role.RoleUtil;
 import Database.ServerIdentifiers;
+import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Role;
@@ -36,6 +37,8 @@ public class AddRoleCommand extends ServerCommand {
 
         List<String> rolesStr = RoleUtil.commaArrayStripKeyword(ctx.parsedMsg(), getKeyword());
         List<Long> curRoles = ctx.db().getSetting(ServerIdentifiers.PublicRoles);
+        StringBuilder addedRoles = new StringBuilder();
+        EmbedBuilder embed = new EmbedBuilder();
         int oldSize = curRoles.size();
 
         List<Role> foundRoles = RoleUtil.getRolesFromStrings(rolesStr, guild, null);
@@ -43,10 +46,15 @@ public class AddRoleCommand extends ServerCommand {
             long id = role.getIdLong();
             if (!curRoles.contains(id)) {
                 curRoles.add(id);
+                addedRoles.append(role.getAsMention()).append("\n");
             }
         }
 
-        ctx.event().getChannel().sendMessage("Added *" + (curRoles.size() - oldSize) + "* roles!").queue();
+        addedRoles.append("Added ").append(curRoles.size() - oldSize).append(" roles!");
+
+        embed.setAuthor("Added roles");
+        embed.setDescription(addedRoles.toString());
+        ctx.event().getChannel().sendMessageEmbeds(embed.build()).queue();
         ctx.db().setSetting(ServerIdentifiers.PublicRoles, curRoles);
     }
 }

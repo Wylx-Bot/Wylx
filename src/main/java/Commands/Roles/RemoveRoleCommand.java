@@ -4,6 +4,7 @@ import Core.Events.Commands.CommandContext;
 import Core.Events.Commands.ServerCommand;
 import Core.Role.RoleUtil;
 import Database.ServerIdentifiers;
+import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Role;
@@ -36,15 +37,22 @@ public class RemoveRoleCommand extends ServerCommand {
 
         List<String> rolesStr = RoleUtil.commaArrayStripKeyword(ctx.parsedMsg(), getKeyword());
         List<Long> curRoles = ctx.db().getSetting(ServerIdentifiers.PublicRoles);
+        StringBuilder removedRoles = new StringBuilder();
+        EmbedBuilder embed = new EmbedBuilder();
         int oldSize = curRoles.size();
 
         List<Role> foundRoles = RoleUtil.getRolesFromStrings(rolesStr, guild, null);
         for (Role role : foundRoles) {
             long id = role.getIdLong();
             curRoles.remove(id);
+            removedRoles.append(role.getAsMention()).append("\n");
         }
 
-        ctx.event().getChannel().sendMessage("Removed *" + (oldSize - curRoles.size()) + "* roles!").queue();
+        removedRoles.append("Added ").append(oldSize - curRoles.size()).append(" roles!");
+
+        embed.setAuthor("Removed roles");
+        embed.setDescription(removedRoles.toString());
+        ctx.event().getChannel().sendMessageEmbeds(embed.build()).queue();
         ctx.db().setSetting(ServerIdentifiers.PublicRoles, curRoles);
     }
 }
