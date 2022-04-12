@@ -2,7 +2,7 @@ package Commands.Roles;
 
 import Core.Events.Commands.CommandContext;
 import Core.Events.Commands.ServerCommand;
-import Core.Role.RoleUtil;
+import Core.Util.RoleUtil;
 import Database.ServerIdentifiers;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
