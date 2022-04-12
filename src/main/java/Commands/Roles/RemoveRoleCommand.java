@@ -10,12 +10,12 @@ import net.dv8tion.jda.api.entities.Role;
 
 import java.util.List;
 
-public class AddRoleCommand extends ServerCommand {
+public class RemoveRoleCommand extends ServerCommand {
 
-    public AddRoleCommand() {
-        super("addrole", CommandPermission.DISCORD_PERM, Permission.ADMINISTRATOR,
-                "Add role to list of roles which users can self-assign. Can be a comma-delimited list" +
-                        " (addrole role1, role2, role3, ...)");
+    public RemoveRoleCommand() {
+        super("removerole", CommandPermission.DISCORD_PERM, Permission.ADMINISTRATOR,
+                "Remove role from list of roles which users can self-assign. Can be a comma-delimited list" +
+                        " (removerole role1, role2, role3, ...)");
     }
 
     @Override
@@ -23,7 +23,7 @@ public class AddRoleCommand extends ServerCommand {
         Guild guild = ctx.event().getGuild();
 
         if (ctx.args().length == 1) {
-            ctx.event().getChannel().sendMessage("Please specify roles to add. You can give a list" +
+            ctx.event().getChannel().sendMessage("Please specify roles to remove. You can give a list" +
                     "of comma-delimited role names or ids").queue();
             return;
         }
@@ -35,12 +35,10 @@ public class AddRoleCommand extends ServerCommand {
         List<Role> foundRoles = RoleUtil.getRolesFromStrings(rolesStr, guild, null);
         for (Role role : foundRoles) {
             long id = role.getIdLong();
-            if (!curRoles.contains(id)) {
-                curRoles.add(id);
-            }
+            curRoles.remove(id);
         }
 
-        ctx.event().getChannel().sendMessage("Added *" + (curRoles.size() - oldSize) + "* roles!").queue();
+        ctx.event().getChannel().sendMessage("Removed *" + (oldSize - curRoles.size()) + "* roles!").queue();
         ctx.db().setSetting(ServerIdentifiers.PublicRoles, curRoles);
     }
 }
