@@ -13,9 +13,10 @@ import java.util.List;
 public class RemoveRoleCommand extends ServerCommand {
 
     public RemoveRoleCommand() {
-        super("removerole", CommandPermission.DISCORD_PERM, Permission.ADMINISTRATOR,
-                "Remove role from list of roles which users can self-assign. Can be a comma-delimited list" +
-                        " (removerole role1, role2, role3, ...)");
+        super("removerole", CommandPermission.DISCORD_PERM, Permission.ADMINISTRATOR, """
+                        Remove role from list of roles which users can self-assign. Can be a comma-delimited list of either IDs or names.
+                        Usage: {p}removerole role1, role2, role3, ...
+                        """);
     }
 
     @Override

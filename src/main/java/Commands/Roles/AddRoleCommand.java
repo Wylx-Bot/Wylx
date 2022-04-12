@@ -13,9 +13,10 @@ import java.util.List;
 public class AddRoleCommand extends ServerCommand {
 
     public AddRoleCommand() {
-        super("addrole", CommandPermission.DISCORD_PERM, Permission.ADMINISTRATOR,
-                "Add role to list of roles which users can self-assign. Can be a comma-delimited list" +
-                        " (addrole role1, role2, role3, ...)");
+        super("addrole", CommandPermission.DISCORD_PERM, Permission.ADMINISTRATOR,"""
+                        Add role to list of roles which users can self-assign. Can be a comma-delimited list of either IDs or names.
+                        Usage: {p}addrole role1, role2, role3, ...
+                        """);
     }
 
     @Override
