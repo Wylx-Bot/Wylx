@@ -64,7 +64,7 @@ public class FightUserStats implements Codec<FightUserStats> {
     }
 
     public double getMult(FightStatTypes stat) {
-        return FightUtil.calcMult(getStatLvl(stat));
+        return FightUtil.calcMultiplier(getStatLvl(stat));
     }
 
     public void save() {
@@ -85,7 +85,7 @@ public class FightUserStats implements Codec<FightUserStats> {
             }
         }
 
-        this.hp *= FightUtil.calcMult(this.hpLevel);
+        this.hp *= FightUtil.calcMultiplier(this.hpLevel);
         return this;
     }
 

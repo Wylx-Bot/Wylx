@@ -32,7 +32,8 @@ public class FightCommand extends ThreadedCommand {
     protected void runCommandThread(CommandContext ctx) {
         MessageReceivedEvent event = ctx.event();
         Message msg = ctx.event().getMessage();
-        Member player1 = msg.getMember(), player2;
+        Member player1 = msg.getMember();
+        Member player2;
 
         assert player1 != null;
 
