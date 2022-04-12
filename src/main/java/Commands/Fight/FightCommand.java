@@ -20,9 +20,9 @@ public class FightCommand extends ThreadedCommand {
 
     private final Random random = new Random();
     private final FightUserManager isFightingList = new FightUserManager();
-    private final int[] damageArray = { 25, 30, 40, 50, 60, 75, 80, 90, 99, 100, 125, 150, 175, 200, 250 };
 
     private final Pattern mentionPattern = Message.MentionType.USER.getPattern();
+    private final String noExpStr = "\nThere is no EXP to be found here";
 
     public FightCommand() {
         super("fight", CommandPermission.EVERYONE, "Fight another user");
@@ -78,17 +78,28 @@ public class FightCommand extends ThreadedCommand {
         msg.getChannel().sendMessage(headerStr).complete();
 
         if (player2.getUser().isBot() || msg.getAuthor().isBot()) {
-            // TODO: Fancy bot message
-            msg.reply("One of the users is a bot!").queue();
+            // Bot should be user 1, as they do the attack
+            FightUserStats bot = msg.getAuthor().isBot() ? player1Stats : player2Stats;
+            FightUserStats user = msg.getAuthor().isBot() ? player2Stats : player1Stats;
 
+            // Get attack msg
+            int idx = random.nextInt(FightMessages.botMessages.length);
+            String botMsg = FightMessages.botMessages[idx];
+            botMsg = replaceStringWithUsers(botMsg, bot, user);
+
+            msg.getChannel().sendMessage(botMsg + noExpStr).complete();
             isFightingList.setUserIsFighting(player1, false);
             isFightingList.setUserIsFighting(player2, false);
             return;
         }
 
         if (player1.getIdLong() == player2.getIdLong()) {
-            msg.reply("You can't fight yourself!").queue();
+            // Get attack msg
+            int idx = random.nextInt(FightMessages.duplicateFighterMessages.length);
+            String dupMsg = FightMessages.duplicateFighterMessages[idx];
+            dupMsg = replaceStringWithUsers(dupMsg, player1Stats, player2Stats);
 
+            msg.getChannel().sendMessage(dupMsg + noExpStr).complete();
             isFightingList.setUserIsFighting(player1, false);
             isFightingList.setUserIsFighting(player2, false);
             return;
@@ -96,12 +107,6 @@ public class FightCommand extends ThreadedCommand {
 
         // Do fight loop and decide victor
         fight (ctx, player1Stats, player2Stats);
-
-        // Fight is done, save and let other fights occur
-        player1Stats.save();
-        player2Stats.save();
-        isFightingList.setUserIsFighting(player1, false);
-        isFightingList.setUserIsFighting(player2, false);
     }
 
     private void fight(CommandContext ctx, FightUserStats player1, FightUserStats player2) {
@@ -117,7 +122,7 @@ public class FightCommand extends ThreadedCommand {
             attacker = player1Turn ? player1 : player2;
             defender = player1Turn ? player2 : player1;
 
-            int damage = (int) (damageArray[random.nextInt(damageArray.length)] * attacker.getStatMultiplier(FightStatTypes.DAMAGE));
+            int damage = (int) (getRandomDamage() * attacker.getStatMultiplier(FightStatTypes.DAMAGE));
             defender.hp -= Math.min(damage, defender.hp);
 
             String attackMessage = FightMessages.attackMessages[random.nextInt(FightMessages.attackMessages.length)];
@@ -126,10 +131,7 @@ public class FightCommand extends ThreadedCommand {
                 // TODO: Finisher move
             }
 
-            attackMessage = attackMessage.replace("{p1}", String.format("**%s**", attacker.user.getEffectiveName()));
-            attackMessage = attackMessage.replace("{p2}", String.format("**%s**", defender.user.getEffectiveName()));
-            attackMessage = attackMessage.replace("{r}", Integer.toString(random.nextInt(8) + 2));
-
+            attackMessage = replaceStringWithUsers(attackMessage, attacker, defender);
             String msgStr = String.format("%s! [-%d] [%d hp left]", attackMessage, damage, defender.hp);
             Message msgObj = channel.sendMessage(msgStr).complete();
             messages.add(msgObj);
@@ -163,6 +165,13 @@ public class FightCommand extends ThreadedCommand {
 
         channel.sendMessage(fightEnd).complete();
 
+        // Fight is done, save and let other fights occur
+        player1.save();
+        player2.save();
+        isFightingList.setUserIsFighting(player1.user, false);
+        isFightingList.setUserIsFighting(player2.user, false);
+
+        // Wait 30 seconds before cleaning up fight messages
         try {
             Thread.sleep(30000);
         } catch (InterruptedException e) {
@@ -170,5 +179,19 @@ public class FightCommand extends ThreadedCommand {
         }
 
         channel.purgeMessages(messages);
+    }
+
+    private double getRandomDamage() {
+        double randomPercent = random.nextDouble();
+        // (1.4x - 0.49) ^ 3 + 0.25
+        //\left(9.38x-3.28\right)^{3}+60
+        return Math.pow(9.38 * randomPercent - 3.28, 3) + 60;
+    }
+
+    private String replaceStringWithUsers(String msg, FightUserStats attacker, FightUserStats defender) {
+        msg = msg.replace("{p1}", String.format("**%s**", attacker.user.getEffectiveName()));
+        msg = msg.replace("{p2}", String.format("**%s**", defender.user.getEffectiveName()));
+        msg = msg.replace("{r}", Integer.toString(random.nextInt(8) + 2));
+        return msg;
     }
 }

@@ -54,11 +54,12 @@ public class FightMessages {
 
     // User attacking Wylx (or another Bot)
     public static String[] botMessages = {
-
+        "{p1} enters bullet time and knocks out {p2}",
     };
 
     // User fighting themselves
     public static String[] duplicateFighterMessages = {
-
+        "{p1} slaps themselves...it isn't very effective",
+        "{p1} creates a duplicate of themselves - the duplicate refuses to fight",
     };
 }
