@@ -22,6 +22,11 @@ public class AddRoleCommand extends ServerCommand {
     public void runCommand(CommandContext ctx) {
         Guild guild = ctx.event().getGuild();
 
+        if (!guild.getSelfMember().hasPermission(Permission.MANAGE_ROLES)) {
+            ctx.event().getChannel().sendMessage("I do not have the `MANAGE_ROLES` permission!").queue();
+            return;
+        }
+
         if (ctx.args().length == 1) {
             ctx.event().getChannel().sendMessage("Please specify roles to add. You can give a list" +
                     "of comma-delimited role names or ids").queue();
