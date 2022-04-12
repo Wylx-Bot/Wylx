@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -97,7 +98,7 @@ public class MessageProcessing extends ListenerAdapter {
         if (msgPrefix != null) {
             msgStr = msgStr.substring(msgPrefix.length()).trim();
             String[] args = msgStr.split(" ");
-            ServerCommand command = commandMap.get(args[0]);
+            ServerCommand command = commandMap.get(args[0].toLowerCase());
 
             if (command != null && eventManager.checkEvent(command)) {
                 if(command.checkPermission(event)) {
