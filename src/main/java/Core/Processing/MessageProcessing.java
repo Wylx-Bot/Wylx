@@ -99,7 +99,7 @@ public class MessageProcessing extends ListenerAdapter {
         if (msgPrefix != null) {
             msgStr = msgStr.substring(msgPrefix.length()).trim();
             String[] args = msgStr.split(" ");
-            ServerCommand command = commandMap.get(args[0]);
+            ServerCommand command = commandMap.get(args[0].toLowerCase());
 
             if (command != null && eventManager.checkEvent(command)) {
                 if(command.checkPermission(event)) {
