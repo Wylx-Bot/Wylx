@@ -12,7 +12,9 @@ public class BotUtilPackage extends EventPackage {
                         new RestartCommand(),
                         new SystemCommand(),
                         new UpdateCommand(),
-                        new Help()
+                        new Help(),
+                        new InviteCommand(),
+                        new ServerInviteCommand()
                 }, new SilentEvent[]{}
         );
     }
