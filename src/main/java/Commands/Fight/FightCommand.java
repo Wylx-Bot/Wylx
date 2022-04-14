@@ -28,6 +28,8 @@ public class FightCommand extends ThreadedCommand {
         super("fight", CommandPermission.EVERYONE, "Fight another user");
     }
 
+
+
     @Override
     protected void runCommandThread(CommandContext ctx) {
         MessageReceivedEvent event = ctx.event();
