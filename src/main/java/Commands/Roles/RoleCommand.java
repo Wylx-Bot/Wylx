@@ -21,7 +21,7 @@ public class RoleCommand extends ServerCommand {
                 List and assign roles. When entering role names, either use the role ID or role name.
                 Usage:
                 To list roles: %{p}role
-                To give/remove roles: %{p} role role1, role2, role3
+                To give/remove roles: %{p}role role1, role2, role3
                 """);
     }
 
