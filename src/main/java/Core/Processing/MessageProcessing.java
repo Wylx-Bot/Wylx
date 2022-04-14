@@ -2,9 +2,10 @@ package Core.Processing;
 
 import Commands.BotUtil.BotUtilPackage;
 import Commands.DND.TTRPGPackage;
+import Commands.Fight.FightPackage;
 import Commands.Frog.FrogPackage;
-import Commands.BotUtil.Help;
 import Commands.Music.MusicPackage;
+import Commands.Roles.RolePackage;
 import Commands.ServerUtil.ServerUtilPackage;
 import Commands.ServerSettings.ServerSettingsPackage;
 import Core.Events.Commands.CommandContext;
@@ -45,6 +46,8 @@ public class MessageProcessing extends ListenerAdapter {
             new TTRPGPackage(),
             new BotUtilPackage(),
             new FrogPackage(),
+            new FightPackage(),
+            new RolePackage(),
     };
 
     static {
@@ -96,7 +99,7 @@ public class MessageProcessing extends ListenerAdapter {
         if (msgPrefix != null) {
             msgStr = msgStr.substring(msgPrefix.length()).trim();
             String[] args = msgStr.split(" ");
-            ServerCommand command = commandMap.get(args[0]);
+            ServerCommand command = commandMap.get(args[0].toLowerCase());
 
             if (command != null && eventManager.checkEvent(command)) {
                 if(command.checkPermission(event)) {

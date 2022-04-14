@@ -1,14 +1,17 @@
 package Database;
 
 import Core.Events.ServerEventManager;
+import org.bson.codecs.Codec;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 // These identifiers are used in database access to ensure information is located correctly
 public enum ServerIdentifiers implements DiscordIdentifiers{
     Modules("Modules_Enabled", ServerEventManager.class, new ServerEventManager()),
     MusicVolume("Music_Volume", Integer.class, 20),
-    Prefix("Prefix", String.class, ";");
+    Prefix("Prefix", String.class, ";"),
+    PublicRoles("Public_Roles", List.class, new ArrayList<Long>());
 
     public final String identifier;
     public final Class<?> dataType;
@@ -32,7 +35,15 @@ public enum ServerIdentifiers implements DiscordIdentifiers{
 
     @Override
     public Object getDefaultValue() {
-        return defaultValue;
+        if(!(defaultValue instanceof Codec<?>))
+            return defaultValue;
+        else {
+            try {
+                return dataType.getDeclaredConstructor().newInstance();
+            } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+                return null;
+            }
+        }
     }
 }
 
