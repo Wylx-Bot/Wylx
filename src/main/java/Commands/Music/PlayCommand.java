@@ -93,7 +93,7 @@ public class PlayCommand extends ServerCommand {
         var context = new TrackContext(
                 ctx.guildID(),
                 event.getChannel().getIdLong(),
-                event.getAuthor().getIdLong(),
+                event.getAuthor().getId(),
                 dur.toMillis()
         );
 

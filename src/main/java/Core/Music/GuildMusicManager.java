@@ -26,13 +26,13 @@ public class GuildMusicManager extends AudioEventAdapter {
     private boolean loop = false;
     private Timer discTimer;
     private TrackContext lastCtx;
-    private final long guildID;
+    private final String guildID;
     private final AudioPlayer player;
     private final MusicPlaylist playlist = new MusicPlaylist();
 
     private static final Logger logger = LoggerFactory.getLogger(GuildMusicManager.class);
 
-    public GuildMusicManager(long guildID, AudioPlayerManager manager) {
+    public GuildMusicManager(String guildID, AudioPlayerManager manager) {
         Wylx wylx = Wylx.getInstance();
         this.guildID = guildID;
         player = manager.createPlayer();

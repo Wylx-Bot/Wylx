@@ -18,7 +18,7 @@ public enum Timezone {
 
     static Timezone getTimezone(String abrv){
         for(Timezone zone : Timezone.values()){
-            if(abrv.equals(zone.abrv)){
+            if(abrv.equalsIgnoreCase(zone.abrv)){
                 return zone;
             }
         }
