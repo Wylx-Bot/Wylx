@@ -35,7 +35,7 @@ public class RemoveRoleCommand extends ServerCommand {
             return;
         }
 
-        List<String> rolesStr = RoleUtil.commaArrayStripKeyword(ctx.parsedMsg(), getKeyword());
+        List<String> rolesStr = RoleUtil.commaArrayStripKeyword(ctx.parsedMsg());
         List<Long> curRoles = ctx.db().getSetting(ServerIdentifiers.PublicRoles);
         StringBuilder removedRoles = new StringBuilder();
         EmbedBuilder embed = new EmbedBuilder();
