@@ -23,7 +23,7 @@ public class RoleCommand extends ServerCommand {
                 Usage:
                 To list roles: %{p}role
                 To give/remove roles: %{p}role role1, role2, role3
-                """);
+                """, "giverole", "addrole", "roles", "removerole");
     }
 
     @Override
