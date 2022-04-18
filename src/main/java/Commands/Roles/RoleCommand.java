@@ -89,7 +89,7 @@ public class RoleCommand extends ServerCommand {
         List<String> invalidRoles = new ArrayList<>();
 
         // More than one arg, user is trying to add or remove roles
-        List<String> roleNamesStr = RoleUtil.commaArrayStripKeyword(ctx.parsedMsg(), getKeyword());
+        List<String> roleNamesStr = RoleUtil.commaArrayStripKeyword(ctx.parsedMsg(), ctx.parsedMsg().split(" ")[0]);
         List<Role> rolesStr = RoleUtil.getRolesFromStrings(roleNamesStr, guild, invalidRoles);
 
         StringBuilder invStr = new StringBuilder(); // Invalid roles which don't exist
