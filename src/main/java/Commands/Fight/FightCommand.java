@@ -25,7 +25,10 @@ public class FightCommand extends ThreadedCommand {
     private final String noExpStr = "\nThere is no EXP to be found here";
 
     public FightCommand() {
-        super("fight", CommandPermission.EVERYONE, "Fight another user");
+        super("fight", CommandPermission.EVERYONE, """
+                Fight another user
+                Usage: %{p}fight <user mention>
+                """);
     }
 
     @Override

@@ -55,6 +55,7 @@ public class FightMessages {
     // User attacking Wylx (or another Bot)
     public static String[] botMessages = {
         "{p1} enters bullet time and knocks out {p2}",
+        "{p1} was hacked and had to be shutdown by {p2}",
     };
 
     // User fighting themselves

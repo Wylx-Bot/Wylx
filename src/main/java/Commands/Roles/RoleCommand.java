@@ -12,6 +12,7 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public class RoleCommand extends ServerCommand {
@@ -21,8 +22,8 @@ public class RoleCommand extends ServerCommand {
                 List and assign roles. When entering role names, either use the role ID or role name.
                 Usage:
                 To list roles: %{p}role
-                To give/remove roles: %{p} role role1, role2, role3
-                """);
+                To give/remove roles: %{p}role role1, role2, role3
+                """, "giverole", "addrole", "roles", "removerole");
     }
 
     @Override
@@ -54,6 +55,8 @@ public class RoleCommand extends ServerCommand {
                     "Use the AddRole command to add assignable roles").queue();
             return;
         }
+
+        rolesDb.sort(Comparator.comparing(Role::getName));
 
         EmbedBuilder embed = new EmbedBuilder();
         embed.setAuthor(String.format("%s roles", guild.getName()), guild.getIconUrl());
