@@ -20,7 +20,7 @@ public abstract class SilentEvent extends Event {
 
     @Override
     public String getKeyword(){
-        return this.getClass().getSimpleName();
+        return this.getClass().getSimpleName().toLowerCase();
     }
     @Override
     public String getDescription(String alias){
