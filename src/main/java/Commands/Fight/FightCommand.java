@@ -163,7 +163,7 @@ public class FightCommand extends ThreadedCommand {
 
         if (defender.addExp(defenderExp)) {
             fightEnd += String.format("%s leveled up! New level %d",
-                    defender.user.getEffectiveName(), attacker.getLvl());
+                    defender.user.getEffectiveName(), defender.getLvl());
         }
 
         channel.sendMessage(fightEnd).complete();
