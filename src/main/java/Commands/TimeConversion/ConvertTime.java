@@ -34,6 +34,8 @@ public class ConvertTime extends SilentEvent {
             // Don't prompt a user more than once (spam)
             Boolean timezonePrompted = dUser.getSetting(UserIdentifiers.TimezonePrompted);
             if(timezonePrompted) return;
+            // Set it so the user doesn't get prompted multiple times
+            dUser.setSetting(UserIdentifiers.TimezonePrompted, true);
 
             event.getMessage().reply("Please set your timezone using " + prefix + "settimezone <timezone>").queue();
             return;
