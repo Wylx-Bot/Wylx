@@ -8,9 +8,9 @@ public class TimePackage extends EventPackage {
     public TimePackage() {
         super(
                 new ServerCommand[]{
-                    new SetTimezone()
+                    new SetTimezone(),
                 }, new SilentEvent[]{
-
+                    new ConvertTime(),
                 }
         );
     }

@@ -1,7 +1,7 @@
 package Commands.TimeConversion;
 
 public enum Timezone {
-    // TODO: Put in way more timezones
+    // TODO: Put in way more timezones / Use Java's Timezone Library
     PST("PST", "Pacific Standard Time", 0),
     MST("MST", "Mountain Standard Time", 1),
     CST("CST", "Central Standard Time", 2),
