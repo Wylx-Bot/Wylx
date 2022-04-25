@@ -22,7 +22,7 @@ public class SetTimezone extends ServerCommand {
     @Override
     public void runCommand(CommandContext ctx) {
         // If theres more than 2 args the user did something wrong
-        if(ctx.args().length > 2){
+        if(ctx.args().length > 2) {
             ctx.event().getMessage().reply(getDescription(ctx.prefix())).queue();
             return;
         }
