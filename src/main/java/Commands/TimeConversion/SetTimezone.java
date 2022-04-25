@@ -48,7 +48,7 @@ public class SetTimezone extends ServerCommand {
         EmbedBuilder builder = new EmbedBuilder();
         builder.setTitle("Wylx Timezones");
         builder.setColor(ctx.event().getGuild().getSelfMember().getColor());
-        for(Timezone zone : Timezone.values()){
+        for(Timezone zone : Timezone.values()) {
             builder.appendDescription(zone.abrv + ":    " + zone.name + "\n");
         }
         return builder.build();
