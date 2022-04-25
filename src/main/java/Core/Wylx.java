@@ -75,8 +75,8 @@ public class Wylx {
         activityIndex %= activities.size();
     }
 
-    public long getBotID(){
-        return jda.getSelfUser().getIdLong();
+    public String getBotID(){
+        return jda.getSelfUser().getId();
     }
 
     public String getBotIDString() {
@@ -91,13 +91,13 @@ public class Wylx {
         return db;
     }
 
-    public AudioManager getGuildAudioManager(long guildID) {
+    public AudioManager getGuildAudioManager(String guildID) {
         var guild = jda.getGuildById(guildID);
         if (guild == null) return null;
         return guild.getAudioManager();
     }
 
-    public Member getMemberInGuild(long guildID, long userID) {
+    public Member getMemberInGuild(String guildID, String userID) {
         var guild = jda.getGuildById(guildID);
         var user = jda.getUserById(userID);
         if (guild == null || user == null) return null;
@@ -111,7 +111,7 @@ public class Wylx {
     }
 
     @SuppressWarnings("ConstantConditions")
-    public boolean userInVoiceChannel(long guildID, long channelID, long userID) {
+    public boolean userInVoiceChannel(String guildID, long channelID, String userID) {
         var member = getMemberInGuild(guildID, userID);
         if (member == null) return false;
         var voiceState = member.getVoiceState();
