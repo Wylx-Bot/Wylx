@@ -51,6 +51,6 @@ public class Time {
 
     @Override
     public String toString() {
-        return hour + ":" + (minutes > 9 ? minutes : "0" + minutes) + (isAM ? "am" : "pm");
+        return String.format("%d:%02d%s", hour, minutes, isAM ? "am" : "pm");
     }
 }

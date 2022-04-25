@@ -21,8 +21,6 @@ public class ConvertTime extends SilentEvent {
 
     @Override
     public boolean check(MessageReceivedEvent event, String prefix) {
-        // Figure it out for yourself, I did it once but forgot by the time I went to comment it
-
         return TWELVE_HOUR_PATTERN.matcher(event.getMessage().getContentRaw()).find();
     }
 
