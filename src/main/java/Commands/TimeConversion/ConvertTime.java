@@ -31,7 +31,7 @@ public class ConvertTime extends SilentEvent {
         Timezone userTimezone = Timezone.getTimezone(dUser.getSetting(UserIdentifiers.Timezone));
 
         // Cant do conversions if we don't know the user's timezone
-        if(userTimezone == null){
+        if(userTimezone == null) {
             // Don't prompt a user more than once (spam)
             Boolean timezonePrompted = dUser.getSetting(UserIdentifiers.TimezonePrompted);
             if(timezonePrompted) return;

@@ -22,19 +22,19 @@ public class SetTimezone extends ServerCommand {
     @Override
     public void runCommand(CommandContext ctx) {
         // If theres more than 2 args the user did something wrong
-        if(ctx.args().length > 2){
+        if(ctx.args().length > 2) {
             ctx.event().getMessage().reply(getDescription(ctx.prefix())).queue();
             return;
         }
 
         // One arg we need to tell the user what their options are
-        if(ctx.args().length == 1){
+        if(ctx.args().length == 1) {
             ctx.event().getChannel().sendMessageEmbeds(optionsEmbed(ctx)).queue();
             return;
         }
 
         Timezone timezone = Timezone.getTimezone(ctx.args()[1]);
-        if(timezone == null){
+        if(timezone == null) {
             ctx.event().getChannel().sendMessageEmbeds(optionsEmbed(ctx)).queue();
             return;
         }
@@ -48,7 +48,7 @@ public class SetTimezone extends ServerCommand {
         EmbedBuilder builder = new EmbedBuilder();
         builder.setTitle("Wylx Timezones");
         builder.setColor(ctx.event().getGuild().getSelfMember().getColor());
-        for(Timezone zone : Timezone.values()){
+        for(Timezone zone : Timezone.values()) {
             builder.appendDescription(zone.abrv + ":    " + zone.name + "\n");
         }
         return builder.build();
