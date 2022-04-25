@@ -34,7 +34,7 @@ public class SetTimezone extends ServerCommand {
         }
 
         Timezone timezone = Timezone.getTimezone(ctx.args()[1]);
-        if(timezone == null){
+        if(timezone == null) {
             ctx.event().getChannel().sendMessageEmbeds(optionsEmbed(ctx)).queue();
             return;
         }
