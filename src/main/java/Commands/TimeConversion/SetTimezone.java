@@ -28,7 +28,7 @@ public class SetTimezone extends ServerCommand {
         }
 
         // One arg we need to tell the user what their options are
-        if(ctx.args().length == 1){
+        if(ctx.args().length == 1) {
             ctx.event().getChannel().sendMessageEmbeds(optionsEmbed(ctx)).queue();
             return;
         }
