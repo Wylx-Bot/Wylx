@@ -27,7 +27,7 @@ public class NewRoleMenuCommand extends ServerCommand {
 
         TextChannel newChannel = channels.get(0);
 
-        Message newMessage = newChannel.sendMessageEmbeds(RoleMenu.getEmptyEmbed()).complete();
+        Message newMessage = newChannel.sendMessage("A").complete();
         RoleMenu menu = new RoleMenu(newMessage.getId(), newChannel.getId(), event.getGuild().getId());
         Wylx.getInstance().getDb().setRoleMenu(menu);
     }

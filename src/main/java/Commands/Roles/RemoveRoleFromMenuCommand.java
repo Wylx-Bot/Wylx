@@ -11,9 +11,9 @@ import net.dv8tion.jda.api.entities.Role;
 
 import java.util.List;
 
-public class AddRoleToMenuCommand extends ServerCommand {
-    AddRoleToMenuCommand() {
-        super("addroletomenu", CommandPermission.DISCORD_PERM, Permission.ADMINISTRATOR, "Add role to menu");
+public class RemoveRoleFromMenuCommand extends ServerCommand {
+    RemoveRoleFromMenuCommand() {
+        super("removerolefrommenu", CommandPermission.DISCORD_PERM, Permission.ADMINISTRATOR, "Remove role from menu");
     }
 
     @Override
@@ -26,12 +26,10 @@ public class AddRoleToMenuCommand extends ServerCommand {
             return;
         }
 
-        List<Role> roles = ctx.event().getGuild().getRolesByName(args[2], false);
-        Emoji emoji = Emoji.fromMarkdown(args[3]);
-        if (menu.addReaction(new RoleReaction(roles.get(0), emoji))) {
+        if (menu.removeReaction(args[2])) {
             Wylx.getInstance().getDb().setRoleMenu(menu);
         } else {
-            ctx.event().getMessage().reply("Could not add role to menu").queue();
+            ctx.event().getMessage().reply("Could not remove role from menu").queue();
         }
     }
 }

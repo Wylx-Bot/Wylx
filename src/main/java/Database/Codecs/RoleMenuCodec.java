@@ -57,11 +57,6 @@ public class RoleMenuCodec implements Codec<RoleMenu> {
         }
 
         reader.readEndDocument();
-        System.out.println(title);
-        System.out.println(guildID);
-        System.out.println(channelID);
-        System.out.println(messageID);
-        roles.forEach((role, emoji) -> { System.out.println(role + " " + emoji); });
         return new RoleMenu(title, messageID, channelID, guildID, roles);
     }
 
