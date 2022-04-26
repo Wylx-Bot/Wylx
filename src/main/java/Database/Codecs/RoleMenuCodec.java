@@ -57,7 +57,11 @@ public class RoleMenuCodec implements Codec<RoleMenu> {
         }
 
         reader.readEndDocument();
-        return new RoleMenu(title, messageID, channelID, guildID, roles);
+        try {
+            return new RoleMenu(title, messageID, channelID, guildID, roles);
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     @Override

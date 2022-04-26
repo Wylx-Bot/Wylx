@@ -4,6 +4,7 @@ import Core.Wylx;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,19 +22,29 @@ public class RoleMenu {
 
     private final ArrayList<RoleReaction> reactions = new ArrayList<>();
 
-    public RoleMenu(String messageID, String channelID, String guildID) {
+    public RoleMenu(String messageID, String channelID, String guildID) throws Exception {
         this("Role Selection", messageID, channelID, guildID, null);
         updateMessage();
     }
 
-    public RoleMenu(String title, String messageID, String channelID, String guildID, Map<String, String> roles) {
+    public RoleMenu(String title, String messageID, String channelID, String guildID, Map<String, String> roles) throws Exception {
         this.title = title;
         this.messageID = messageID;
         this.channelID = channelID;
         this.guildID = guildID;
 
         JDA jda = Wylx.getInstance().getJDA();
-        message = jda.getTextChannelById(channelID).retrieveMessageById(messageID).complete();
+        TextChannel channel = jda.getTextChannelById(channelID);
+        if (channel == null) {
+            throw new Exception("Channel does not exist");
+        }
+
+        try {
+            message = channel.retrieveMessageById(messageID).complete();
+        } catch (ErrorResponseException e) {
+            throw new Exception("Message does not exist");
+        }
+
         if (roles == null) {
             return;
         }
@@ -60,6 +71,13 @@ public class RoleMenu {
             reactions.add(new RoleReaction(role, emoji));
         });
 
+    }
+
+    public static MessageEmbed getEmptyEmbed() {
+        EmbedBuilder builder = new EmbedBuilder();
+        builder.setAuthor("Role Selection");
+        builder.setDescription("React to get a role!\n\nThis list is currently empty. To add roles, please use TODO");
+        return builder.build();
     }
 
     public MessageEmbed getEmbed() {
@@ -107,10 +125,12 @@ public class RoleMenu {
         message.editMessageEmbeds(getEmbed()).queue();
     }
 
-    public Boolean addReaction(RoleReaction newReaction) {
+    public void addReaction(RoleReaction newReaction) throws Exception {
         for (RoleReaction reaction : reactions) {
             if (reaction.role().equals(newReaction.role())) {
-                return false;
+                throw new Exception("Role already exists in menu");
+            } else if (reaction.emoji().equals(newReaction.emoji())) {
+                throw new Exception("Emoji already being used in menu");
             }
         }
 
@@ -121,15 +141,18 @@ public class RoleMenu {
             Emote emote = Wylx.getInstance().getJDA().getEmoteById(newReaction.emoji().getId());
             if (emote != null) {
                 message.addReaction(emote).queue();
+            } else {
+                throw new Exception("Emote does not exist");
             }
         }
         updateMessage();
-        return true;
     }
 
-    public Boolean removeReaction(String name) {
+    public void removeReaction(String name) throws Exception {
         List<RoleReaction> filtered = reactions.stream().filter(roleReaction -> roleReaction.role().getName().equalsIgnoreCase(name)).toList();
-        if (filtered.size() != 1) return false;
+        if (filtered.size() != 1) {
+            throw new Exception("Could not find role to remove");
+        }
         RoleReaction reaction = filtered.get(0);
         reactions.remove(reaction);
         if (reaction.emoji().isUnicode()) {
@@ -140,8 +163,17 @@ public class RoleMenu {
                 message.clearReactions(emote).queue();
             }
         }
+
         updateMessage();
-        return true;
+    }
+
+    public Role getReactionFromEmote(Emoji emoji) {
+        for (RoleReaction reaction : reactions) {
+            if (reaction.emoji().equals(emoji)) {
+                return reaction.role();
+            }
+        }
+        return null;
     }
 
 

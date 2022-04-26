@@ -5,6 +5,7 @@ import Core.Events.Commands.ServerCommand;
 import Core.Roles.RoleMenu;
 import Core.Wylx;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
@@ -26,9 +27,29 @@ public class NewRoleMenuCommand extends ServerCommand {
         }
 
         TextChannel newChannel = channels.get(0);
+        if (!newChannel.canTalk()) {
+            event.getMessage().reply("Wylx does not have permission to send messages in that channel!").queue();
+            return;
+        }
 
-        Message newMessage = newChannel.sendMessage("A").complete();
-        RoleMenu menu = new RoleMenu(newMessage.getId(), newChannel.getId(), event.getGuild().getId());
-        Wylx.getInstance().getDb().setRoleMenu(menu);
+        Member self = event.getGuild().getSelfMember();
+        if (!self.hasPermission(newChannel, Permission.MESSAGE_ADD_REACTION)) {
+            event.getMessage().reply("Wylx does not have permission to react in that channel!").queue();
+            return;
+        }
+
+        if (!self.hasPermission(newChannel, Permission.MESSAGE_MANAGE)) {
+            event.getMessage().reply("Wylx does not have the permission MESSAGE_MANAGE in that channel!").queue();
+            return;
+        }
+
+        Message newMessage = newChannel.sendMessageEmbeds(RoleMenu.getEmptyEmbed()).complete();
+
+        try {
+            RoleMenu menu = new RoleMenu(newMessage.getId(), newChannel.getId(), event.getGuild().getId());
+            Wylx.getInstance().getDb().setRoleMenu(menu);
+        } catch (Exception e) {
+            event.getMessage().reply("Could not create new Role Menu").queue();
+        }
     }
 }

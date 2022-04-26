@@ -28,10 +28,11 @@ public class AddRoleToMenuCommand extends ServerCommand {
 
         List<Role> roles = ctx.event().getGuild().getRolesByName(args[2], false);
         Emoji emoji = Emoji.fromMarkdown(args[3]);
-        if (menu.addReaction(new RoleReaction(roles.get(0), emoji))) {
+        try {
+            menu.addReaction(new RoleReaction(roles.get(0), emoji));
             Wylx.getInstance().getDb().setRoleMenu(menu);
-        } else {
-            ctx.event().getMessage().reply("Could not add role to menu").queue();
+        } catch (Exception e) {
+            ctx.event().getMessage().reply(e.getMessage()).queue();
         }
     }
 }

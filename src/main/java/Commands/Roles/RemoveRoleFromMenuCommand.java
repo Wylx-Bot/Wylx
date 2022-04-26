@@ -26,10 +26,11 @@ public class RemoveRoleFromMenuCommand extends ServerCommand {
             return;
         }
 
-        if (menu.removeReaction(args[2])) {
+        try {
+            menu.removeReaction(args[2]);
             Wylx.getInstance().getDb().setRoleMenu(menu);
-        } else {
-            ctx.event().getMessage().reply("Could not remove role from menu").queue();
+        } catch (Exception e) {
+            ctx.event().getMessage().reply(e.getMessage()).queue();
         }
     }
 }

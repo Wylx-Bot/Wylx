@@ -103,8 +103,10 @@ public class DatabaseManager {
         if (!roleMenuCache.containsKey(messageID)) {
             RoleMenu menu = roleMenuCollection.find(Filters.eq(messageID)).first();
 
-            // Menu does not exist :(
+            // Menu does not exist or got deleted :(
             if (menu == null) {
+                deleteRoleMenu(messageID);
+                roleMenuCache.remove(messageID);
                 return null;
             }
 
@@ -119,5 +121,9 @@ public class DatabaseManager {
         if(oldMenu != null)
             roleMenuCollection.deleteOne(Filters.eq(menu.getMessageID()));
         roleMenuCollection.insertOne(menu);
+    }
+
+    public void deleteRoleMenu(String messageID) {
+        roleMenuCollection.deleteOne(Filters.eq(messageID));
     }
 }
