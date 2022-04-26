@@ -54,6 +54,10 @@ public class FightUserStats implements Codec<FightUserStats> {
         return level;
     }
 
+    public int getExp() {
+        return exp;
+    }
+
     // Returns level of a skill
     public int getStatLvl(FightStatTypes stat) {
         return switch (stat) {
@@ -62,6 +66,10 @@ public class FightUserStats implements Codec<FightUserStats> {
             case SPEED -> this.speedLevel;
             case DAMAGE -> this.damageLevel;
         };
+    }
+
+    public int getUsedPoints() {
+        return this.hpLevel + this.expMultLevel + this.speedLevel + this.damageLevel;
     }
 
     // Returns multiplier based off of the level of the skill
