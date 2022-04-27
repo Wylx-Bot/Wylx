@@ -71,10 +71,10 @@ public class SystemCommand extends ServerCommand {
         }
 
         Runtime rt = Runtime.getRuntime();
-        var maxMem = rt.maxMemory() / BYTES_PER_MEGABYTE;
-        var usedMem = (rt.totalMemory() - rt.freeMemory()) / BYTES_PER_MEGABYTE;
-        var ratio = (double) usedMem / maxMem;
-        var uptime = ManagementFactory.getRuntimeMXBean().getUptime();
+        long maxMem = rt.maxMemory() / BYTES_PER_MEGABYTE;
+        long usedMem = (rt.totalMemory() - rt.freeMemory()) / BYTES_PER_MEGABYTE;
+        double ratio = (double) usedMem / maxMem;
+        long uptime = ManagementFactory.getRuntimeMXBean().getUptime();
 
         String builder =
                 String.format("**OS**: %s\n", System.getProperty("os.name")) +

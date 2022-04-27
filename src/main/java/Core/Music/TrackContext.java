@@ -1,6 +1,6 @@
 package Core.Music;
 
-public record TrackContext (long guildID,
+public record TrackContext (String guildID,
                             long channelID,
-                            long requesterID,
+                            String requesterID,
                             long startMillis) { }

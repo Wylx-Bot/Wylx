@@ -8,8 +8,8 @@ import java.util.Arrays;
 import java.util.List;
 
 public class RoleUtil {
-    public static List<String> commaArrayStripKeyword(String msg, String keyword) {
-        String strippedStr = msg.substring(keyword.length());
+    public static List<String> commaArrayStripKeyword(String msg) {
+        String strippedStr = msg.substring(msg.indexOf(' ')).strip();
         return Arrays.stream(strippedStr.split(",")).map(String::trim).toList();
     }
 

@@ -6,6 +6,7 @@ import Core.Fight.FightUserStats;
 
 public enum UserIdentifiers implements DiscordIdentifiers{
     Timezone("Timezone", String.class, "LOL"),
+    TimezonePrompted("TimezonePrompted", Boolean.class, false),
     FightStats("FightStats", FightUserStats.class, new FightUserStats());
 
     private final String identifier;

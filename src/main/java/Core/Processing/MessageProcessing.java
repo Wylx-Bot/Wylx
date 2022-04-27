@@ -8,6 +8,7 @@ import Commands.Music.MusicPackage;
 import Commands.Roles.RolePackage;
 import Commands.ServerUtil.ServerUtilPackage;
 import Commands.ServerSettings.ServerSettingsPackage;
+import Commands.TimeConversion.TimePackage;
 import Core.Events.Commands.CommandContext;
 import Core.Events.Commands.ServerCommand;
 import Core.Events.Event;
@@ -48,6 +49,7 @@ public class MessageProcessing extends ListenerAdapter {
             new FrogPackage(),
             new FightPackage(),
             new RolePackage(),
+            new TimePackage(),
     };
 
     static {
@@ -69,11 +71,11 @@ public class MessageProcessing extends ListenerAdapter {
         Wylx wylx = Wylx.getInstance();
         DatabaseManager dbManager = wylx.getDb();
 
-        long memberID = event.getAuthor().getIdLong();
-        long guildID = event.getGuild().getIdLong();
+        String memberID = event.getAuthor().getId();
+        String guildID = event.getGuild().getId();
 
         //Ignore messages from the bot
-        if(memberID == wylx.getBotID() ||
+        if(memberID.equals(wylx.getBotID()) ||
             !event.getChannel().canTalk() ||
             !event.isFromGuild()) return;
 

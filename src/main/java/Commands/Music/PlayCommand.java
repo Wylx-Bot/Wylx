@@ -18,6 +18,7 @@ import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.ItemComponent;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
+import net.dv8tion.jda.api.requests.restaction.MessageAction;
 
 import java.time.Duration;
 import java.util.ArrayList;
@@ -44,7 +45,7 @@ public class PlayCommand extends ServerCommand {
     @Override
     public void runCommand(CommandContext ctx) {
         MessageReceivedEvent event = ctx.event();
-        var playerManager = WylxPlayerManager.getInstance();
+        WylxPlayerManager playerManager = WylxPlayerManager.getInstance();
         String[] args = ctx.args();
         boolean isSearch;
 
@@ -90,10 +91,10 @@ public class PlayCommand extends ServerCommand {
             }
         }
 
-        var context = new TrackContext(
+        TrackContext context = new TrackContext(
                 ctx.guildID(),
                 event.getChannel().getIdLong(),
-                event.getAuthor().getIdLong(),
+                event.getAuthor().getId(),
                 dur.toMillis()
         );
 
@@ -149,7 +150,7 @@ public class PlayCommand extends ServerCommand {
 
         cancelRow.add(Button.secondary("x", Emoji.fromUnicode("U+274C")));
 
-        var toSend = event.getChannel().sendMessage(builder.toString());
+        MessageAction toSend = event.getChannel().sendMessage(builder.toString());
         Helper.createButtonInteraction((ButtonInteractionEvent buttonEvent, Object obj) -> {
             // Cancel search
             if (buttonEvent.getComponentId().equals("x")) {

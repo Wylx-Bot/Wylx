@@ -14,9 +14,9 @@ import java.util.List;
 public class AddRoleCommand extends ServerCommand {
 
     public AddRoleCommand() {
-        super("addrole", CommandPermission.DISCORD_PERM, Permission.ADMINISTRATOR,"""
+        super("registerrole", CommandPermission.DISCORD_PERM, Permission.ADMINISTRATOR,"""
                         Add role to list of roles which users can self-assign. Can be a comma-delimited list of either IDs or names.
-                        Usage: %{p}addrole role1, role2, role3, ...
+                        Usage: %{p}registerrole role1, role2, role3, ...
                         """);
     }
 
@@ -35,7 +35,7 @@ public class AddRoleCommand extends ServerCommand {
             return;
         }
 
-        List<String> rolesStr = RoleUtil.commaArrayStripKeyword(ctx.parsedMsg(), getKeyword());
+        List<String> rolesStr = RoleUtil.commaArrayStripKeyword(ctx.parsedMsg());
         List<Long> curRoles = ctx.db().getSetting(ServerIdentifiers.PublicRoles);
         StringBuilder addedRoles = new StringBuilder();
         EmbedBuilder embed = new EmbedBuilder();

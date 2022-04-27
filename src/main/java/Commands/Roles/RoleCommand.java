@@ -12,6 +12,7 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public class RoleCommand extends ServerCommand {
@@ -21,8 +22,8 @@ public class RoleCommand extends ServerCommand {
                 List and assign roles. When entering role names, either use the role ID or role name.
                 Usage:
                 To list roles: %{p}role
-                To give/remove roles: %{p} role role1, role2, role3
-                """);
+                To give/remove roles: %{p}role role1, role2, role3
+                """, "giverole", "addrole", "roles", "removerole");
     }
 
     @Override
@@ -55,6 +56,8 @@ public class RoleCommand extends ServerCommand {
             return;
         }
 
+        rolesDb.sort(Comparator.comparing(Role::getName));
+
         EmbedBuilder embed = new EmbedBuilder();
         embed.setAuthor(String.format("%s roles", guild.getName()), guild.getIconUrl());
 
@@ -86,7 +89,7 @@ public class RoleCommand extends ServerCommand {
         List<String> invalidRoles = new ArrayList<>();
 
         // More than one arg, user is trying to add or remove roles
-        List<String> roleNamesStr = RoleUtil.commaArrayStripKeyword(ctx.parsedMsg(), getKeyword());
+        List<String> roleNamesStr = RoleUtil.commaArrayStripKeyword(ctx.parsedMsg());
         List<Role> rolesStr = RoleUtil.getRolesFromStrings(roleNamesStr, guild, invalidRoles);
 
         StringBuilder invStr = new StringBuilder(); // Invalid roles which don't exist

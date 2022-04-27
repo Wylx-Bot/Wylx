@@ -1,6 +1,7 @@
 package Core.Events.Commands;
 import Core.Events.Event;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,7 +76,7 @@ public abstract class ServerCommand extends Event {
     };
 
     public boolean checkPermission(MessageReceivedEvent event) {
-        var member = event.getMember();
+        Member member = event.getMember();
         if (member == null) return false;
 
         switch (this.cmdPerm) {
@@ -91,7 +92,7 @@ public abstract class ServerCommand extends Event {
             }
             case BOT_ADMIN -> {
                 // TODO: Put in Database
-                var memberId = member.getIdLong();
+                long memberId = member.getIdLong();
 
                 for (long admin : botAdmins) {
                     if (admin == memberId) return true;

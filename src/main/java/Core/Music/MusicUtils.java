@@ -6,7 +6,10 @@ import Core.Wylx;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.GuildVoiceState;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.managers.AudioManager;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
@@ -25,16 +28,16 @@ public class MusicUtils {
      * @return True if there was an error joining
      */
     public static boolean joinVoice(TrackContext ctx) {
-        var wylx = Wylx.getInstance();
-        var audioManager = wylx.getGuildAudioManager(ctx.guildID());
-        var member = wylx.getMemberInGuild(ctx.guildID(), ctx.requesterID());
+        Wylx wylx = Wylx.getInstance();
+        AudioManager audioManager = wylx.getGuildAudioManager(ctx.guildID());
+        Member member = wylx.getMemberInGuild(ctx.guildID(), ctx.requesterID());
 
         // Bot already in voice
         if (audioManager.isConnected())
             return false;
 
         // Get channel that requester is in to join
-        var voiceState = member.getVoiceState();
+        GuildVoiceState voiceState = member.getVoiceState();
         if (voiceState == null || !voiceState.inAudioChannel())
             return true; // User not in voice channel
 
@@ -51,9 +54,9 @@ public class MusicUtils {
      */
     @SuppressWarnings("ConstantConditions")
     public static boolean voiceCommandBlocked(CommandContext ctx) {
-        var wylx = Wylx.getInstance();
-        var audioManager = wylx.getGuildAudioManager(ctx.guildID());
-        var member = wylx.getMemberInGuild(ctx.guildID(), ctx.authorID());
+        Wylx wylx = Wylx.getInstance();
+        AudioManager audioManager = wylx.getGuildAudioManager(ctx.guildID());
+        Member member = wylx.getMemberInGuild(ctx.guildID(), ctx.authorID());
 
         // Check user is in a voice channel
         // Note that JDA only caches members in voice channels, so NULL is expected a lot
@@ -197,7 +200,7 @@ public class MusicUtils {
         if (manager.isLooping()) return null;
 
         for (Object track: list) {
-            var currentTrack = (AudioTrack) track;
+            AudioTrack currentTrack = (AudioTrack) track;
             millis += currentTrack.getDuration();
             if (currentTrack.getInfo().isStream) return null;
         }

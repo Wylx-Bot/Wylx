@@ -6,10 +6,7 @@ import Database.DatabaseManager;
 import io.github.cdimascio.dotenv.Dotenv;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
-import net.dv8tion.jda.api.entities.Activity;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.MessageChannel;
-import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.managers.AudioManager;
 
 import javax.security.auth.login.LoginException;
@@ -75,8 +72,8 @@ public class Wylx {
         activityIndex %= activities.size();
     }
 
-    public long getBotID(){
-        return jda.getSelfUser().getIdLong();
+    public String getBotID(){
+        return jda.getSelfUser().getId();
     }
 
     public String getBotIDString() {
@@ -91,15 +88,15 @@ public class Wylx {
         return db;
     }
 
-    public AudioManager getGuildAudioManager(long guildID) {
-        var guild = jda.getGuildById(guildID);
+    public AudioManager getGuildAudioManager(String guildID) {
+        Guild guild = jda.getGuildById(guildID);
         if (guild == null) return null;
         return guild.getAudioManager();
     }
 
-    public Member getMemberInGuild(long guildID, long userID) {
-        var guild = jda.getGuildById(guildID);
-        var user = jda.getUserById(userID);
+    public Member getMemberInGuild(String guildID, String userID) {
+        Guild guild = jda.getGuildById(guildID);
+        User user = jda.getUserById(userID);
         if (guild == null || user == null) return null;
         return guild.getMember(user);
     }
@@ -111,10 +108,10 @@ public class Wylx {
     }
 
     @SuppressWarnings("ConstantConditions")
-    public boolean userInVoiceChannel(long guildID, long channelID, long userID) {
-        var member = getMemberInGuild(guildID, userID);
+    public boolean userInVoiceChannel(String guildID, long channelID, String userID) {
+        Member member = getMemberInGuild(guildID, userID);
         if (member == null) return false;
-        var voiceState = member.getVoiceState();
+        GuildVoiceState voiceState = member.getVoiceState();
         return voiceState != null &&
                 voiceState.inAudioChannel() &&
                 voiceState.getChannel().getIdLong() == channelID;

@@ -14,9 +14,9 @@ import java.util.List;
 public class RemoveRoleCommand extends ServerCommand {
 
     public RemoveRoleCommand() {
-        super("removerole", CommandPermission.DISCORD_PERM, Permission.ADMINISTRATOR, """
+        super("unregisterrole", CommandPermission.DISCORD_PERM, Permission.ADMINISTRATOR, """
                         Remove role from list of roles which users can self-assign. Can be a comma-delimited list of either IDs or names.
-                        Usage: %{p}removerole role1, role2, role3, ...
+                        Usage: %{p}unregisterrole role1, role2, role3, ...
                         """);
     }
 
@@ -35,7 +35,7 @@ public class RemoveRoleCommand extends ServerCommand {
             return;
         }
 
-        List<String> rolesStr = RoleUtil.commaArrayStripKeyword(ctx.parsedMsg(), getKeyword());
+        List<String> rolesStr = RoleUtil.commaArrayStripKeyword(ctx.parsedMsg());
         List<Long> curRoles = ctx.db().getSetting(ServerIdentifiers.PublicRoles);
         StringBuilder removedRoles = new StringBuilder();
         EmbedBuilder embed = new EmbedBuilder();

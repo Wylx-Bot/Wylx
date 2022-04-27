@@ -9,7 +9,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class WylxPlayerManager {
     private final AudioPlayerManager playerManager;
-    private final ConcurrentHashMap<Long, GuildMusicManager> managers;
+    private final ConcurrentHashMap<String, GuildMusicManager> managers;
 
     private WylxPlayerManager() {
         playerManager = new DefaultAudioPlayerManager();
@@ -24,7 +24,7 @@ public class WylxPlayerManager {
         return instance;
     }
 
-    public GuildMusicManager getGuildManager(long guildID) {
+    public GuildMusicManager getGuildManager(String guildID) {
         if (managers.containsKey(guildID)) {
             return managers.get(guildID);
         }

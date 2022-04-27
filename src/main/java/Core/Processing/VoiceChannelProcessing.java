@@ -18,15 +18,15 @@ public class VoiceChannelProcessing extends ListenerAdapter {
 
     @Override
     public void onGuildVoiceMove(@NotNull GuildVoiceMoveEvent event) {
-        checkVoiceChannel(event.getGuild().getIdLong());
+        checkVoiceChannel(event.getGuild().getId());
     }
 
     @Override
     public void onGuildVoiceLeave(@NotNull GuildVoiceLeaveEvent event) {
-        checkVoiceChannel(event.getGuild().getIdLong());
+        checkVoiceChannel(event.getGuild().getId());
     }
 
-    private void checkVoiceChannel(long guildID) {
+    private void checkVoiceChannel(String guildID) {
         GuildMusicManager guildMusicManager = WylxPlayerManager.getInstance().getGuildManager(guildID);
         AudioManager manager =  Wylx.getInstance().getGuildAudioManager(guildID);
         AudioChannel channel = manager.getConnectedChannel();
