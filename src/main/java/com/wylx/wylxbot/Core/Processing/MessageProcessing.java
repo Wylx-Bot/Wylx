@@ -6,8 +6,8 @@ import com.wylx.wylxbot.Commands.Fight.FightPackage;
 import com.wylx.wylxbot.Commands.Frog.FrogPackage;
 import com.wylx.wylxbot.Commands.Music.MusicPackage;
 import com.wylx.wylxbot.Commands.Roles.RolePackage;
-import com.wylx.wylxbot.Commands.ServerUtil.ServerUtilPackage;
 import com.wylx.wylxbot.Commands.ServerSettings.ServerSettingsPackage;
+import com.wylx.wylxbot.Commands.ServerUtil.ServerUtilPackage;
 import com.wylx.wylxbot.Commands.TimeConversion.TimePackage;
 import com.wylx.wylxbot.Core.Events.Commands.CommandContext;
 import com.wylx.wylxbot.Core.Events.Commands.ServerCommand;
@@ -21,6 +21,11 @@ import com.wylx.wylxbot.Core.WylxEnvConfig;
 import com.wylx.wylxbot.Database.DatabaseManager;
 import com.wylx.wylxbot.Database.DiscordServer;
 import com.wylx.wylxbot.Database.ServerIdentifiers;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -28,12 +33,9 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
+/**
+ * Listens for message events from Discord. Handles firing off commands from the Commands package.
+ */
 public class MessageProcessing extends ListenerAdapter {
     private static final WylxPlayerManager musicPlayerManager = WylxPlayerManager.getInstance();
     private static final Logger logger = LoggerFactory.getLogger(MessageProcessing.class);
@@ -41,24 +43,24 @@ public class MessageProcessing extends ListenerAdapter {
     public static final ArrayList<SilentEvent> silentEvents = new ArrayList<>();
     public static final HashMap<String, Event> eventMap = new HashMap<>();
     public static final EventPackage[] eventPackages = {
-            new ServerUtilPackage(),
-            new ServerSettingsPackage(),
-            new MusicPackage(),
-            new TTRPGPackage(),
-            new BotUtilPackage(),
-            new FrogPackage(),
-            new FightPackage(),
-            new RolePackage(),
-            new TimePackage(),
+        new ServerUtilPackage(),
+        new ServerSettingsPackage(),
+        new MusicPackage(),
+        new TTRPGPackage(),
+        new BotUtilPackage(),
+        new FrogPackage(),
+        new FightPackage(),
+        new RolePackage(),
+        new TimePackage(),
     };
 
     static {
-        for(EventPackage eventPackage : eventPackages){
-            for(ServerCommand command : eventPackage.getCommands()){
+        for (EventPackage eventPackage : eventPackages) {
+            for (ServerCommand command : eventPackage.getCommands()) {
                 commandMap.putAll(command.getCommandMap());
             }
             silentEvents.addAll(Arrays.asList(eventPackage.getSilentEvents()));
-            for(Event event : eventPackage.getEvents()){
+            for (Event event : eventPackage.getEvents()) {
                 eventMap.putAll(event.getEventMap());
             }
         }
@@ -71,16 +73,18 @@ public class MessageProcessing extends ListenerAdapter {
         Wylx wylx = Wylx.getInstance();
         DatabaseManager dbManager = wylx.getDb();
 
-        String memberID = event.getAuthor().getId();
-        String guildID = event.getGuild().getId();
+        String memberId = event.getAuthor().getId();
+        String guildId = event.getGuild().getId();
 
         //Ignore messages from the bot
-        if(memberID.equals(wylx.getBotID()) ||
-            !event.getChannel().canTalk() ||
-            !event.isFromGuild()) return;
+        if (memberId.equals(wylx.getBotId())
+            || !event.getChannel().canTalk()
+            || !event.isFromGuild()) {
+            return;
+        }
 
-        DiscordServer db = dbManager.getServer(event.getGuild().getId());
-        ServerEventManager eventManager = ServerEventManager.getServerEventManager(event.getGuild().getId());
+        DiscordServer db = dbManager.getServer(guildId);
+        ServerEventManager eventManager = ServerEventManager.getServerEventManager(guildId);
         String serverPrefix = getPrefix(db, wylx);
         String msgStr = event.getMessage().getContentRaw();
         String msgPrefix = null;
@@ -93,7 +97,8 @@ public class MessageProcessing extends ListenerAdapter {
             msgPrefix = serverPrefix;
 
         // Does message start with @Wylx?
-        } else if (matcher.find() && matcher.start() == 0 && matcher.group(1).equals(wylx.getBotIDString())) {
+        } else if (matcher.find() && matcher.start() == 0
+                && matcher.group(1).equals(wylx.getBotIdString())) {
             msgPrefix = msgStr.substring(0, matcher.end());
         }
 
@@ -104,23 +109,25 @@ public class MessageProcessing extends ListenerAdapter {
             ServerCommand command = commandMap.get(args[0].toLowerCase());
 
             if (command != null && eventManager.checkEvent(command)) {
-                if(command.checkPermission(event)) {
+                if (command.checkPermission(event)) {
                     CommandContext ctx = new CommandContext(
-                        event, args, msgStr, serverPrefix, guildID, memberID,
-                        musicPlayerManager.getGuildManager(guildID),
+                        event, args, msgStr, serverPrefix, guildId, memberId,
+                        musicPlayerManager.getGuildManager(guildId),
                         db
                     );
                     logger.debug("Command ({}) Called With {} Args", args[0], args.length);
                     command.runCommand(ctx);
                 } else {
-                    event.getMessage().reply("You don't have permission to use this command!").queue();
+                    event.getMessage()
+                            .reply("You don't have permission to use this command!")
+                            .queue();
                 }
                 return;
             }
         }
 
-        for(SilentEvent silentEvent : silentEvents){
-            if(eventManager.checkEvent(silentEvent) && silentEvent.check(event, serverPrefix)){
+        for (SilentEvent silentEvent : silentEvents) {
+            if (eventManager.checkEvent(silentEvent) && silentEvent.check(event, serverPrefix)) {
                 silentEvent.runEvent(event, serverPrefix);
                 return;
             }

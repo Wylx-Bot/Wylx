@@ -1,7 +1,17 @@
 package com.wylx.wylxbot.Core.Util;
 
+/**
+ * Progress Bar helper class.
+ */
 public class ProgressBar {
     private static final int PROGRESS_BAR_LENGTH = 33;
+
+    /**
+     * Create a progress bar of length PROGRESS_BAR_LENGTH.
+     *
+     * @param percent Progress as a value from 0-1
+     * @return String progress bar
+     */
     public static String progressBar(double percent) {
         StringBuilder progress = new StringBuilder("[");
         int length = (int) (percent * PROGRESS_BAR_LENGTH);

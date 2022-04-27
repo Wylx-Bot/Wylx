@@ -1,6 +1,13 @@
 package com.wylx.wylxbot.Core.Util;
 
 import com.wylx.wylxbot.Core.Wylx;
+import java.time.Duration;
+import java.util.Collection;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.TimeUnit;
+import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
@@ -8,32 +15,33 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.react.GenericMessageReactionEvent;
 import net.dv8tion.jda.api.exceptions.ErrorHandler;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
-import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.requests.ErrorResponse;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
 import org.jetbrains.annotations.NotNull;
 
-import java.time.Duration;
-import java.util.Collection;
-import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.concurrent.TimeUnit;
-import java.util.function.BiConsumer;
-import java.util.function.BiFunction;
-
+/**
+ * Helper functions for getting user input after a command is run.
+ */
 public class Helper {
     private static final int MILLISECONDS_PER_SECOND = 1000;
     private static final int SECONDS_PER_MINUTE = 60;
     private static final int MINUTES_PER_HOUR = 60;
     private static final int ONE_HOUR = MINUTES_PER_HOUR * SECONDS_PER_MINUTE * MILLISECONDS_PER_SECOND;
 
-    // Validates the users choice, if they select :check: it runs the runnable, if they select :x: do nothing
+    // Unicode for :x: and :check:
     public static final String CHECK = "U+2705";
     public static final String X = "U+274c";
-    public static void validate(String description, MessageReceivedEvent event, Runnable runnable){
+
+    /**
+     * Create a confirmation message which users can respond to by selecting :check: or :x:.
+     * runnable only runs when :Check: is selected.
+     *
+     * @param description Description to put in confirmation message
+     * @param event Original event that caused the command that called this
+     * @param runnable Runnable that is run when :check: is selected.
+     */
+    public static void validate(String description, MessageReceivedEvent event, Runnable runnable) {
         event.getChannel().deleteMessageById(event.getMessageId()).queue();
         event.getChannel().sendMessage(description).queue(message -> {
             // Check emoji
@@ -46,33 +54,34 @@ public class Helper {
 
     private static class ValidateContainer extends ListenerAdapter {
         private final Runnable runnable;
-        private final long messageID;
-        private final long userID;
+        private final long messageId;
+        private final long userId;
 
-        private ValidateContainer(Runnable runnable, long messageID, long userID){
+        private ValidateContainer(Runnable runnable, long messageId, long userId) {
             this.runnable = runnable;
-            this.messageID = messageID;
-            this.userID = userID;
-            Wylx.getInstance().getJDA().addEventListener(this);
+            this.messageId = messageId;
+            this.userId = userId;
+            Wylx.getInstance().getJda().addEventListener(this);
         }
 
         @Override
         public void onGenericMessageReaction(@NotNull GenericMessageReactionEvent event) {
-            if(event.getMessageIdLong() == messageID && event.getUserIdLong() == userID){
-                if(event.getReactionEmote().getAsCodepoints().equals(CHECK)){
-                    event.getChannel().deleteMessageById(messageID).queue();
+            if (event.getMessageIdLong() == messageId && event.getUserIdLong() == userId) {
+                if (event.getReactionEmote().getAsCodepoints().equals(CHECK)) {
+                    event.getChannel().deleteMessageById(messageId).queue();
                     runnable.run();
-                    Wylx.getInstance().getJDA().removeEventListener(this);
-                } else if(event.getReactionEmote().getAsCodepoints().equals(X)){
+                    Wylx.getInstance().getJda().removeEventListener(this);
+                } else if (event.getReactionEmote().getAsCodepoints().equals(X)) {
                     event.getChannel().sendMessage("Cancelled").queue();
-                    Wylx.getInstance().getJDA().removeEventListener(this);
+                    Wylx.getInstance().getJda().removeEventListener(this);
                 }
             }
         }
     }
 
     /**
-     * Create a self-destructing message which deletes itself after timeout
+     * Create a self-destructing message which deletes itself after timeout.
+     *
      * @param msg Message to send
      * @param timeout Time until message is deleted
      */
@@ -81,34 +90,6 @@ public class Helper {
             var errorHandler = new ErrorHandler().ignore(ErrorResponse.UNKNOWN_MESSAGE);
             message.delete().queueAfter(timeout.toSeconds(), TimeUnit.SECONDS, null, errorHandler);
         });
-    }
-
-    public static void validateButtons(String description, MessageReceivedEvent event, Runnable runnable) {
-        long messageId = event.getMessageIdLong();
-        List<ActionRow> rows = List.of(ActionRow.of(
-                Button.success(CHECK, "Continue"),
-                Button.danger(X, "Cancel")
-        ));
-
-        createButtonInteraction((ButtonInteractionEvent buttonEvent, Object ctx) -> {
-            if (buttonEvent.getUser().getIdLong() == event.getAuthor().getIdLong()) {
-                if (buttonEvent.getComponentId().equals(CHECK)) {
-                    event.getChannel().deleteMessageById(messageId).queue();
-                    runnable.run();
-                } else {
-                    buttonEvent.editMessage("Cancelled")
-                            .flatMap(InteractionHook::editOriginalComponents)
-                            .queue();
-                }
-                return true;
-            }
-            return false;
-        }, (Message sentMessage, Boolean timedOut) -> {
-            if (timedOut) {
-                sentMessage.editMessage("Timed Out")
-                        .flatMap(Message::editMessageComponents).queue();
-            }
-        }, rows, event.getChannel().sendMessage(description), null);
     }
 
     /**
@@ -132,7 +113,7 @@ public class Helper {
 
         Timer timer = new Timer();
         Message msg = toSend.setActionRows(actionRows).complete();
-        JDA jda = Wylx.getInstance().getJDA();
+        JDA jda = Wylx.getInstance().getJda();
 
         ListenerAdapter adapter = new ListenerAdapter() {
             @Override

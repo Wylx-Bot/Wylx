@@ -19,7 +19,7 @@ public class DatabaseManager {
     private final HashMap<String, DiscordUser> userCache = new HashMap<>();
 
     public DatabaseManager(WylxEnvConfig config) {
-        connectionString = new ConnectionString(config.dbURL);
+        connectionString = new ConnectionString(config.dbUrl);
         client = getMongoClient();
     }
 

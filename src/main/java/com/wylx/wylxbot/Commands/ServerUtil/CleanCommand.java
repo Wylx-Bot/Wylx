@@ -54,7 +54,7 @@ public class CleanCommand extends ServerCommand {
         int scrapeThisTime = Math.min(scrape, 100);
         history.retrievePast(scrapeThisTime).queue(messages -> {
             // Load information that will be constant
-            String botID = Wylx.getInstance().getBotID();
+            String botID = Wylx.getInstance().getBotId();
 
             // Loop through each loaded message
             for(int i = 0; i < messages.size(); i++){

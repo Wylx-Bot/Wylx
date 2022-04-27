@@ -12,6 +12,9 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Processes voice channel events, mostly used to detect when Wylx should leave a voice channel.
+ */
 public class VoiceChannelProcessing extends ListenerAdapter {
 
     private static final Logger logger = LoggerFactory.getLogger(VoiceChannelProcessing.class);
@@ -26,9 +29,10 @@ public class VoiceChannelProcessing extends ListenerAdapter {
         checkVoiceChannel(event.getGuild().getId());
     }
 
-    private void checkVoiceChannel(String guildID) {
-        GuildMusicManager guildMusicManager = WylxPlayerManager.getInstance().getGuildManager(guildID);
-        AudioManager manager =  Wylx.getInstance().getGuildAudioManager(guildID);
+    private void checkVoiceChannel(String guildId) {
+        WylxPlayerManager playerManager = WylxPlayerManager.getInstance();
+        GuildMusicManager guildMusicManager = playerManager.getGuildManager(guildId);
+        AudioManager manager =  Wylx.getInstance().getGuildAudioManager(guildId);
         AudioChannel channel = manager.getConnectedChannel();
 
         if (channel == null) {
@@ -38,10 +42,8 @@ public class VoiceChannelProcessing extends ListenerAdapter {
 
         // Leave if we are the only user left
         if (manager.isConnected() && channel.getMembers().size() == 1) {
-            logger.debug("Leaving {} due to inactivity", guildID);
+            logger.debug("Leaving {} due to inactivity", guildId);
             guildMusicManager.stop();
         }
     }
-
-
 }

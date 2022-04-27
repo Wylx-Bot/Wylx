@@ -4,6 +4,12 @@ import com.wylx.wylxbot.Core.Processing.MessageProcessing;
 import com.wylx.wylxbot.Core.Processing.VoiceChannelProcessing;
 import com.wylx.wylxbot.Database.DatabaseManager;
 import io.github.cdimascio.dotenv.Dotenv;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
+import javax.security.auth.login.LoginException;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
@@ -12,21 +18,21 @@ import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.managers.AudioManager;
 
-import javax.security.auth.login.LoginException;
-import java.util.*;
-
+/**
+ * Wylx Bot main class. Connects to Discord and contains some helper methods.
+ */
 public class Wylx {
     private static final Wylx INSTANCE = new Wylx();
     private static final int ACTIVITY_PERIOD = 60000; // 60 seconds
     private final List<Activity> activities = new ArrayList<>(Arrays.asList(
-        Activity.playing("with half a ship"), 			// Timelord
-        Activity.playing("with other sentient bots"), 	// Dragonite
+        Activity.playing("with half a ship"),           // Timelord
+        Activity.playing("with other sentient bots"),   // Dragonite
         Activity.playing("with the fate of humanity"),
         Activity.playing("Human Deception Simulator")
     ));
 
     private JDA jda;
-    private DatabaseManager db;
+    private final DatabaseManager db;
     private int activityIndex = 0;
     private final WylxEnvConfig wylxConfig;
 
@@ -75,11 +81,11 @@ public class Wylx {
         activityIndex %= activities.size();
     }
 
-    public String getBotID(){
+    public String getBotId() {
         return jda.getSelfUser().getId();
     }
 
-    public String getBotIDString() {
+    public String getBotIdString() {
         return jda.getSelfUser().getId();
     }
 
@@ -91,36 +97,73 @@ public class Wylx {
         return db;
     }
 
-    public AudioManager getGuildAudioManager(String guildID) {
-        var guild = jda.getGuildById(guildID);
-        if (guild == null) return null;
+    /**
+     * Get audio manager from Discord Guild.
+     *
+     * @param guildId Guild ID
+     * @return audio manager
+     */
+    public AudioManager getGuildAudioManager(String guildId) {
+        var guild = jda.getGuildById(guildId);
+        if (guild == null) {
+            return null;
+        }
         return guild.getAudioManager();
     }
 
-    public Member getMemberInGuild(String guildID, String userID) {
-        var guild = jda.getGuildById(guildID);
-        var user = jda.getUserById(userID);
-        if (guild == null || user == null) return null;
+    /**
+     * Get member from Discord Guild.
+     *
+     * @param guildId Guild ID
+     * @param userId User ID
+     * @return Member
+     */
+    public Member getMemberInGuild(String guildId, String userId) {
+        var guild = jda.getGuildById(guildId);
+        var user = jda.getUserById(userId);
+        if (guild == null || user == null) {
+            return null;
+        }
         return guild.getMember(user);
     }
 
-    public MessageChannel getTextChannel(long channelID) {
-        TextChannel channel = jda.getTextChannelById(channelID);
-        if (channel != null) return channel;
-        else return jda.getThreadChannelById(channelID);
+    /**
+     * Get text or thread channel from channel ID.
+     *
+     * @param channelId Channel ID
+     * @return Message Channel
+     */
+    public MessageChannel getTextChannel(long channelId) {
+        TextChannel channel = jda.getTextChannelById(channelId);
+        if (channel != null) {
+            return channel;
+        } else {
+            return jda.getThreadChannelById(channelId);
+        }
     }
 
+    /**
+     * Check if user is in the voice channel given by channelId.
+     *
+     * @param guildId Guild ID
+     * @param channelId Voice channel ID
+     * @param userId User ID
+     * @return true if user is in the voice channel channelId
+     */
     @SuppressWarnings("ConstantConditions")
-    public boolean userInVoiceChannel(String guildID, long channelID, String userID) {
-        var member = getMemberInGuild(guildID, userID);
-        if (member == null) return false;
+    public boolean userInVoiceChannel(String guildId, long channelId, String userId) {
+        var member = getMemberInGuild(guildId, userId);
+        if (member == null) {
+            return false;
+        }
+
         var voiceState = member.getVoiceState();
-        return voiceState != null &&
-                voiceState.inAudioChannel() &&
-                voiceState.getChannel().getIdLong() == channelID;
+        return voiceState != null
+                && voiceState.inAudioChannel()
+                && voiceState.getChannel().getIdLong() == channelId;
     }
 
-    public JDA getJDA(){
+    public JDA getJda() {
         return jda;
     }
 }
