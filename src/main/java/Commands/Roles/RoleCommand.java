@@ -4,7 +4,7 @@ import Core.Events.Commands.CommandContext;
 import Core.Events.Commands.ServerCommand;
 import Database.DbElements.DiscordServer;
 import Database.DbElements.ServerIdentifiers;
-import Core.Roles.RoleUtil;
+import Commands.Roles.RolesUtil.RoleUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;

@@ -1,7 +1,7 @@
 package Database.Codecs;
 
-import Core.Roles.RoleMenu;
-import Core.Roles.RoleReaction;
+import Commands.Roles.RolesUtil.RoleMenu;
+import Commands.Roles.RolesUtil.RoleReaction;
 import net.dv8tion.jda.api.entities.Emoji;
 import org.bson.BsonReader;
 import org.bson.BsonType;

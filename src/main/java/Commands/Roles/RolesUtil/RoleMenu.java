@@ -1,7 +1,7 @@
-package Core.Roles;
+package Commands.Roles.RolesUtil;
 
 import Core.Wylx;
-import Database.ServerIdentifiers;
+import Database.DbElements.ServerIdentifiers;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;

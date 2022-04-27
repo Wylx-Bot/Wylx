@@ -2,8 +2,8 @@ package Commands.Roles;
 
 import Core.Events.Commands.CommandContext;
 import Core.Events.Commands.ServerCommand;
-import Core.Roles.RoleMenu;
-import Core.Roles.RoleReaction;
+import Commands.Roles.RolesUtil.RoleMenu;
+import Commands.Roles.RolesUtil.RoleReaction;
 import Core.Wylx;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;

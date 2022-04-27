@@ -1,4 +1,4 @@
-package Core.Roles;
+package Commands.Roles.RolesUtil;
 
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Role;
