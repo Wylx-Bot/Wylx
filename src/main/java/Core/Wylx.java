@@ -2,7 +2,7 @@ package Core;
 
 import Core.Processing.MessageProcessing;
 import Core.Processing.VoiceChannelProcessing;
-import Database.DatabaseManager;
+import Database.DbManager;
 import io.github.cdimascio.dotenv.Dotenv;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
@@ -23,7 +23,7 @@ public class Wylx {
     ));
 
     private JDA jda;
-    private DatabaseManager db;
+    private DbManager db;
     private int activityIndex = 0;
     private final WylxEnvConfig wylxConfig;
 
@@ -47,7 +47,7 @@ public class Wylx {
             activities.add(Activity.playing("with Wylx!"));
         }
 
-        db = new DatabaseManager(wylxConfig);
+        db = new DbManager(wylxConfig);
 
         try {
             jda = JDABuilder.createDefault(token)
@@ -84,7 +84,7 @@ public class Wylx {
         return wylxConfig;
     }
 
-    public DatabaseManager getDb() {
+    public DbManager getDb() {
         return db;
     }
 

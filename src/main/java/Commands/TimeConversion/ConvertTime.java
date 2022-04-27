@@ -2,11 +2,10 @@ package Commands.TimeConversion;
 
 import Core.Events.SilentEvents.SilentEvent;
 import Core.Wylx;
-import Database.DiscordUser;
+import Database.DbCollection;
 import Database.UserIdentifiers;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
-import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -27,16 +26,17 @@ public class ConvertTime extends SilentEvent {
     // TODO: Only convert to the timezones that people in the server have
     @Override
     public void runEvent(MessageReceivedEvent event, String prefix) {
-        DiscordUser dUser = Wylx.getInstance().getDb().getUser(event.getAuthor().getId());
-        Timezone userTimezone = Timezone.getTimezone(dUser.getSetting(UserIdentifiers.Timezone));
+        String userID = event.getAuthor().getId();
+        DbCollection<UserIdentifiers> dUser = Wylx.getInstance().getDb().getUserCollection();
+        Timezone userTimezone = Timezone.getTimezone(dUser.getSetting(userID, UserIdentifiers.Timezone));
 
         // Cant do conversions if we don't know the user's timezone
         if(userTimezone == null) {
             // Don't prompt a user more than once (spam)
-            Boolean timezonePrompted = dUser.getSetting(UserIdentifiers.TimezonePrompted);
+            Boolean timezonePrompted = dUser.getSetting(userID, UserIdentifiers.TimezonePrompted);
             if(timezonePrompted) return;
             // Set it so the user doesn't get prompted multiple times
-            dUser.setSetting(UserIdentifiers.TimezonePrompted, true);
+            dUser.setSetting(userID, UserIdentifiers.TimezonePrompted, true);
 
             event.getMessage().reply("Please set your timezone using " + prefix + "settimezone <timezone>").queue();
             return;

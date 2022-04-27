@@ -36,7 +36,7 @@ public class RemoveRoleCommand extends ServerCommand {
         }
 
         List<String> rolesStr = RoleUtil.commaArrayStripKeyword(ctx.parsedMsg());
-        List<Long> curRoles = ctx.db().getSetting(ServerIdentifiers.PublicRoles);
+        List<Long> curRoles = ctx.db().getSetting(ctx.guildID(), ServerIdentifiers.PublicRoles);
         StringBuilder removedRoles = new StringBuilder();
         EmbedBuilder embed = new EmbedBuilder();
         int oldSize = curRoles.size();
@@ -53,6 +53,6 @@ public class RemoveRoleCommand extends ServerCommand {
         embed.setAuthor("Removed roles");
         embed.setDescription(removedRoles.toString());
         ctx.event().getChannel().sendMessageEmbeds(embed.build()).queue();
-        ctx.db().setSetting(ServerIdentifiers.PublicRoles, curRoles);
+        ctx.db().setSetting(ctx.guildID(), ServerIdentifiers.PublicRoles, curRoles);
     }
 }

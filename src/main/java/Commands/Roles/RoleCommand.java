@@ -3,7 +3,6 @@ package Commands.Roles;
 import Core.Events.Commands.CommandContext;
 import Core.Events.Commands.ServerCommand;
 import Core.Util.RoleUtil;
-import Database.DiscordServer;
 import Database.ServerIdentifiers;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
@@ -29,9 +28,8 @@ public class RoleCommand extends ServerCommand {
     @Override
     public void runCommand(CommandContext ctx) {
         Guild guild = ctx.event().getGuild();
-        DiscordServer db = ctx.db();
 
-        List<Long> roleIdsDb = db.getSetting(ServerIdentifiers.PublicRoles);
+        List<Long> roleIdsDb = ctx.db().getSetting(ctx.guildID(), ServerIdentifiers.PublicRoles);
         List<Role> rolesDb = RoleUtil.getRolesFromIds(roleIdsDb, guild);
 
         // If no args provided, just list which roles users can give themselves

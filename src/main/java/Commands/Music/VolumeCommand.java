@@ -41,7 +41,7 @@ public class VolumeCommand extends ServerCommand {
             return;
         }
 
-        ctx.db().setSetting(ServerIdentifiers.MusicVolume, number);
+        ctx.db().setSetting(ctx.guildID(), ServerIdentifiers.MusicVolume, number);
         ctx.musicManager().setVolume(number);
     }
 }

@@ -18,8 +18,8 @@ import Core.Events.SilentEvents.SilentEvent;
 import Core.Music.WylxPlayerManager;
 import Core.Wylx;
 import Core.WylxEnvConfig;
-import Database.DatabaseManager;
-import Database.DiscordServer;
+import Database.DbCollection;
+import Database.DbManager;
 import Database.ServerIdentifiers;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
@@ -69,7 +69,7 @@ public class MessageProcessing extends ListenerAdapter {
     @Override
     public void onMessageReceived(@NotNull MessageReceivedEvent event) {
         Wylx wylx = Wylx.getInstance();
-        DatabaseManager dbManager = wylx.getDb();
+        DbManager dbManager = wylx.getDb();
 
         String memberID = event.getAuthor().getId();
         String guildID = event.getGuild().getId();
@@ -79,9 +79,9 @@ public class MessageProcessing extends ListenerAdapter {
             !event.getChannel().canTalk() ||
             !event.isFromGuild()) return;
 
-        DiscordServer db = dbManager.getServer(event.getGuild().getId());
-        ServerEventManager eventManager = ServerEventManager.getServerEventManager(event.getGuild().getId());
-        String serverPrefix = getPrefix(db, wylx);
+        DbCollection<ServerIdentifiers> db = dbManager.getServerCollection();
+        ServerEventManager eventManager = ServerEventManager.getServerEventManager(guildID);
+        String serverPrefix = getPrefix(guildID, wylx);
         String msgStr = event.getMessage().getContentRaw();
         String msgPrefix = null;
 
@@ -127,10 +127,11 @@ public class MessageProcessing extends ListenerAdapter {
         }
     }
 
-    private String getPrefix(DiscordServer server, Wylx wylx) {
+    private String getPrefix(String guildID, Wylx wylx) {
         WylxEnvConfig config = wylx.getWylxConfig();
+        DbCollection<ServerIdentifiers> db = wylx.getDb().getServerCollection();
         if (config.release) {
-            return server.getSetting(ServerIdentifiers.Prefix);
+            return db.getSetting(guildID, ServerIdentifiers.Prefix);
         }
 
         return config.betaPrefix;

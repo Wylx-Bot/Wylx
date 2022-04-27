@@ -1,67 +1,83 @@
 package Core.Fight;
 
 import Core.Wylx;
-import Database.DatabaseManager;
-import Database.DiscordUser;
+import Database.DbCollection;
+import Database.DbManager;
 import Database.UserIdentifiers;
 import net.dv8tion.jda.api.entities.Member;
 import org.bson.BsonReader;
 import org.bson.BsonType;
 import org.bson.BsonWriter;
-import org.bson.codecs.Codec;
+import org.bson.Document;
 import org.bson.codecs.DecoderContext;
 import org.bson.codecs.EncoderContext;
 
-public class FightUserStats implements Codec<FightUserStats> {
+public class FightUserStats extends Document {
     public int hp = 500;
     public Member user;
-    public DiscordUser userDb;
 
+    private static final String EXP_KEY = "Exp";
+    private static final String LEVEL_KEY = "Level";
+    private static final String HP_KEY = "HP Level";
+    private static final String DAMAGE_KEY = "Damage Level";
+    private static final String EXP_MULT_KEY = "EXP Multiplier Level";
+    private static final String SPEED_KEY = "Speed Level";
 
-    // Stored in DB
-    private int exp = 0;
-    private int level = 1;
+    public FightUserStats() {
+        put(EXP_KEY, 0);
+        put(LEVEL_KEY, 1);
+        put(HP_KEY, 0);
+        put(DAMAGE_KEY, 0);
+        put(EXP_MULT_KEY, 0);
+        put(SPEED_KEY, 0);
+    }
 
-    private int hpLevel = 0;        // Level used for HP multiplier
-    private int damageLevel = 0;    // Level used for Damage multiplier
-    private int expMultLevel = 0;   // Level used for Experience multiplier
-    private int speedLevel = 0;     // Level used for initial turn bias
-
-    public FightUserStats() {}
-
-    private static final DatabaseManager db = Wylx.getInstance().getDb();
+    private static final DbManager db = Wylx.getInstance().getDb();
     public static FightUserStats getUserStats(Member user) {
-        DiscordUser dbUser = db.getUser(user.getId());
-        FightUserStats stats = dbUser.getSetting(UserIdentifiers.FightStats);
+        DbCollection<UserIdentifiers> dbUser = db.getUserCollection();
+        FightUserStats stats = dbUser.getSetting(user.getId(), UserIdentifiers.FightStats);
         stats.user = user;
-        stats.userDb = dbUser;
         return stats;
     }
 
-    public boolean addExp(int exp) {
-        this.exp += exp;
+    public boolean addExp(int addedExp) {
+        boolean levelUp = false;
+        int level = getLvl();
+        int exp = getInteger(EXP_KEY) + addedExp;
+
+        exp += getInteger(EXP_KEY);
         int expNextLvl = FightUtil.calcEXPForLevel(level);
-        if (this.exp > expNextLvl) {
-            this.exp -= expNextLvl;
-            this.level++;
-            return true;
+        if (exp > expNextLvl) {
+            exp -= expNextLvl;
+            level++;
+            levelUp = true;
         }
 
-        return false;
+        this.put(EXP_KEY, exp);
+        this.put(LEVEL_KEY, level);
+        return levelUp;
     }
 
     public int getLvl() {
-        return level;
+        return getInteger(LEVEL_KEY);
+    }
+
+    private String fightStatToKey(FightStatTypes stat) {
+        return switch (stat) {
+            case HP -> HP_KEY;
+            case EXP -> EXP_MULT_KEY;
+            case SPEED -> SPEED_KEY;
+            case DAMAGE -> DAMAGE_KEY;
+        };
     }
 
     // Returns level of a skill
     public int getStatLvl(FightStatTypes stat) {
-        return switch (stat) {
-            case HP -> this.hpLevel;
-            case EXP -> this.expMultLevel;
-            case SPEED -> this.speedLevel;
-            case DAMAGE -> this.damageLevel;
-        };
+        return getInteger(fightStatToKey(stat));
+    }
+
+    public void setStatLvl(FightStatTypes stat, int newLevel) {
+        put(fightStatToKey(stat), newLevel);
     }
 
     // Returns multiplier based off of the level of the skill
@@ -70,39 +86,7 @@ public class FightUserStats implements Codec<FightUserStats> {
     }
 
     public void save() {
-        userDb.setSetting(UserIdentifiers.FightStats, this);
-    }
-
-    @Override
-    public FightUserStats decode(BsonReader reader, DecoderContext decoderContext) {
-        while (reader.readBsonType() != BsonType.END_OF_DOCUMENT) {
-            String name = reader.readName();
-            switch (name) {
-                case "EXP" -> this.exp = reader.readInt32();
-                case "Level" -> this.level = reader.readInt32();
-                case "HP_Lvl" -> this.hpLevel = reader.readInt32();
-                case "Speed_Lvl" -> this.speedLevel = reader.readInt32();
-                case "EXP_Lvl" -> this.expMultLevel = reader.readInt32();
-                case "Damage_Lvl" -> this.damageLevel = reader.readInt32();
-            }
-        }
-
-        this.hp *= FightUtil.calcMultiplier(this.hpLevel);
-        return this;
-    }
-
-    @Override
-    public void encode(BsonWriter writer, FightUserStats value, EncoderContext encoderContext) {
-        writer.writeInt32("EXP", this.exp);
-        writer.writeInt32("Level", this.level);
-        writer.writeInt32("HP_Lvl", this.hpLevel);
-        writer.writeInt32("Speed_Lvl", this.speedLevel);
-        writer.writeInt32("EXP_Lvl", this.expMultLevel);
-        writer.writeInt32("Damage_Lvl", this.damageLevel);
-    }
-
-    @Override
-    public Class<FightUserStats> getEncoderClass() {
-        return FightUserStats.class;
+        DbCollection<UserIdentifiers> dbUser = db.getUserCollection();
+        dbUser.setSetting(user.getId(), UserIdentifiers.FightStats, this);
     }
 }

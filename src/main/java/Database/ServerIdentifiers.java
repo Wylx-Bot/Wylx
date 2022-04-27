@@ -5,19 +5,20 @@ import org.bson.codecs.Codec;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
+import java.util.function.Supplier;
 
 // These identifiers are used in database access to ensure information is located correctly
 public enum ServerIdentifiers implements DiscordIdentifiers{
-    Modules("Modules_Enabled", ServerEventManager.class, new ServerEventManager()),
-    MusicVolume("Music_Volume", Integer.class, 20),
-    Prefix("Prefix", String.class, ";"),
-    PublicRoles("Public_Roles", List.class, new ArrayList<Long>());
+    Modules("Modules_Enabled", ServerEventManager.class, ServerEventManager::new),
+    MusicVolume("Music_Volume", Integer.class, () -> 20),
+    Prefix("Prefix", String.class, () -> ";"),
+    PublicRoles("Public_Roles", List.class, ArrayList::new);
 
     public final String identifier;
     public final Class<?> dataType;
-    public final Object defaultValue;
+    public final Supplier<Object> defaultValue;
 
-    ServerIdentifiers(String identifier, Class dataType, Object defaultValue) {
+    ServerIdentifiers(String identifier, Class dataType, Supplier<Object> defaultValue) {
         this.identifier = identifier;
         this.dataType = dataType;
         this.defaultValue = defaultValue;
@@ -35,15 +36,7 @@ public enum ServerIdentifiers implements DiscordIdentifiers{
 
     @Override
     public Object getDefaultValue() {
-        if(!(defaultValue instanceof Codec<?>))
-            return defaultValue;
-        else {
-            try {
-                return dataType.getDeclaredConstructor().newInstance();
-            } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-                return null;
-            }
-        }
+        return defaultValue.get();
     }
 }
 
