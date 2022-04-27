@@ -1,6 +1,7 @@
 package Core.Roles;
 
 import Core.Wylx;
+import Database.ServerIdentifiers;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
@@ -85,8 +86,10 @@ public class RoleMenu {
         builder.setAuthor(this.title);
         StringBuilder string = new StringBuilder("React to get a role!\n\n");
         if (reactions.size() == 0) {
-            // TODO: AAAA
-            string.append("This list is currently empty. To add roles, please use TODO");
+            String prefix = Wylx.getInstance().getDb().getServer(guildID).getSetting(ServerIdentifiers.Prefix);
+            string.append("This list is currently empty. To add roles, please use the `");
+            string.append(prefix);
+            string.append("modifyRoleMenu` command");
         } else {
             reactions.forEach(reaction -> {
                 String roleStr = mentionRoles ? reaction.role().getAsMention() : reaction.role().getName();
