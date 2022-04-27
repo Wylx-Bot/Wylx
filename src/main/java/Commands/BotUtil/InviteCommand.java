@@ -1,4 +1,4 @@
-package Commands.ServerUtil;
+package Commands.BotUtil;
 
 import Core.Events.Commands.CommandContext;
 import Core.Events.Commands.ServerCommand;

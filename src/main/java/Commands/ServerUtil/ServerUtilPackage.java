@@ -11,7 +11,6 @@ public class ServerUtilPackage extends EventPackage {
                         new CleanCommand(),
                         new ClearCommand(),
                         new ClearToCommand(),
-                        new InviteCommand(),
                         new RepeatCommand()
                 }, new SilentEvent[]{}
         );
