@@ -38,7 +38,7 @@ public class Help extends ServerCommand {
             event.getChannel().sendMessage(helpMessage).queue();
             return;
         } else if(MessageProcessing.eventMap.containsKey(args[1])){
-            Event serverEvent = MessageProcessing.commandMap.get(args[1]);
+            Event serverEvent = MessageProcessing.eventMap.get(args[1]);
             event.getChannel().sendMessage(serverEvent.getKeyword() + ": " + serverEvent.getDescription(ctx.prefix())).queue();
             return;
         }
