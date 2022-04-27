@@ -6,10 +6,7 @@ import Database.DatabaseManager;
 import io.github.cdimascio.dotenv.Dotenv;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
-import net.dv8tion.jda.api.entities.Activity;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.MessageChannel;
-import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.managers.AudioManager;
 
 import javax.security.auth.login.LoginException;
@@ -92,14 +89,14 @@ public class Wylx {
     }
 
     public AudioManager getGuildAudioManager(String guildID) {
-        var guild = jda.getGuildById(guildID);
+        Guild guild = jda.getGuildById(guildID);
         if (guild == null) return null;
         return guild.getAudioManager();
     }
 
     public Member getMemberInGuild(String guildID, String userID) {
-        var guild = jda.getGuildById(guildID);
-        var user = jda.getUserById(userID);
+        Guild guild = jda.getGuildById(guildID);
+        User user = jda.getUserById(userID);
         if (guild == null || user == null) return null;
         return guild.getMember(user);
     }
@@ -112,9 +109,9 @@ public class Wylx {
 
     @SuppressWarnings("ConstantConditions")
     public boolean userInVoiceChannel(String guildID, long channelID, String userID) {
-        var member = getMemberInGuild(guildID, userID);
+        Member member = getMemberInGuild(guildID, userID);
         if (member == null) return false;
-        var voiceState = member.getVoiceState();
+        GuildVoiceState voiceState = member.getVoiceState();
         return voiceState != null &&
                 voiceState.inAudioChannel() &&
                 voiceState.getChannel().getIdLong() == channelID;

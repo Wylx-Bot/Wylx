@@ -19,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -47,9 +48,9 @@ public class GuildMusicManager extends AudioEventAdapter {
     }
 
     public void queuePlaylist(AudioPlaylist newPlaylist) {
-        var tracks = newPlaylist.getTracks();
-        var ctx = (TrackContext) tracks.get(0).getUserData();
-        var textChannel = Wylx.getInstance().getTextChannel(ctx.channelID());
+        List<AudioTrack> tracks = newPlaylist.getTracks();
+        TrackContext ctx = (TrackContext) tracks.get(0).getUserData();
+        MessageChannel textChannel = Wylx.getInstance().getTextChannel(ctx.channelID());
 
         cancelTimer();
         if (MusicUtils.joinVoice(ctx)) {
@@ -70,8 +71,8 @@ public class GuildMusicManager extends AudioEventAdapter {
     }
 
     public void queue(AudioTrack newTrack) {
-        var ctx = (TrackContext) newTrack.getUserData();
-        var textChannel = Wylx.getInstance().getTextChannel(ctx.channelID());
+        TrackContext ctx = (TrackContext) newTrack.getUserData();
+        MessageChannel textChannel = Wylx.getInstance().getTextChannel(ctx.channelID());
 
         cancelTimer();
         if (MusicUtils.joinVoice(ctx)) {
@@ -120,7 +121,7 @@ public class GuildMusicManager extends AudioEventAdapter {
         discTimer.schedule(new TimerTask() {
             @Override
             public void run() {
-                var audioManager = Wylx.getInstance().getGuildAudioManager(guildID);
+                AudioManager audioManager = Wylx.getInstance().getGuildAudioManager(guildID);
                 audioManager.closeAudioConnection();
             }
         }, 60000);
@@ -201,9 +202,9 @@ public class GuildMusicManager extends AudioEventAdapter {
 
     @Override
     public void onTrackStart(AudioPlayer player, AudioTrack track) {
-        var wylx = Wylx.getInstance();
+        Wylx wylx = Wylx.getInstance();
         lastCtx = (TrackContext) track.getUserData();
-        var channel = wylx.getTextChannel(lastCtx.channelID());
+        MessageChannel channel = wylx.getTextChannel(lastCtx.channelID());
 
         track.setPosition(lastCtx.startMillis());
 
