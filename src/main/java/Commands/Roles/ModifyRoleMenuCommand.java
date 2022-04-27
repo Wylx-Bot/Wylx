@@ -52,6 +52,7 @@ public class ModifyRoleMenuCommand extends ServerCommand {
     private static class DMListener extends ListenerAdapter {
         private final RoleMenu menu;
         private final User user;
+        private final PrivateChannel privateChannel;
         private final Guild guild;
 
         public DMListener(RoleMenu menu, User user, Guild guild) throws ErrorResponseException {
@@ -59,14 +60,14 @@ public class ModifyRoleMenuCommand extends ServerCommand {
             this.user = user;
             this.guild = guild;
 
-            PrivateChannel channel = user.openPrivateChannel().complete();
-            sendUsageAndMenu(channel);
+            privateChannel = user.openPrivateChannel().complete();
+            sendUsageAndMenu(privateChannel);
         }
 
         @Override
         public void onMessageReceived(@NotNull MessageReceivedEvent event) {
             if (event.getAuthor().getIdLong() != user.getIdLong() ||
-                event.isFromGuild()) {
+                !event.getChannel().equals(privateChannel)) {
                 return;
             }
 
