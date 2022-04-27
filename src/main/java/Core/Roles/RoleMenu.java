@@ -87,9 +87,11 @@ public class RoleMenu {
         StringBuilder string = new StringBuilder("React to get a role!\n\n");
         if (reactions.size() == 0) {
             String prefix = Wylx.getInstance().getDb().getServer(guildID).getSetting(ServerIdentifiers.Prefix);
-            string.append("This list is currently empty. To add roles, please use the `");
+            string.append("This list is currently empty. To add roles, please use\n`");
             string.append(prefix);
-            string.append("modifyRoleMenu` command");
+            string.append("modifyRoleMenu ");
+            string.append(this.messageID);
+            string.append("`\nto modify this menu.");
         } else {
             reactions.forEach(reaction -> {
                 String roleStr = mentionRoles ? reaction.role().getAsMention() : reaction.role().getName();

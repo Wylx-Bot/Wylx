@@ -5,7 +5,6 @@ import Core.Events.Commands.ServerCommand;
 import Core.Roles.RoleMenu;
 import Core.Roles.RoleReaction;
 import Core.Wylx;
-import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
@@ -13,6 +12,7 @@ import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Arrays;
 import java.util.List;
 
 public class ModifyRoleMenuCommand extends ServerCommand {
@@ -71,17 +71,20 @@ public class ModifyRoleMenuCommand extends ServerCommand {
                 return;
             }
 
-            String[] args = event.getMessage().getContentRaw().split(" ");
-            String options = event.getMessage().getContentRaw().substring(args[0].length()).trim();
+            String[] rawArgs = event.getMessage().getContentRaw().split(" ");
+            List<String> filteredArgs = Arrays.stream(rawArgs).filter(arg -> arg.length() != 0).toList();
 
-            switch (args[0].toLowerCase()) {
+            String command = filteredArgs.get(0).toLowerCase();
+            String options = event.getMessage().getContentRaw().substring(command.length()).trim();
+
+            switch (command) {
                 case "quit" -> {
                     event.getChannel().sendMessage("Finished editing Role Menu").queue();
                     user.getJDA().removeEventListener(this);
                     return;
                 }
                 case "settitle" -> {
-                    if (args.length < 2) {
+                    if (filteredArgs.size() < 2) {
                         event.getChannel().sendMessage("Please give a title").queue();
                         return;
                     } else {
@@ -89,7 +92,7 @@ public class ModifyRoleMenuCommand extends ServerCommand {
                     }
                 }
                 case "addrole" -> {
-                    if (!addRole(args, options, event)) {
+                    if (!addRole(filteredArgs, options, event)) {
                         return;
                     }
                 }
@@ -113,11 +116,11 @@ public class ModifyRoleMenuCommand extends ServerCommand {
             }
         }
 
-        private boolean addRole(String[] args, String options, MessageReceivedEvent event) {
+        private boolean addRole(List<String> args, String options, MessageReceivedEvent event) {
             Emoji emoji;
             String roleName;
 
-            if (args.length <= 1) {
+            if (args.size() <= 1) {
                 event.getChannel().sendMessage("No emoji or role provided").queue();
                  return false;
             }
@@ -142,7 +145,7 @@ public class ModifyRoleMenuCommand extends ServerCommand {
                 roleName = options.substring(emoji.getName().length() + 2);
             } else {
                 // Unicode emote or custom emote
-                emoji = Emoji.fromMarkdown(args[1]);
+                emoji = Emoji.fromMarkdown(args.get(1));
                 roleName = options.substring(emoji.getAsMention().length());
             }
 
