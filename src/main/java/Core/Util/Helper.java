@@ -81,7 +81,7 @@ public class Helper {
      */
     public static void selfDestructingMsg(MessageAction msg, Duration timeout) {
         msg.queue(message -> {
-            var errorHandler = new ErrorHandler().ignore(ErrorResponse.UNKNOWN_MESSAGE);
+            ErrorHandler errorHandler = new ErrorHandler().ignore(ErrorResponse.UNKNOWN_MESSAGE);
             message.delete().queueAfter(timeout.toSeconds(), TimeUnit.SECONDS, null, errorHandler);
         });
     }
