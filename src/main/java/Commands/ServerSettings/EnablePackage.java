@@ -3,6 +3,7 @@ package Commands.ServerSettings;
 import Core.Events.Commands.CommandContext;
 import Core.Events.Commands.ServerCommand;
 import Core.Events.ServerEventManager;
+import Database.ServerIdentifiers;
 import net.dv8tion.jda.api.Permission;
 
 public class EnablePackage extends ServerCommand {
@@ -20,7 +21,7 @@ public class EnablePackage extends ServerCommand {
 			return;
 		}
 
-		ServerEventManager eventManager = ServerEventManager.getServerEventManager(ctx.event().getGuild().getId());
+		ServerEventManager eventManager = ServerEventManager.getServerEventManager(ctx.guildID());
 		String packageName = ctx.args()[1].toLowerCase();
 		boolean value = Boolean.parseBoolean(ctx.args()[2]);
 
@@ -31,6 +32,7 @@ public class EnablePackage extends ServerCommand {
 			return;
 		}
 
+		ctx.db().setSetting(ctx.guildID(), ServerIdentifiers.Modules, eventManager.getDocument());
 		ctx.event().getChannel().sendMessage("Set \"" + packageName + "\" to " + Boolean.parseBoolean(ctx.args()[2])).queue();
 	}
 }

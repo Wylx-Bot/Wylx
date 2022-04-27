@@ -4,6 +4,7 @@ import Core.Events.Commands.CommandContext;
 import Core.Events.Commands.ServerCommand;
 import Core.Events.ServerEventManager;
 import Core.Processing.MessageProcessing;
+import Database.ServerIdentifiers;
 import net.dv8tion.jda.api.Permission;
 
 import java.util.Locale;
@@ -23,7 +24,7 @@ public class EnableCommand extends ServerCommand {
 			return;
 		}
 
-		ServerEventManager eventManager = ServerEventManager.getServerEventManager(ctx.event().getGuild().getId());
+		ServerEventManager eventManager = ServerEventManager.getServerEventManager(ctx.guildID());
 		String eventName;
 
 		try{
@@ -35,6 +36,7 @@ public class EnableCommand extends ServerCommand {
 			return;
 		}
 
+		ctx.db().setSetting(ctx.guildID(), ServerIdentifiers.Modules, eventManager.getDocument());
 		ctx.event().getChannel().sendMessage("Set \"" + eventName + "\" to " + Boolean.parseBoolean(ctx.args()[2])).queue();
 	}
 }

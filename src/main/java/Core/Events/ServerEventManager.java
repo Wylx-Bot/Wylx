@@ -5,13 +5,7 @@ import Core.Wylx;
 import Database.DbCollection;
 import Database.DbManager;
 import Database.ServerIdentifiers;
-import com.mongodb.connection.ServerId;
-import org.bson.BsonReader;
-import org.bson.BsonType;
-import org.bson.BsonWriter;
-import org.bson.codecs.Codec;
-import org.bson.codecs.DecoderContext;
-import org.bson.codecs.EncoderContext;
+import org.bson.Document;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -33,22 +27,26 @@ public class ServerEventManager {
 		// If not cached load the manager from db and cache
 		if(manager == null) {
 			DbCollection<ServerIdentifiers> discordServer = db.getServerCollection();
-			manager = discordServer.getSetting(id, ServerIdentifiers.Modules);
+			Document doc = discordServer.getSetting(id, ServerIdentifiers.Modules);
+			manager = new ServerEventManager(doc);
 			cachedManagers.put(id, manager);
 		}
 
 		return manager;
 	}
 
-	// Map used for making comparisons as events are being run
-	private final HashMap<String, Boolean> masterEventMap = new HashMap<>();
-	// Map of enabled and disabled modules
-	private final HashMap<String, Boolean> moduleMap = new HashMap<>();
-	// Map of events that are exceptions to their modules
-	private final HashMap<String, Boolean> eventExceptionMap = new HashMap<>();
+	private static final String MODULE_MAP = "Modules";
+	private static final String EXCEPTION_MAP = "Exceptions";
 
-	public ServerEventManager() {
-		fillDefaults();
+	// Map used for making comparisons as events are being run
+	private final Map<String, Boolean> masterEventMap = new HashMap<>();
+	// Map of enabled and disabled modules
+	private final Map<String, Boolean> moduleMap = new HashMap<>();
+	// Map of events that are exceptions to their modules
+	private final Map<String, Boolean> eventExceptionMap = new HashMap<>();
+
+	public ServerEventManager(Document document) {
+		initValues(document);
 	}
 
 	public boolean checkEvent(Event event){
@@ -56,7 +54,6 @@ public class ServerEventManager {
 	}
 
 	public boolean checkEvent(String eventName){
-		if(masterEventMap.size() == 0) fillDefaults();
 		return masterEventMap.get(eventName);
 	}
 
@@ -78,10 +75,6 @@ public class ServerEventManager {
 
 		// If the module doesnt exist we cant set anything with it
 		if(module == null) throw new IllegalArgumentException("Specified module does not exist");
-
-		// if the values are already the same do nothing
-		Boolean currentValue = moduleMap.get(moduleName);
-		if(currentValue != null && currentValue == value) return;
 
 		// Write the value to the module map
 		moduleMap.put(moduleName, value);
@@ -117,12 +110,27 @@ public class ServerEventManager {
 		}
 	}
 
-	private void fillDefaults(){
+	private void initValues(Document document) {
+		Map<String, Boolean> modules = document.get(MODULE_MAP, new HashMap<>());
+		Map<String, Boolean> exceptions = document.get(EXCEPTION_MAP, new HashMap<>());
+
+		// Make sure modules has every module
 		for(EventPackage module : eventPackages){
 			String moduleName = module.getClass().getSimpleName().toLowerCase();
-
-			// Load the module that didn't exist
-			setModule(moduleName, true);
+			if (!modules.containsKey(moduleName)) {
+				// Load the module that didn't exist
+				modules.put(moduleName, true);
+			}
 		}
+
+		// Intialize modules and exceptions
+		modules.forEach(this::setModule);
+		exceptions.forEach(this::setEvent);
+	}
+
+	public Document getDocument() {
+		return new Document()
+				.append(MODULE_MAP, moduleMap)
+				.append(EXCEPTION_MAP, eventExceptionMap);
 	}
 }

@@ -5,16 +5,12 @@ import Database.DbCollection;
 import Database.DbManager;
 import Database.UserIdentifiers;
 import net.dv8tion.jda.api.entities.Member;
-import org.bson.BsonReader;
-import org.bson.BsonType;
-import org.bson.BsonWriter;
 import org.bson.Document;
-import org.bson.codecs.DecoderContext;
-import org.bson.codecs.EncoderContext;
 
-public class FightUserStats extends Document {
+public class FightUserStats {
     public int hp = 500;
     public Member user;
+    private final Document document;
 
     private static final String EXP_KEY = "Exp";
     private static final String LEVEL_KEY = "Level";
@@ -23,29 +19,31 @@ public class FightUserStats extends Document {
     private static final String EXP_MULT_KEY = "EXP Multiplier Level";
     private static final String SPEED_KEY = "Speed Level";
 
-    public FightUserStats() {
-        put(EXP_KEY, 0);
-        put(LEVEL_KEY, 1);
-        put(HP_KEY, 0);
-        put(DAMAGE_KEY, 0);
-        put(EXP_MULT_KEY, 0);
-        put(SPEED_KEY, 0);
+    public FightUserStats(Document document, Member user) {
+        this.document = document;
+        this.user = user;
+
+        document.put(EXP_KEY, 0);
+        document.put(LEVEL_KEY, 1);
+        document.put(HP_KEY, 0);
+        document.put(DAMAGE_KEY, 0);
+        document.put(EXP_MULT_KEY, 0);
+        document.put(SPEED_KEY, 0);
     }
 
     private static final DbManager db = Wylx.getInstance().getDb();
     public static FightUserStats getUserStats(Member user) {
         DbCollection<UserIdentifiers> dbUser = db.getUserCollection();
-        FightUserStats stats = dbUser.getSetting(user.getId(), UserIdentifiers.FightStats);
-        stats.user = user;
-        return stats;
+        Document stats = dbUser.getSetting(user.getId(), UserIdentifiers.FightStats);
+        return new FightUserStats(stats, user);
     }
 
     public boolean addExp(int addedExp) {
         boolean levelUp = false;
         int level = getLvl();
-        int exp = getInteger(EXP_KEY) + addedExp;
+        int exp = document.getInteger(EXP_KEY) + addedExp;
 
-        exp += getInteger(EXP_KEY);
+        exp += document.getInteger(EXP_KEY);
         int expNextLvl = FightUtil.calcEXPForLevel(level);
         if (exp > expNextLvl) {
             exp -= expNextLvl;
@@ -53,13 +51,13 @@ public class FightUserStats extends Document {
             levelUp = true;
         }
 
-        this.put(EXP_KEY, exp);
-        this.put(LEVEL_KEY, level);
+        document.put(EXP_KEY, exp);
+        document.put(LEVEL_KEY, level);
         return levelUp;
     }
 
     public int getLvl() {
-        return getInteger(LEVEL_KEY);
+        return document.getInteger(LEVEL_KEY);
     }
 
     private String fightStatToKey(FightStatTypes stat) {
@@ -73,11 +71,11 @@ public class FightUserStats extends Document {
 
     // Returns level of a skill
     public int getStatLvl(FightStatTypes stat) {
-        return getInteger(fightStatToKey(stat));
+        return document.getInteger(fightStatToKey(stat));
     }
 
     public void setStatLvl(FightStatTypes stat, int newLevel) {
-        put(fightStatToKey(stat), newLevel);
+        document.put(fightStatToKey(stat), newLevel);
     }
 
     // Returns multiplier based off of the level of the skill
@@ -87,6 +85,6 @@ public class FightUserStats extends Document {
 
     public void save() {
         DbCollection<UserIdentifiers> dbUser = db.getUserCollection();
-        dbUser.setSetting(user.getId(), UserIdentifiers.FightStats, this);
+        dbUser.setSetting(user.getId(), UserIdentifiers.FightStats, document);
     }
 }
