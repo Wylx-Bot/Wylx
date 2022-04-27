@@ -13,8 +13,7 @@ public class RolePackage extends EventPackage {
                         new AddRoleCommand(),
                         new RemoveRoleCommand(),
                         new NewRoleMenuCommand(),
-                        new AddRoleToMenuCommand(),
-                        new RemoveRoleFromMenuCommand(),
+                        new ModifyRoleMenuCommand(),
                 }, new SilentEvent[]{}
         );
     }

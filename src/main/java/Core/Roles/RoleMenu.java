@@ -12,7 +12,7 @@ import java.util.Map;
 
 public class RoleMenu {
 
-    private final String title;
+    private String title;
 
     private final String guildID;
     private final String messageID;
@@ -80,7 +80,7 @@ public class RoleMenu {
         return builder.build();
     }
 
-    public MessageEmbed getEmbed() {
+    public MessageEmbed getEmbed(boolean mentionRoles) {
         EmbedBuilder builder = new EmbedBuilder();
         builder.setAuthor(this.title);
         StringBuilder string = new StringBuilder("React to get a role!\n\n");
@@ -89,9 +89,10 @@ public class RoleMenu {
             string.append("This list is currently empty. To add roles, please use TODO");
         } else {
             reactions.forEach(reaction -> {
+                String roleStr = mentionRoles ? reaction.role().getAsMention() : reaction.role().getName();
                 String line = String.format("%s - %s\n",
                         reaction.emoji().getAsMention(),
-                        reaction.role().getAsMention());
+                        roleStr);
                 string.append(line);
             });
         }
@@ -121,8 +122,13 @@ public class RoleMenu {
         return reactions;
     }
 
-    public void updateMessage() {
-        message.editMessageEmbeds(getEmbed()).queue();
+    public void setTitle(String title) {
+        this.title = title;
+        updateMessage();
+    }
+
+    private void updateMessage() {
+        message.editMessageEmbeds(getEmbed(true)).queue();
     }
 
     public void addReaction(RoleReaction newReaction) throws Exception {
