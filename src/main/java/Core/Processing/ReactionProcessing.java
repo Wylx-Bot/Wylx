@@ -35,7 +35,7 @@ public class ReactionProcessing extends ListenerAdapter {
 
     private Role checkReactionForMenu(@NotNull GenericMessageReactionEvent event) {
         Message msg = event.getChannel().retrieveMessageById(event.getMessageId()).complete();
-        User selfUser = Wylx.getInstance().getSelfUser();
+        User selfUser = event.getJDA().getSelfUser();
 
         // Check if it's a reaction to a message Wylx sent
         if (!msg.getAuthor().equals(selfUser)) {
