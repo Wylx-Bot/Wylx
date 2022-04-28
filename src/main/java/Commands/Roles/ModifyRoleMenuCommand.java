@@ -16,6 +16,8 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class ModifyRoleMenuCommand extends ServerCommand {
     ModifyRoleMenuCommand() {
@@ -57,6 +59,8 @@ public class ModifyRoleMenuCommand extends ServerCommand {
         private final User user;
         private final PrivateChannel privateChannel;
         private final Guild guild;
+        private Timer timer = new Timer();
+        private static final long TIMEOUT = 15 * 60 * 1000; // 15 Minutes
 
         public DMListener(RoleMenu menu, User user, Guild guild) throws ErrorResponseException {
             this.menu = menu;
@@ -65,6 +69,24 @@ public class ModifyRoleMenuCommand extends ServerCommand {
 
             privateChannel = user.openPrivateChannel().complete();
             sendUsageAndMenu(privateChannel);
+            resetTimer();
+        }
+
+        private void resetTimer() {
+            timer.cancel();
+            timer = new Timer();
+            timer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    privateChannel.sendMessage("Timed out. Finished editing Role Menu").queue();
+                    quit();
+                }
+            }, TIMEOUT);
+        }
+
+        private void quit() {
+            timer.cancel();
+            user.getJDA().removeEventListener(this);
         }
 
         @Override
@@ -80,10 +102,12 @@ public class ModifyRoleMenuCommand extends ServerCommand {
             String command = filteredArgs.get(0).toLowerCase();
             String options = event.getMessage().getContentRaw().substring(command.length()).trim();
 
+            resetTimer();
+
             switch (command) {
                 case "quit" -> {
                     event.getChannel().sendMessage("Finished editing Role Menu").queue();
-                    user.getJDA().removeEventListener(this);
+                    quit();
                     return;
                 }
                 case "settitle" -> {

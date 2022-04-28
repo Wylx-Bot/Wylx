@@ -16,9 +16,6 @@ import java.util.concurrent.TimeUnit;
 
 public class DatabaseManager {
 
-    private static final String ROLE_MENU_COLLECTION_KEY = "Role Menus";
-    private static final String GLOBAL_DB_KEY = "WylxGlobals";
-
     private final ConnectionString connectionString;
     private final MongoClient client;
     private final HashMap<String, DiscordServer> serverCache = new HashMap<>();

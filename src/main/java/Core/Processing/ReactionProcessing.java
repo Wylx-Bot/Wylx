@@ -35,10 +35,15 @@ public class ReactionProcessing extends ListenerAdapter {
 
     private Role checkReactionForMenu(@NotNull GenericMessageReactionEvent event) {
         Message msg = event.getChannel().retrieveMessageById(event.getMessageId()).complete();
-        Member selfMember = event.getGuild().getSelfMember();
+        User selfUser = Wylx.getInstance().getSelfUser();
 
         // Check if it's a reaction to a message Wylx sent
-        if (!msg.getAuthor().equals(selfMember.getUser())) {
+        if (!msg.getAuthor().equals(selfUser)) {
+            return null;
+        }
+
+        // Don't give roles to Wylx
+        if (event.retrieveUser().complete().equals(selfUser)) {
             return null;
         }
 

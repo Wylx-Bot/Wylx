@@ -15,7 +15,12 @@ import java.util.List;
 
 public class NewRoleMenuCommand extends ServerCommand {
     public NewRoleMenuCommand() {
-        super("newrolemenu", CommandPermission.DISCORD_PERM, Permission.ADMINISTRATOR, "Create new role menu");
+        super("newrolemenu", CommandPermission.DISCORD_PERM, Permission.ADMINISTRATOR,
+            """
+            Create a new Role menu
+            Usage:
+            %{p}newrolemenu #channel-mention
+            """);
     }
 
     @Override

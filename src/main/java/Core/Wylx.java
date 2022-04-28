@@ -91,6 +91,10 @@ public class Wylx {
         return db;
     }
 
+    public User getSelfUser() {
+        return jda.getSelfUser();
+    }
+
     public AudioManager getGuildAudioManager(String guildID) {
         Guild guild = jda.getGuildById(guildID);
         if (guild == null) return null;

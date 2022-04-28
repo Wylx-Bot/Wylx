@@ -72,10 +72,12 @@ public class MessageProcessing extends ListenerAdapter {
         DatabaseManager dbManager = wylx.getDb();
         String memberID = event.getAuthor().getId();
 
-        //Ignore messages from the bot
-        if(event.getAuthor().getId().equals(wylx.getBotID()) ||
-                !event.getChannel().canTalk() ||
-                !event.isFromGuild()) return;
+        //Ignore messages from the bot and in DMs
+        if(memberID.equals(wylx.getBotID()) ||
+            !event.getChannel().canTalk() ||
+            !event.isFromGuild()) {
+                return;
+        }
 
         String guildID = event.getGuild().getId();
         DiscordServer db = dbManager.getServer(guildID);
