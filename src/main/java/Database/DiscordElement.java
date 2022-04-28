@@ -83,17 +83,18 @@ public abstract class DiscordElement<IdentifierType extends DiscordIdentifiers> 
     }
 
     @SuppressWarnings("unchecked")
-    public <T> T getSetting(IdentifierType identifier){
+    public <T> T getSettingOrNull(IdentifierType identifier) {
         // Get the document relevant to our setting
         Document settingDoc = settingsCollection.find(exists(identifier.getIdentifier())).first();
 
-        // If the settings doc is null we need to return the default value
-        if(settingDoc == null)
-            return (T) identifier.getDefaultValue();
+        if (settingDoc == null) {
+            return null;
+        }
 
-        // If this is a simple document it can be decoded with default codecs
-        if(!settingDoc.get("complex", false))
+        // Non-complex can be decoded with default codecs
+        if (!settingDoc.get("complex", false)) {
             return settingDoc.get(identifier.getIdentifier(), (T) identifier.getDefaultValue());
+        }
 
         // For complex objects we first need to turn our setting into a bson doc to be decoded
         BsonReader reader = settingDoc.get(identifier.getIdentifier(), new Document()).toBsonDocument().asBsonReader();
@@ -101,6 +102,18 @@ public abstract class DiscordElement<IdentifierType extends DiscordIdentifiers> 
         reader.readStartDocument();
         // Hand off to the codec to finish decoding
         return ((Codec<T>) identifier.getDefaultValue()).decode(reader, null);
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T> T getSetting(IdentifierType identifier){
+        T value = getSettingOrNull(identifier);
+
+        // If the settings doc is null we need to return the default value
+        if(value == null) {
+            return (T) identifier.getDefaultValue();
+        }
+
+        return value;
     }
 
     @SuppressWarnings("unchecked")
