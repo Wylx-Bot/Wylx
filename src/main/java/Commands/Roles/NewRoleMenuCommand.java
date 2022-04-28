@@ -4,6 +4,7 @@ import Core.Events.Commands.CommandContext;
 import Core.Events.Commands.ServerCommand;
 import Commands.Roles.RolesUtil.RoleMenu;
 import Core.Wylx;
+import Database.RoleMenuIdentifiers;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
@@ -47,8 +48,11 @@ public class NewRoleMenuCommand extends ServerCommand {
 
         try {
             RoleMenu menu = new RoleMenu(newMessage.getId(), newChannel.getId(), event.getGuild().getId());
-            Wylx.getInstance().getDb().setRoleMenu(menu);
+            Wylx.getInstance().getDb().getRoleMenu(newMessage.getId())
+                    .setSetting(RoleMenuIdentifiers.ROLE_MENU, menu);
         } catch (Exception e) {
+            System.out.println(e.getMessage());
+            e.printStackTrace();
             event.getMessage().reply("Could not create new Role Menu").queue();
         }
     }

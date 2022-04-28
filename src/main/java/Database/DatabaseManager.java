@@ -1,26 +1,18 @@
 package Database;
 
-import Commands.Roles.RolesUtil.RoleMenu;
 import Core.WylxEnvConfig;
 import Database.DbElements.DiscordServer;
 import Database.DbElements.DiscordUser;
-import Database.Codecs.RoleMenuCodec;
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
-import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
-import com.mongodb.client.model.Filters;
 import org.bson.Document;
-import org.bson.codecs.configuration.CodecRegistries;
-import org.bson.codecs.configuration.CodecRegistry;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
-
-import static com.mongodb.client.model.Filters.exists;
 
 public class DatabaseManager {
 
@@ -31,20 +23,11 @@ public class DatabaseManager {
     private final MongoClient client;
     private final HashMap<String, DiscordServer> serverCache = new HashMap<>();
     private final HashMap<String, DiscordUser> userCache = new HashMap<>();
-    private final HashMap<String, RoleMenu> roleMenuCache = new HashMap<>();
-
-    private final MongoCollection<RoleMenu> roleMenuCollection;
+    private final HashMap<String, DiscordRoleMenu> roleMenuCache = new HashMap<>();
 
     public DatabaseManager(WylxEnvConfig config) {
         connectionString = new ConnectionString(config.dbURL);
         client = getMongoClient();
-        MongoDatabase globalSettings = client.getDatabase(GLOBAL_DB_KEY);
-
-        CodecRegistry codecRegistry = CodecRegistries.fromRegistries(
-                CodecRegistries.fromCodecs(new RoleMenuCodec()),
-                MongoClientSettings.getDefaultCodecRegistry());
-
-        roleMenuCollection = globalSettings.getCollection(ROLE_MENU_COLLECTION_KEY, RoleMenu.class).withCodecRegistry(codecRegistry);
     }
 
     private MongoClient getMongoClient() {
@@ -93,32 +76,9 @@ public class DatabaseManager {
         return userCache.get(userID);
     }
 
-    public RoleMenu getRoleMenu(String messageID) {
-        // Check cache first, then DB
-        if (!roleMenuCache.containsKey(messageID)) {
-            RoleMenu menu = roleMenuCollection.find(Filters.eq(messageID)).first();
-
-            // Menu does not exist or got deleted :(
-            if (menu == null) {
-                deleteRoleMenu(messageID);
-                roleMenuCache.remove(messageID);
-                return null;
-            }
-
-            roleMenuCache.put(messageID, menu);
-        }
-
+    public DiscordRoleMenu getRoleMenu(String messageID) {
+        if(!roleMenuCache.containsKey(messageID))
+            roleMenuCache.put(messageID, new DiscordRoleMenu(client, messageID));
         return roleMenuCache.get(messageID);
-    }
-
-    public void setRoleMenu(RoleMenu menu) {
-        RoleMenu oldMenu = roleMenuCollection.find(Filters.eq(menu.getMessageID())).first();
-        if(oldMenu != null)
-            roleMenuCollection.deleteOne(Filters.eq(menu.getMessageID()));
-        roleMenuCollection.insertOne(menu);
-    }
-
-    public void deleteRoleMenu(String messageID) {
-        roleMenuCollection.deleteOne(Filters.eq(messageID));
     }
 }

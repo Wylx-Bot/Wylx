@@ -132,8 +132,11 @@ public abstract class DiscordElement<IdentifierType extends DiscordIdentifiers> 
     @SuppressWarnings("unchecked")
     public <T> void setSetting(IdentifierType identifier, Object data){
         // Ensure that the identifier and data are matched
-        if(identifier.getDataType().cast(data) == null)
+        try {
+            identifier.getDataType().cast(data);
+        } catch (ClassCastException e) {
             throw new IllegalArgumentException("Identifier data type mismatch");
+        }
 
         // Put updated data into the cache
         cacheMap.put(identifier.getIdentifier(), data);

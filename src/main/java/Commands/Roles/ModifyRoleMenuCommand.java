@@ -5,6 +5,8 @@ import Core.Events.Commands.ServerCommand;
 import Commands.Roles.RolesUtil.RoleMenu;
 import Commands.Roles.RolesUtil.RoleReaction;
 import Core.Wylx;
+import Database.DiscordRoleMenu;
+import Database.RoleMenuIdentifiers;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
@@ -34,7 +36,8 @@ public class ModifyRoleMenuCommand extends ServerCommand {
             return;
         }
 
-        RoleMenu menu = Wylx.getInstance().getDb().getRoleMenu(ctx.args()[1]);
+        DiscordRoleMenu roleDb = Wylx.getInstance().getDb().getRoleMenu(ctx.args()[1]);
+        RoleMenu menu = roleDb.getSettingOrNull(RoleMenuIdentifiers.ROLE_MENU);
         if (menu == null) {
             ctx.event().getMessage().reply("Could not find menu").queue();
             return;
@@ -107,7 +110,9 @@ public class ModifyRoleMenuCommand extends ServerCommand {
             }
 
             // Save changes
-            Wylx.getInstance().getDb().setRoleMenu(menu);
+            Wylx.getInstance().getDb().getRoleMenu(menu.getMessageID())
+                    .setSetting(RoleMenuIdentifiers.ROLE_MENU, menu);
+
             // Display new menu
             try {
                 sendUsageAndMenu(event.getChannel());

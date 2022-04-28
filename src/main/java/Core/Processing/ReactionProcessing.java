@@ -2,6 +2,8 @@ package Core.Processing;
 
 import Commands.Roles.RolesUtil.RoleMenu;
 import Core.Wylx;
+import Database.DiscordRoleMenu;
+import Database.RoleMenuIdentifiers;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.message.react.GenericMessageReactionEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
@@ -41,7 +43,8 @@ public class ReactionProcessing extends ListenerAdapter {
         }
 
         // Check for menu
-        RoleMenu menu = Wylx.getInstance().getDb().getRoleMenu(event.getMessageId());
+        DiscordRoleMenu roleDb = Wylx.getInstance().getDb().getRoleMenu(event.getMessageId());
+        RoleMenu menu = roleDb.getSettingOrNull(RoleMenuIdentifiers.ROLE_MENU);
         if (menu == null) {
             return null;
         }
