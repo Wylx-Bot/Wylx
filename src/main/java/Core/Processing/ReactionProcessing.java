@@ -43,7 +43,7 @@ public class ReactionProcessing extends ListenerAdapter {
         }
 
         // Don't give roles to Wylx
-        if (event.retrieveUser().complete().equals(selfUser)) {
+        if (event.getUserIdLong() == selfUser.getIdLong()) {
             return null;
         }
 
