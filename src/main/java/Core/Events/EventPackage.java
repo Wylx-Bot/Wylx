@@ -26,10 +26,9 @@ public abstract class EventPackage {
 
     public abstract String getHeader();
 
-    public final String getDescription(CommandContext ctx){
+    public final String getDescription(ServerEventManager eventManager){
         StringBuilder descriptionBuilder = new StringBuilder();
         descriptionBuilder.append("+ ");
-        ServerEventManager eventManager = ServerEventManager.getServerEventManager(ctx.event().getGuild().getId());
         boolean packageEnabled = eventManager.checkPackage(this);
         descriptionBuilder.append(packageEnabled ? "" : "(Disabled) ");
         descriptionBuilder.append(getName());

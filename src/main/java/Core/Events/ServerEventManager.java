@@ -19,29 +19,23 @@ public class ServerEventManager {
 
 	// List of all process packages copied from message processing
 	private static final EventPackage[] eventPackages = MessageProcessing.eventPackages;
-	// Keep managers in cache so they don't have to be loaded from the db for every events (string is server id)
-	private static final HashMap<String, ServerEventManager> cachedManagers = new HashMap<>();
 
 	private static final DatabaseManager db = Wylx.getInstance().getDb();
 
 	// Static getting of events manager for a server
 	public static ServerEventManager getServerEventManager(String id){
 		// Try to find cached manager for the server
-		ServerEventManager manager = cachedManagers.get(id);
+		ServerEventManager manager = db.getServer(id).getSetting(ServerIdentifiers.Modules);
 
-		// If not cached load the manager from db and cache
-		if(manager == null) {
-			DiscordServer discordServer = db.getServer(id);
-			manager = discordServer.getSetting(ServerIdentifiers.Modules);
-			manager.serverDB = discordServer;
-			cachedManagers.put(id, manager);
-		}
+		// If not cached load the manager from db and set db
+		if(manager.serverDB == null)
+			manager.serverDB = db.getServer(id);
 
 		return manager;
 	}
 
 	// DiscordServer this manager belongs to
-	private DiscordServer serverDB;
+	private DiscordServer serverDB = null;
 	// Map used for making comparisons as events are being run
 	protected final HashMap<String, Boolean> masterEventMap = new HashMap<>();
 	// Map of enabled and disabled modules
