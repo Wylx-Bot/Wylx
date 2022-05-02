@@ -87,24 +87,4 @@ public class FightUserStats {
     public int getExp() {
         return exp;
     }
-
-    public int getLevel() {
-        return level;
-    }
-
-    public int getHpLevel() {
-        return hpLevel;
-    }
-
-    public int getDamageLevel() {
-        return damageLevel;
-    }
-
-    public int getExpMultLevel() {
-        return expMultLevel;
-    }
-
-    public int getSpeedLevel() {
-        return speedLevel;
-    }
 }

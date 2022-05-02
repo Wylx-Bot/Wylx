@@ -35,11 +35,11 @@ public class FightUserStatsCodec implements Codec<FightUserStats> {
     @Override
     public void encode(BsonWriter writer, FightUserStats value, EncoderContext encoderContext) {
         writer.writeInt32("EXP", value.getExp());
-        writer.writeInt32("Level", value.getLevel());
-        writer.writeInt32("HP_Lvl", value.getHpLevel());
-        writer.writeInt32("Speed_Lvl", value.getSpeedLevel());
-        writer.writeInt32("EXP_Lvl", value.getExpMultLevel());
-        writer.writeInt32("Damage_Lvl", value.getDamageLevel());
+        writer.writeInt32("Level", value.getLvl());
+        writer.writeInt32("HP_Lvl", value.getStatLvl(FightStatTypes.HP));
+        writer.writeInt32("Speed_Lvl", value.getStatLvl(FightStatTypes.SPEED));
+        writer.writeInt32("EXP_Lvl", value.getStatLvl(FightStatTypes.EXP));
+        writer.writeInt32("Damage_Lvl", value.getStatLvl(FightStatTypes.DAMAGE));
     }
 
     @Override
