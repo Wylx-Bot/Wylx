@@ -37,11 +37,11 @@ public class ServerEventManager {
 	// DiscordServer this manager belongs to
 	private DiscordServer serverDB = null;
 	// Map used for making comparisons as events are being run
-	protected final HashMap<String, Boolean> masterEventMap = new HashMap<>();
+	private final HashMap<String, Boolean> masterEventMap = new HashMap<>();
 	// Map of enabled and disabled modules
-	protected final HashMap<String, Boolean> moduleMap = new HashMap<>();
+	private final HashMap<String, Boolean> moduleMap = new HashMap<>();
 	// Map of events that are exceptions to their modules
-	protected final HashMap<String, Boolean> eventExceptionMap = new HashMap<>();
+	private final HashMap<String, Boolean> eventExceptionMap = new HashMap<>();
 
 	public boolean checkEvent(Event event){
 		return checkEvent(event.getClass().getSimpleName().toLowerCase());
@@ -130,5 +130,17 @@ public class ServerEventManager {
 			// Load the module that didn't exist
 			setModule(moduleName, true, false);
 		}
+	}
+
+	protected HashMap<String, Boolean> getMasterEventMap() {
+		return masterEventMap;
+	}
+
+	protected HashMap<String, Boolean> getModuleMap() {
+		return moduleMap;
+	}
+
+	protected HashMap<String, Boolean> getEventExceptionMap() {
+		return eventExceptionMap;
 	}
 }

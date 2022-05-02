@@ -25,7 +25,7 @@ public class ServerEventManagerCodec implements Codec<ServerEventManager> {
         for(EventPackage module : eventPackages){
             String moduleName = module.getClass().getSimpleName().toLowerCase();
             // If the module is already loaded don't set it to default
-            if(eventManager.moduleMap.containsKey(moduleName)) continue;
+            if(eventManager.getModuleMap().containsKey(moduleName)) continue;
 
             // Load the module that didn't exist
             eventManager.setModule(moduleName, true, false);
@@ -42,16 +42,16 @@ public class ServerEventManagerCodec implements Codec<ServerEventManager> {
     @Override
     public void encode(BsonWriter writer, ServerEventManager value, EncoderContext encoderContext) {
         // Write the module
-        for(Map.Entry<String, Boolean> entry : value.moduleMap.entrySet()){
+        for(Map.Entry<String, Boolean> entry : value.getModuleMap().entrySet()){
             writer.writeBoolean(entry.getKey(), entry.getValue());
         }
 
         // Write if the server has event exceptions
-        boolean exceptions = value.eventExceptionMap.size() != 0;
+        boolean exceptions = value.getEventExceptionMap().size() != 0;
         writer.writeBoolean("EXCEPTIONS", exceptions);
 
         // Write the exceptions
-        for(Map.Entry<String, Boolean> entry : value.eventExceptionMap.entrySet()){
+        for(Map.Entry<String, Boolean> entry : value.getEventExceptionMap().entrySet()){
             writer.writeBoolean(entry.getKey(), entry.getValue());
         }
     }
