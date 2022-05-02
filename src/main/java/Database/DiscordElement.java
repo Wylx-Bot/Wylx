@@ -101,7 +101,7 @@ public abstract class DiscordElement<IdentifierType extends DiscordIdentifiers> 
         // Remove the start tag from the beginning
         reader.readStartDocument();
         // Hand off to the codec to finish decoding
-        return ((Codec<T>) identifier.getDefaultValue()).decode(reader, null);
+        return (T) identifier.getCodec().decode(reader, null);
     }
 
     @SuppressWarnings("unchecked")
@@ -129,14 +129,14 @@ public abstract class DiscordElement<IdentifierType extends DiscordIdentifiers> 
             settingsCollection.deleteOne(exists(identifier.getIdentifier()));
 
         // If the data is *fancy* do *fancy* things with it
-        if(data instanceof Codec<?>){
+        if(identifier.getCodec() != null){
             // Create a document and writer to put the data in
             BsonDocument complexDocument = new BsonDocument();
             BsonWriter complexWriter = new BsonDocumentWriter(complexDocument);
 
             // Write data from our object into the document
             complexWriter.writeStartDocument();
-            ((Codec<T>) data).encode(complexWriter, (T) data, null);
+            ((Codec<T>) identifier.getCodec()).encode(complexWriter, (T) data, null);
             complexWriter.writeEndDocument();
 
             // Set data to document so it can be written to the DB

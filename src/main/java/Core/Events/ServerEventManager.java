@@ -15,7 +15,7 @@ import org.bson.codecs.EncoderContext;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ServerEventManager implements Codec<ServerEventManager> {
+public class ServerEventManager {
 
 	// List of all process packages copied from message processing
 	private static final EventPackage[] eventPackages = MessageProcessing.eventPackages;
@@ -43,11 +43,11 @@ public class ServerEventManager implements Codec<ServerEventManager> {
 	// DiscordServer this manager belongs to
 	private DiscordServer serverDB;
 	// Map used for making comparisons as events are being run
-	private final HashMap<String, Boolean> masterEventMap = new HashMap<>();
+	protected final HashMap<String, Boolean> masterEventMap = new HashMap<>();
 	// Map of enabled and disabled modules
-	private final HashMap<String, Boolean> moduleMap = new HashMap<>();
+	protected final HashMap<String, Boolean> moduleMap = new HashMap<>();
 	// Map of events that are exceptions to their modules
-	private final HashMap<String, Boolean> eventExceptionMap = new HashMap<>();
+	protected final HashMap<String, Boolean> eventExceptionMap = new HashMap<>();
 
 	public boolean checkEvent(Event event){
 		return checkEvent(event.getClass().getSimpleName().toLowerCase());
@@ -70,7 +70,7 @@ public class ServerEventManager implements Codec<ServerEventManager> {
 		setModule(moduleName, value, true);
 	}
 
-	private void setModule(String moduleName, boolean value, boolean write) throws IllegalArgumentException{
+	protected void setModule(String moduleName, boolean value, boolean write) throws IllegalArgumentException{
 		// find the actual class for the module
 		EventPackage module = null;
 		for(EventPackage eventPackage : eventPackages){
@@ -106,7 +106,7 @@ public class ServerEventManager implements Codec<ServerEventManager> {
 		setEvent(eventName, value, true);
 	}
 
-	private void setEvent(String eventName, boolean value, boolean write) throws IllegalArgumentException{
+	protected void setEvent(String eventName, boolean value, boolean write) throws IllegalArgumentException{
 		// If the event doesn't exist we can set anything with it
 		if(!masterEventMap.containsKey(eventName)) throw new IllegalArgumentException("Specified event: `" + eventName +  "` does not exist");
 
@@ -136,52 +136,5 @@ public class ServerEventManager implements Codec<ServerEventManager> {
 			// Load the module that didn't exist
 			setModule(moduleName, true, false);
 		}
-	}
-
-	@Override
-	public ServerEventManager decode(BsonReader reader, DecoderContext decoderContext) {
-		// Read existing modules from the DB
-		for(String moduleName = reader.readName(); !moduleName.equals("EXCEPTIONS"); moduleName = reader.readName()){
-			setModule(moduleName, reader.readBoolean(), false);
-		}
-
-		// Add in any modules that didn't exist in the DB
-		for(EventPackage module : eventPackages){
-			String moduleName = module.getClass().getSimpleName().toLowerCase();
-			// If the module is already loaded don't set it to default
-			if(moduleMap.containsKey(moduleName)) continue;
-
-			// Load the module that didn't exist
-			setModule(moduleName, true, false);
-		}
-
-		boolean exceptions = reader.readBoolean();
-		while(reader.readBsonType() != BsonType.END_OF_DOCUMENT){
-			setEvent(reader.readName(), reader.readBoolean(), false);
-		}
-
-		return this;
-	}
-
-	@Override
-	public void encode(BsonWriter writer, ServerEventManager value, EncoderContext encoderContext) {
-		// Write the module
-		for(Map.Entry<String, Boolean> entry : moduleMap.entrySet()){
-			writer.writeBoolean(entry.getKey(), entry.getValue());
-		}
-
-		// Write if the server has event exceptions
-		boolean exceptions = eventExceptionMap.size() != 0;
-		writer.writeBoolean("EXCEPTIONS", exceptions);
-
-		// Write the exceptions
-		for(Map.Entry<String, Boolean> entry : eventExceptionMap.entrySet()){
-			writer.writeBoolean(entry.getKey(), entry.getValue());
-		}
-	}
-
-	@Override
-	public Class<ServerEventManager> getEncoderClass() {
-		return ServerEventManager.class;
 	}
 }

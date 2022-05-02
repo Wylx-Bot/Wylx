@@ -7,18 +7,20 @@ import java.util.function.Supplier;
 import Core.Fight.FightUserStats;
 
 public enum UserIdentifiers implements DiscordIdentifiers{
-    Timezone("Timezone", String.class, () -> "LOL"),
-    TimezonePrompted("TimezonePrompted", Boolean.class, () -> false),
-    FightStats("FightStats", FightUserStats.class, FightUserStats::new);
+    Timezone("Timezone", String.class, () -> "LOL", null),
+    TimezonePrompted("TimezonePrompted", Boolean.class, () -> false, null),
+    FightStats("FightStats", FightUserStats.class, FightUserStats::new, null);
 
     private final String identifier;
     private final Class<?> dataType;
     private final Supplier<Object> defaultSupplier;
+    private final Codec<?> codec;
 
-    UserIdentifiers(String identifier, Class<?> dataType, Supplier<Object> defaultValue) {
+    UserIdentifiers(String identifier, Class<?> dataType, Supplier<Object> defaultValue, Codec<?> codec) {
         this.identifier = identifier;
         this.dataType = dataType;
         this.defaultSupplier = defaultValue;
+        this.codec = codec;
     }
 
     @Override
@@ -29,6 +31,11 @@ public enum UserIdentifiers implements DiscordIdentifiers{
     @Override
     public Class<?> getDataType() {
         return dataType;
+    }
+
+    @Override
+    public Codec<?> getCodec(){
+        return codec;
     }
 
     @Override
