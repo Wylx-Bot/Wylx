@@ -1,5 +1,6 @@
 package Database;
 
+import Commands.Fight.Util.FightUserStatsCodec;
 import org.bson.codecs.Codec;
 
 import java.util.function.Supplier;
@@ -9,7 +10,7 @@ import Commands.Fight.Util.FightUserStats;
 public enum UserIdentifiers implements DiscordIdentifiers{
     Timezone("Timezone", String.class, () -> "LOL", null),
     TimezonePrompted("TimezonePrompted", Boolean.class, () -> false, null),
-    FightStats("FightStats", FightUserStats.class, FightUserStats::new, null);
+    FightStats("FightStats", FightUserStats.class, FightUserStats::new, new FightUserStatsCodec());
 
     private final String identifier;
     private final Class<?> dataType;
