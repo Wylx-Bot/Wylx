@@ -1,4 +1,4 @@
-package Core.Fight;
+package Commands.Fight.Util;
 
 public class FightUtil {
 

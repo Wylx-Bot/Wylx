@@ -2,10 +2,10 @@ package Commands.Fight;
 
 import Core.Events.Commands.CommandContext;
 import Core.Events.Commands.ThreadedCommand;
-import Core.Fight.FightMessages;
-import Core.Fight.FightStatTypes;
-import Core.Fight.FightUserManager;
-import Core.Fight.FightUserStats;
+import Commands.Fight.Util.FightMessages;
+import Commands.Fight.Util.FightStatTypes;
+import Commands.Fight.Util.FightUserManager;
+import Commands.Fight.Util.FightUserStats;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;

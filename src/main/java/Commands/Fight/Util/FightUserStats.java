@@ -1,4 +1,4 @@
-package Core.Fight;
+package Commands.Fight.Util;
 
 import Core.Wylx;
 import Database.DatabaseManager;

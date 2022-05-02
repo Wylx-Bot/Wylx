@@ -1,10 +1,10 @@
 package Database;
 
 import org.bson.codecs.Codec;
-import java.lang.reflect.InvocationTargetException;
+
 import java.util.function.Supplier;
 
-import Core.Fight.FightUserStats;
+import Commands.Fight.Util.FightUserStats;
 
 public enum UserIdentifiers implements DiscordIdentifiers{
     Timezone("Timezone", String.class, () -> "LOL", null),
