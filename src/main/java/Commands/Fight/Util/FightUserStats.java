@@ -2,15 +2,9 @@ package Commands.Fight.Util;
 
 import Core.Wylx;
 import Database.DatabaseManager;
-import Database.DiscordUser;
-import Database.UserIdentifiers;
+import Database.DbElements.DiscordUser;
+import Database.DbElements.UserIdentifiers;
 import net.dv8tion.jda.api.entities.Member;
-import org.bson.BsonReader;
-import org.bson.BsonType;
-import org.bson.BsonWriter;
-import org.bson.codecs.Codec;
-import org.bson.codecs.DecoderContext;
-import org.bson.codecs.EncoderContext;
 
 public class FightUserStats {
     public int hp = 500;

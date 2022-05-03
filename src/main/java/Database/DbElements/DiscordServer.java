@@ -1,5 +1,6 @@
-package Database;
+package Database.DbElements;
 
+import Database.DiscordElement;
 import com.mongodb.BasicDBObject;
 import com.mongodb.MongoClientSettings;
 import com.mongodb.client.MongoClient;
@@ -15,10 +16,10 @@ import java.util.*;
 import static com.mongodb.MongoNamespace.checkDatabaseNameValidity;
 import static com.mongodb.client.model.Filters.exists;
 
-public class DiscordServer extends DiscordElement<ServerIdentifiers>{
+public class DiscordServer extends DiscordElement<ServerIdentifiers> {
     private static final String SERVER_SETTINGS_DOC = "Server_Settings";
 
-    protected DiscordServer(MongoClient client, String id) {
+    public DiscordServer(MongoClient client, String id) {
         super(client, id, SERVER_SETTINGS_DOC, ServerIdentifiers.values());
     }
 }

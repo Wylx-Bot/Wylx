@@ -1,7 +1,8 @@
-package Database;
+package Database.DbElements;
 
 import Core.Events.ServerEventManager;
-import Core.Events.ServerEventManagerCodec;
+import Database.Codecs.ServerEventManagerCodec;
+import Database.DiscordIdentifiers;
 import org.bson.codecs.Codec;
 
 import java.lang.reflect.InvocationTargetException;
@@ -9,7 +10,7 @@ import java.util.*;
 import java.util.function.Supplier;
 
 // These identifiers are used in database access to ensure information is located correctly
-public enum ServerIdentifiers implements DiscordIdentifiers{
+public enum ServerIdentifiers implements DiscordIdentifiers {
     Modules("Modules_Enabled", ServerEventManager.class, ServerEventManager::new, new ServerEventManagerCodec()),
     MusicVolume("Music_Volume", Integer.class, () -> 20, null),
     Prefix("Prefix", String.class, () -> ";", null),

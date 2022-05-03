@@ -3,17 +3,10 @@ package Core.Events;
 import Core.Processing.MessageProcessing;
 import Core.Wylx;
 import Database.DatabaseManager;
-import Database.DiscordServer;
-import Database.ServerIdentifiers;
-import org.bson.BsonReader;
-import org.bson.BsonType;
-import org.bson.BsonWriter;
-import org.bson.codecs.Codec;
-import org.bson.codecs.DecoderContext;
-import org.bson.codecs.EncoderContext;
+import Database.DbElements.DiscordServer;
+import Database.DbElements.ServerIdentifiers;
 
 import java.util.HashMap;
-import java.util.Map;
 
 public class ServerEventManager {
 
@@ -64,7 +57,7 @@ public class ServerEventManager {
 		setModule(moduleName, value, true);
 	}
 
-	protected void setModule(String moduleName, boolean value, boolean write) throws IllegalArgumentException{
+	public void setModule(String moduleName, boolean value, boolean write) throws IllegalArgumentException{
 		// find the actual class for the module
 		EventPackage module = null;
 		for(EventPackage eventPackage : eventPackages){
@@ -100,7 +93,7 @@ public class ServerEventManager {
 		setEvent(eventName, value, true);
 	}
 
-	protected void setEvent(String eventName, boolean value, boolean write) throws IllegalArgumentException{
+	public void setEvent(String eventName, boolean value, boolean write) throws IllegalArgumentException{
 		// If the event doesn't exist we can set anything with it
 		if(!masterEventMap.containsKey(eventName)) throw new IllegalArgumentException("Specified event: `" + eventName +  "` does not exist");
 
@@ -132,15 +125,15 @@ public class ServerEventManager {
 		}
 	}
 
-	protected HashMap<String, Boolean> getMasterEventMap() {
+	public HashMap<String, Boolean> getMasterEventMap() {
 		return masterEventMap;
 	}
 
-	protected HashMap<String, Boolean> getModuleMap() {
+	public HashMap<String, Boolean> getModuleMap() {
 		return moduleMap;
 	}
 
-	protected HashMap<String, Boolean> getEventExceptionMap() {
+	public HashMap<String, Boolean> getEventExceptionMap() {
 		return eventExceptionMap;
 	}
 }

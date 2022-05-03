@@ -1,5 +1,7 @@
-package Core.Events;
+package Database.Codecs;
 
+import Core.Events.EventPackage;
+import Core.Events.ServerEventManager;
 import org.bson.BsonReader;
 import org.bson.BsonType;
 import org.bson.BsonWriter;

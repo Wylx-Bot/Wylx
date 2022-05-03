@@ -2,8 +2,8 @@ package Commands.ServerSettings;
 
 import Core.Events.Commands.CommandContext;
 import Core.Events.Commands.ServerCommand;
-import Database.DiscordServer;
-import Database.ServerIdentifiers;
+import Database.DbElements.DiscordServer;
+import Database.DbElements.ServerIdentifiers;
 import net.dv8tion.jda.api.Permission;
 
 public class SetPrefix extends ServerCommand {

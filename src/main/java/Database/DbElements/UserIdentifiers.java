@@ -1,13 +1,14 @@
-package Database;
+package Database.DbElements;
 
 import Commands.Fight.Util.FightUserStatsCodec;
+import Database.DiscordIdentifiers;
 import org.bson.codecs.Codec;
 
 import java.util.function.Supplier;
 
 import Commands.Fight.Util.FightUserStats;
 
-public enum UserIdentifiers implements DiscordIdentifiers{
+public enum UserIdentifiers implements DiscordIdentifiers {
     Timezone("Timezone", String.class, () -> "LOL", null),
     TimezonePrompted("TimezonePrompted", Boolean.class, () -> false, null),
     FightStats("FightStats", FightUserStats.class, FightUserStats::new, new FightUserStatsCodec());
