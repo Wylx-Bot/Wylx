@@ -1,5 +1,7 @@
-package Commands.Fight.Util;
+package Database.Codecs;
 
+import Commands.Fight.Util.FightStatTypes;
+import Commands.Fight.Util.FightUserStats;
 import org.bson.BsonReader;
 import org.bson.BsonType;
 import org.bson.BsonWriter;

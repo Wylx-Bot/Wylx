@@ -113,6 +113,10 @@ public class FightCommand extends ThreadedCommand {
     }
 
     private void fight(CommandContext ctx, FightUserStats player1, FightUserStats player2) {
+        // Reset the HP of our contestants
+        player1.resetHP();
+        player2.resetHP();
+
         ArrayList<Message> messages = new ArrayList<>();    // Messages to delete
         MessageChannel channel = ctx.event().getChannel();
         FightUserStats attacker, defender;

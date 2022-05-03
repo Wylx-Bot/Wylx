@@ -1,6 +1,6 @@
 package Database.DbElements;
 
-import Commands.Fight.Util.FightUserStatsCodec;
+import Database.Codecs.FightUserStatsCodec;
 import Database.DiscordIdentifiers;
 import org.bson.codecs.Codec;
 

@@ -7,6 +7,7 @@ import Database.DbElements.UserIdentifiers;
 import net.dv8tion.jda.api.entities.Member;
 
 public class FightUserStats {
+    private final static int DEFAULT_HP = 500;
     public int hp = 500;
     public Member user;
     public DiscordUser userDb;
@@ -31,7 +32,7 @@ public class FightUserStats {
         this.expMultLevel = expMultLevel;
         this.speedLevel = speedLevel;
 
-        this.hp *= FightUtil.calcMultiplier(this.hpLevel);
+        this.hp = (int) (DEFAULT_HP * FightUtil.calcMultiplier(this.hpLevel));
     }
 
     private static final DatabaseManager db = Wylx.getInstance().getDb();
@@ -53,6 +54,10 @@ public class FightUserStats {
         }
 
         return false;
+    }
+
+    public void resetHP(){
+        hp = (int) (DEFAULT_HP * FightUtil.calcMultiplier(hpLevel));
     }
 
     public int getLvl() {
