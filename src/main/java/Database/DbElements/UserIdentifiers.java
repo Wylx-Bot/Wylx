@@ -9,14 +9,18 @@ import java.util.function.Supplier;
 import Commands.Fight.Util.FightUserStats;
 
 public enum UserIdentifiers implements DiscordIdentifiers {
-    Timezone("Timezone", String.class, () -> "LOL", null),
-    TimezonePrompted("TimezonePrompted", Boolean.class, () -> false, null),
+    Timezone("Timezone", String.class, () -> "LOL"),
+    TimezonePrompted("TimezonePrompted", Boolean.class, () -> false),
     FightStats("FightStats", FightUserStats.class, FightUserStats::new, new FightUserStatsCodec());
 
     private final String identifier;
     private final Class<?> dataType;
     private final Supplier<Object> defaultSupplier;
     private final Codec<?> codec;
+
+    UserIdentifiers(String identifier, Class<?> dataType, Supplier<Object> defaultValue) {
+        this(identifier, dataType, defaultValue, null);
+    }
 
     UserIdentifiers(String identifier, Class<?> dataType, Supplier<Object> defaultValue, Codec<?> codec) {
         this.identifier = identifier;
