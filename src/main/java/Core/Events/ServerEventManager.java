@@ -17,12 +17,10 @@ public class ServerEventManager {
 
 	// Static getting of events manager for a server
 	public static ServerEventManager getServerEventManager(String id){
+		DiscordServer servedDB = db.getServer(id);
 		// Try to find cached manager for the server
-		ServerEventManager manager = db.getServer(id).getSetting(ServerIdentifiers.Modules);
-
-		// If not cached load the manager from db and set db
-		if(manager.serverDB == null)
-			manager.serverDB = db.getServer(id);
+		ServerEventManager manager = servedDB.getSetting(ServerIdentifiers.Modules);
+		manager.serverDB = servedDB;
 
 		return manager;
 	}
