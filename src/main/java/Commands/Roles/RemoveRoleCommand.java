@@ -2,8 +2,8 @@ package Commands.Roles;
 
 import Core.Events.Commands.CommandContext;
 import Core.Events.Commands.ServerCommand;
-import Core.Util.RoleUtil;
 import Database.DbElements.ServerIdentifiers;
+import Commands.Roles.RolesUtil.RoleUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;

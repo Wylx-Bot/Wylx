@@ -32,15 +32,9 @@ public abstract class DiscordElement<IdentifierType extends DiscordIdentifiers> 
             System.err.println("Illegal Database Name: " + id);
         }
 
-        // Gets the database we want
         mongoDatabase = client.getDatabase(id);
-        // Get the document we want from the DB
-        settingsCollection = getSettingsCollection(settingsDoc).withCodecRegistry(MongoClientSettings.getDefaultCodecRegistry());
-
-        // If there is nothing in our DB we need to give defaults
-        if (settingsCollection.countDocuments() == 0) {
-            initializeSettings(identifiers);
-        }
+        // Get the collection that holds the settings for this guild/user/menu
+        settingsCollection = getSettingsCollection(settingsDoc);
     }
 
     /**
@@ -78,12 +72,6 @@ public abstract class DiscordElement<IdentifierType extends DiscordIdentifiers> 
         }
         mongoDatabase.createCollection(documentName);
         return mongoDatabase.getCollection(documentName);
-    }
-
-    private void initializeSettings(IdentifierType[] identifiers){
-        for(IdentifierType i : identifiers){
-            setSetting(i, i.getDefaultValue());
-        }
     }
 
     @SuppressWarnings("unchecked")
@@ -132,8 +120,11 @@ public abstract class DiscordElement<IdentifierType extends DiscordIdentifiers> 
     @SuppressWarnings("unchecked")
     public <T> void setSetting(IdentifierType identifier, Object data){
         // Ensure that the identifier and data are matched
-        if(identifier.getDataType().cast(data) == null)
+        try {
+            identifier.getDataType().cast(data);
+        } catch (ClassCastException e) {
             throw new IllegalArgumentException("Identifier data type mismatch");
+        }
 
         // Put updated data into the cache
         cacheMap.put(identifier.getIdentifier(), data);

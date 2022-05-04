@@ -70,17 +70,18 @@ public class MessageProcessing extends ListenerAdapter {
     public void onMessageReceived(@NotNull MessageReceivedEvent event) {
         Wylx wylx = Wylx.getInstance();
         DatabaseManager dbManager = wylx.getDb();
-
         String memberID = event.getAuthor().getId();
-        String guildID = event.getGuild().getId();
 
-        //Ignore messages from the bot
+        //Ignore messages from the bot and in DMs
         if(memberID.equals(wylx.getBotID()) ||
             !event.getChannel().canTalk() ||
-            !event.isFromGuild()) return;
+            !event.isFromGuild()) {
+                return;
+        }
 
-        DiscordServer db = dbManager.getServer(event.getGuild().getId());
-        ServerEventManager eventManager = ServerEventManager.getServerEventManager(event.getGuild().getId());
+        String guildID = event.getGuild().getId();
+        DiscordServer db = dbManager.getServer(guildID);
+        ServerEventManager eventManager = ServerEventManager.getServerEventManager(guildID);
         String serverPrefix = getPrefix(db, wylx);
         String msgStr = event.getMessage().getContentRaw();
         String msgPrefix = null;
