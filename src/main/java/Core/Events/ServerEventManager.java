@@ -3,45 +3,30 @@ package Core.Events;
 import Core.Processing.MessageProcessing;
 import Core.Wylx;
 import Database.DatabaseManager;
-import Database.DiscordServer;
-import Database.ServerIdentifiers;
-import org.bson.BsonReader;
-import org.bson.BsonType;
-import org.bson.BsonWriter;
-import org.bson.codecs.Codec;
-import org.bson.codecs.DecoderContext;
-import org.bson.codecs.EncoderContext;
+import Database.DbElements.DiscordServer;
+import Database.DbElements.ServerIdentifiers;
 
 import java.util.HashMap;
-import java.util.Map;
 
-public class ServerEventManager implements Codec<ServerEventManager> {
+public class ServerEventManager {
 
 	// List of all process packages copied from message processing
 	private static final EventPackage[] eventPackages = MessageProcessing.eventPackages;
-	// Keep managers in cache so they don't have to be loaded from the db for every events (string is server id)
-	private static final HashMap<String, ServerEventManager> cachedManagers = new HashMap<>();
 
 	private static final DatabaseManager db = Wylx.getInstance().getDb();
 
 	// Static getting of events manager for a server
 	public static ServerEventManager getServerEventManager(String id){
+		DiscordServer servedDB = db.getServer(id);
 		// Try to find cached manager for the server
-		ServerEventManager manager = cachedManagers.get(id);
-
-		// If not cached load the manager from db and cache
-		if(manager == null) {
-			DiscordServer discordServer = db.getServer(id);
-			manager = discordServer.getSetting(ServerIdentifiers.Modules);
-			manager.serverDB = discordServer;
-			cachedManagers.put(id, manager);
-		}
+		ServerEventManager manager = servedDB.getSetting(ServerIdentifiers.Modules);
+		manager.serverDB = servedDB;
 
 		return manager;
 	}
 
 	// DiscordServer this manager belongs to
-	private DiscordServer serverDB;
+	private DiscordServer serverDB = null;
 	// Map used for making comparisons as events are being run
 	private final HashMap<String, Boolean> masterEventMap = new HashMap<>();
 	// Map of enabled and disabled modules
@@ -70,7 +55,7 @@ public class ServerEventManager implements Codec<ServerEventManager> {
 		setModule(moduleName, value, true);
 	}
 
-	private void setModule(String moduleName, boolean value, boolean write) throws IllegalArgumentException{
+	public void setModule(String moduleName, boolean value, boolean write) throws IllegalArgumentException{
 		// find the actual class for the module
 		EventPackage module = null;
 		for(EventPackage eventPackage : eventPackages){
@@ -106,7 +91,7 @@ public class ServerEventManager implements Codec<ServerEventManager> {
 		setEvent(eventName, value, true);
 	}
 
-	private void setEvent(String eventName, boolean value, boolean write) throws IllegalArgumentException{
+	public void setEvent(String eventName, boolean value, boolean write) throws IllegalArgumentException{
 		// If the event doesn't exist we can set anything with it
 		if(!masterEventMap.containsKey(eventName)) throw new IllegalArgumentException("Specified event: `" + eventName +  "` does not exist");
 
@@ -138,50 +123,15 @@ public class ServerEventManager implements Codec<ServerEventManager> {
 		}
 	}
 
-	@Override
-	public ServerEventManager decode(BsonReader reader, DecoderContext decoderContext) {
-		// Read existing modules from the DB
-		for(String moduleName = reader.readName(); !moduleName.equals("EXCEPTIONS"); moduleName = reader.readName()){
-			setModule(moduleName, reader.readBoolean(), false);
-		}
-
-		// Add in any modules that didn't exist in the DB
-		for(EventPackage module : eventPackages){
-			String moduleName = module.getClass().getSimpleName().toLowerCase();
-			// If the module is already loaded don't set it to default
-			if(moduleMap.containsKey(moduleName)) continue;
-
-			// Load the module that didn't exist
-			setModule(moduleName, true, false);
-		}
-
-		boolean exceptions = reader.readBoolean();
-		while(reader.readBsonType() != BsonType.END_OF_DOCUMENT){
-			setEvent(reader.readName(), reader.readBoolean(), false);
-		}
-
-		return this;
+	public HashMap<String, Boolean> getMasterEventMap() {
+		return masterEventMap;
 	}
 
-	@Override
-	public void encode(BsonWriter writer, ServerEventManager value, EncoderContext encoderContext) {
-		// Write the module
-		for(Map.Entry<String, Boolean> entry : moduleMap.entrySet()){
-			writer.writeBoolean(entry.getKey(), entry.getValue());
-		}
-
-		// Write if the server has event exceptions
-		boolean exceptions = eventExceptionMap.size() != 0;
-		writer.writeBoolean("EXCEPTIONS", exceptions);
-
-		// Write the exceptions
-		for(Map.Entry<String, Boolean> entry : eventExceptionMap.entrySet()){
-			writer.writeBoolean(entry.getKey(), entry.getValue());
-		}
+	public HashMap<String, Boolean> getModuleMap() {
+		return moduleMap;
 	}
 
-	@Override
-	public Class<ServerEventManager> getEncoderClass() {
-		return ServerEventManager.class;
+	public HashMap<String, Boolean> getEventExceptionMap() {
+		return eventExceptionMap;
 	}
 }

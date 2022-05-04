@@ -1,6 +1,8 @@
 package Database;
 
 import Core.WylxEnvConfig;
+import Database.DbElements.DiscordServer;
+import Database.DbElements.DiscordUser;
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
 import com.mongodb.client.MongoClient;

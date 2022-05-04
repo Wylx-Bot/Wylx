@@ -7,6 +7,8 @@ import com.mongodb.client.MongoDatabase;
 import org.bson.*;
 import org.bson.codecs.Codec;
 
+import java.util.HashMap;
+
 import static com.mongodb.MongoNamespace.checkDatabaseNameValidity;
 import static com.mongodb.client.model.Filters.exists;
 
@@ -17,6 +19,8 @@ public abstract class DiscordElement<IdentifierType extends DiscordIdentifiers> 
     private final MongoDatabase mongoDatabase;
     // Document holding the settings for this element
     private final MongoCollection<Document> settingsCollection;
+    // HashMap holding the cached elements
+    private final HashMap<String, Object> cacheMap = new HashMap<>();
 
     protected DiscordElement(MongoClient client, String id, String settingsDoc, IdentifierType[] identifiers){
         // ID of the document within the database
@@ -84,24 +88,33 @@ public abstract class DiscordElement<IdentifierType extends DiscordIdentifiers> 
 
     @SuppressWarnings("unchecked")
     public <T> T getSettingOrNull(IdentifierType identifier) {
+        // Check cache for the element before going to the DB
+        T cachedObject = (T) cacheMap.get(identifier.getIdentifier());
+
+        if (cachedObject != null) return cachedObject;
+
         // Get the document relevant to our setting
         Document settingDoc = settingsCollection.find(exists(identifier.getIdentifier())).first();
 
-        if (settingDoc == null) {
-            return null;
-        }
+        if (settingDoc == null) return null;
 
+        // Place to put the data we get
+        T data;
+        Codec<T> codec = (Codec<T>) identifier.getCodec();
         // Non-complex can be decoded with default codecs
-        if (!settingDoc.get("complex", false)) {
-            return settingDoc.get(identifier.getIdentifier(), (T) identifier.getDefaultValue());
+        if (codec == null) {
+            data = settingDoc.get(identifier.getIdentifier(), (T) identifier.getDefaultValue());
+        } else {
+            // For complex objects we first need to turn our setting into a bson doc to be decoded
+            BsonReader reader = settingDoc.get(identifier.getIdentifier(), new Document()).toBsonDocument().asBsonReader();
+            // Remove the start tag from the beginning
+            reader.readStartDocument();
+            // Hand off to the codec to finish decoding
+            data = codec.decode(reader, null);
         }
 
-        // For complex objects we first need to turn our setting into a bson doc to be decoded
-        BsonReader reader = settingDoc.get(identifier.getIdentifier(), new Document()).toBsonDocument().asBsonReader();
-        // Remove the start tag from the beginning
-        reader.readStartDocument();
-        // Hand off to the codec to finish decoding
-        return ((Codec<T>) identifier.getDefaultValue()).decode(reader, null);
+        cacheMap.put(identifier.getIdentifier(), data);
+        return data;
     }
 
     @SuppressWarnings("unchecked")
@@ -122,6 +135,9 @@ public abstract class DiscordElement<IdentifierType extends DiscordIdentifiers> 
         if(identifier.getDataType().cast(data) == null)
             throw new IllegalArgumentException("Identifier data type mismatch");
 
+        // Put updated data into the cache
+        cacheMap.put(identifier.getIdentifier(), data);
+
         // Get the place for the setting
         Document settingDoc = settingsCollection.find(exists(identifier.getIdentifier())).first();
         // If the setting exists already remove it so it can be replaced
@@ -129,14 +145,15 @@ public abstract class DiscordElement<IdentifierType extends DiscordIdentifiers> 
             settingsCollection.deleteOne(exists(identifier.getIdentifier()));
 
         // If the data is *fancy* do *fancy* things with it
-        if(data instanceof Codec<?>){
+        Codec<T> codec = (Codec<T>) identifier.getCodec();
+        if(codec != null){
             // Create a document and writer to put the data in
             BsonDocument complexDocument = new BsonDocument();
             BsonWriter complexWriter = new BsonDocumentWriter(complexDocument);
 
             // Write data from our object into the document
             complexWriter.writeStartDocument();
-            ((Codec<T>) data).encode(complexWriter, (T) data, null);
+            codec.encode(complexWriter, (T) data, null);
             complexWriter.writeEndDocument();
 
             // Set data to document so it can be written to the DB
@@ -145,8 +162,6 @@ public abstract class DiscordElement<IdentifierType extends DiscordIdentifiers> 
 
         // Put data into document
         settingDoc = new Document().append(identifier.getIdentifier(), data);
-        // Record if the data is complex
-        settingDoc.put("complex", data instanceof BsonDocument);
         // Insert data into db
         settingsCollection.insertOne(settingDoc);
     }

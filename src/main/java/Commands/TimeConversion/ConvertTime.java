@@ -2,8 +2,8 @@ package Commands.TimeConversion;
 
 import Core.Events.SilentEvents.SilentEvent;
 import Core.Wylx;
-import Database.DiscordUser;
-import Database.UserIdentifiers;
+import Database.DbElements.DiscordUser;
+import Database.DbElements.UserIdentifiers;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import java.util.Locale;

@@ -2,8 +2,8 @@ package Core.Music;
 
 import Core.Util.Helper;
 import Core.Wylx;
-import Database.DiscordServer;
-import Database.ServerIdentifiers;
+import Database.DbElements.DiscordServer;
+import Database.DbElements.ServerIdentifiers;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter;

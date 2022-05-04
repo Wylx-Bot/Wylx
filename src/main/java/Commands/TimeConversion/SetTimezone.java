@@ -4,8 +4,8 @@ import Core.Events.Commands.CommandContext;
 import Core.Events.Commands.ServerCommand;
 import Core.Wylx;
 import Database.DatabaseManager;
-import Database.DiscordUser;
-import Database.UserIdentifiers;
+import Database.DbElements.DiscordUser;
+import Database.DbElements.UserIdentifiers;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 

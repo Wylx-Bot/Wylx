@@ -3,7 +3,7 @@ package Commands.Music;
 import Core.Events.Commands.CommandContext;
 import Core.Events.Commands.ServerCommand;
 import Core.Music.MusicUtils;
-import Database.ServerIdentifiers;
+import Database.DbElements.ServerIdentifiers;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 public class VolumeCommand extends ServerCommand {

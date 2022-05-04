@@ -1,18 +1,13 @@
-package Core.Fight;
+package Commands.Fight.Util;
 
 import Core.Wylx;
 import Database.DatabaseManager;
-import Database.DiscordUser;
-import Database.UserIdentifiers;
+import Database.DbElements.DiscordUser;
+import Database.DbElements.UserIdentifiers;
 import net.dv8tion.jda.api.entities.Member;
-import org.bson.BsonReader;
-import org.bson.BsonType;
-import org.bson.BsonWriter;
-import org.bson.codecs.Codec;
-import org.bson.codecs.DecoderContext;
-import org.bson.codecs.EncoderContext;
 
-public class FightUserStats implements Codec<FightUserStats> {
+public class FightUserStats {
+    private final static int DEFAULT_HP = 500;
     public int hp = 500;
     public Member user;
     public DiscordUser userDb;
@@ -28,6 +23,17 @@ public class FightUserStats implements Codec<FightUserStats> {
     private int speedLevel = 0;     // Level used for initial turn bias
 
     public FightUserStats() {}
+
+    public FightUserStats(int exp, int level, int hpLevel, int damageLevel, int expMultLevel, int speedLevel){
+        this.exp = exp;
+        this.level = level;
+        this.hpLevel = hpLevel;
+        this.damageLevel = damageLevel;
+        this.expMultLevel = expMultLevel;
+        this.speedLevel = speedLevel;
+
+        resetHP();
+    }
 
     private static final DatabaseManager db = Wylx.getInstance().getDb();
     public static FightUserStats getUserStats(Member user) {
@@ -48,6 +54,10 @@ public class FightUserStats implements Codec<FightUserStats> {
         }
 
         return false;
+    }
+
+    public void resetHP(){
+        hp = (int) (DEFAULT_HP * FightUtil.calcMultiplier(hpLevel));
     }
 
     public int getLvl() {
@@ -73,36 +83,7 @@ public class FightUserStats implements Codec<FightUserStats> {
         userDb.setSetting(UserIdentifiers.FightStats, this);
     }
 
-    @Override
-    public FightUserStats decode(BsonReader reader, DecoderContext decoderContext) {
-        while (reader.readBsonType() != BsonType.END_OF_DOCUMENT) {
-            String name = reader.readName();
-            switch (name) {
-                case "EXP" -> this.exp = reader.readInt32();
-                case "Level" -> this.level = reader.readInt32();
-                case "HP_Lvl" -> this.hpLevel = reader.readInt32();
-                case "Speed_Lvl" -> this.speedLevel = reader.readInt32();
-                case "EXP_Lvl" -> this.expMultLevel = reader.readInt32();
-                case "Damage_Lvl" -> this.damageLevel = reader.readInt32();
-            }
-        }
-
-        this.hp *= FightUtil.calcMultiplier(this.hpLevel);
-        return this;
-    }
-
-    @Override
-    public void encode(BsonWriter writer, FightUserStats value, EncoderContext encoderContext) {
-        writer.writeInt32("EXP", this.exp);
-        writer.writeInt32("Level", this.level);
-        writer.writeInt32("HP_Lvl", this.hpLevel);
-        writer.writeInt32("Speed_Lvl", this.speedLevel);
-        writer.writeInt32("EXP_Lvl", this.expMultLevel);
-        writer.writeInt32("Damage_Lvl", this.damageLevel);
-    }
-
-    @Override
-    public Class<FightUserStats> getEncoderClass() {
-        return FightUserStats.class;
+    public int getExp() {
+        return exp;
     }
 }

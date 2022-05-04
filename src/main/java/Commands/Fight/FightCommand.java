@@ -2,10 +2,10 @@ package Commands.Fight;
 
 import Core.Events.Commands.CommandContext;
 import Core.Events.Commands.ThreadedCommand;
-import Core.Fight.FightMessages;
-import Core.Fight.FightStatTypes;
-import Core.Fight.FightUserManager;
-import Core.Fight.FightUserStats;
+import Commands.Fight.Util.FightMessages;
+import Commands.Fight.Util.FightStatTypes;
+import Commands.Fight.Util.FightUserManager;
+import Commands.Fight.Util.FightUserStats;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
@@ -113,6 +113,10 @@ public class FightCommand extends ThreadedCommand {
     }
 
     private void fight(CommandContext ctx, FightUserStats player1, FightUserStats player2) {
+        // Reset the HP of our contestants
+        player1.resetHP();
+        player2.resetHP();
+
         ArrayList<Message> messages = new ArrayList<>();    // Messages to delete
         MessageChannel channel = ctx.event().getChannel();
         FightUserStats attacker, defender;

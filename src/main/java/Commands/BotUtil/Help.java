@@ -3,6 +3,7 @@ package Commands.BotUtil;
 import Core.Events.Commands.CommandContext;
 import Core.Events.Commands.ServerCommand;
 import Core.Events.Event;
+import Core.Events.ServerEventManager;
 import Core.Events.SilentEvents.SilentEvent;
 import Core.Events.EventPackage;
 import Core.Processing.MessageProcessing;
@@ -31,8 +32,9 @@ public class Help extends ServerCommand {
         if(args.length == 1) {
             StringBuilder helpMessage = new StringBuilder();
             helpMessage.append("```diff\n");
+            ServerEventManager eventManager = ServerEventManager.getServerEventManager(ctx.guildID());
             for (EventPackage eventPackage : MessageProcessing.eventPackages) {
-                helpMessage.append(eventPackage.getDescription(ctx));
+                helpMessage.append(eventPackage.getDescription(eventManager));
             }
             helpMessage.append("```");
             event.getChannel().sendMessage(helpMessage).queue();
