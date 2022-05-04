@@ -50,7 +50,7 @@ public class ModifyRoleMenuCommand extends ServerCommand {
             DMListener listener = new DMListener(menu, user, ctx.event().getGuild());
             ctx.event().getJDA().addEventListener(listener);
         } catch (ErrorResponseException e) {
-            ctx.event().getMessage().reply("User private messages are blocked!").queue();
+            ctx.event().getMessage().reply("User private messages are blocked! Make sure that DMs are enabled for this guild.").queue();
         }
     }
 
@@ -203,7 +203,7 @@ public class ModifyRoleMenuCommand extends ServerCommand {
         private void sendUsageAndMenu(MessageChannel channel) throws ErrorResponseException {
             channel.sendMessageEmbeds(menu.getEmbed(false)).complete();
             channel.sendMessage("""
-                    The below embed is how your menu currently looks.
+                    The above embed is how your menu currently looks.
                     Use the below commands to edit the menu:
                     ```
                     addrole <emoji> <role name> - Add role to menu
