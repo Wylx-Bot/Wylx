@@ -126,7 +126,7 @@ public class ModifyRoleMenuCommand extends ServerCommand {
                 case "removerole" -> {
                     try {
                         menu.removeReaction(options.trim());
-                    } catch (Exception e) {
+                    } catch (IllegalArgumentException e) {
                         event.getChannel().sendMessage(e.getMessage()).queue();
                     }
                 }
@@ -194,7 +194,7 @@ public class ModifyRoleMenuCommand extends ServerCommand {
             try {
                 menu.addReaction(new RoleReaction(roles.get(0), emoji));
                 return true;
-            } catch (Exception e) {
+            } catch (IllegalArgumentException e) {
                 event.getChannel().sendMessage(e.getMessage()).queue();
                 return false;
             }

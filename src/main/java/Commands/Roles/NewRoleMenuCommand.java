@@ -10,6 +10,7 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 
 import java.util.List;
 
@@ -51,12 +52,17 @@ public class NewRoleMenuCommand extends ServerCommand {
 
         Message newMessage = newChannel.sendMessageEmbeds(RoleMenu.getEmptyEmbed()).complete();
 
+        event.getChannel().sendMessage(String.format("""
+        Role menu created in %s! To modify the menu, use `%smodifyRoleMenu %s`
+        """, newChannel.getAsMention(), ctx.prefix(), newMessage.getId())).queue();
+
         try {
             RoleMenu menu = new RoleMenu(newMessage.getId(), newChannel.getId(), event.getGuild().getId());
             Wylx.getInstance().getDb().getRoleMenu(newMessage.getId())
                     .setSetting(RoleMenuIdentifiers.ROLE_MENU, menu);
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
+        } catch (IllegalArgumentException | ErrorResponseException e) {
+            // This really shouldn't happen, as we know channel + message exist
+            logger.error("Failed to create new Role Menu");
             e.printStackTrace();
             event.getMessage().reply("Could not create new Role Menu").queue();
         }

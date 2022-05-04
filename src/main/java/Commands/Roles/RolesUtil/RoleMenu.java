@@ -30,12 +30,12 @@ public class RoleMenu {
 
     private final ArrayList<RoleReaction> reactions = new ArrayList<>();
 
-    public RoleMenu(String messageID, String channelID, String guildID) throws Exception {
+    public RoleMenu(String messageID, String channelID, String guildID) throws IllegalArgumentException, ErrorResponseException {
         this("Role Selection", messageID, channelID, guildID, null);
         updateMessage();
     }
 
-    public RoleMenu(String title, String messageID, String channelID, String guildID, Map<String, String> roles) throws Exception {
+    public RoleMenu(String title, String messageID, String channelID, String guildID, Map<String, String> roles) throws IllegalArgumentException, ErrorResponseException {
         this.title = title;
         this.messageID = messageID;
         this.channelID = channelID;
@@ -44,14 +44,10 @@ public class RoleMenu {
         JDA jda = Wylx.getInstance().getJDA();
         TextChannel channel = jda.getTextChannelById(channelID);
         if (channel == null) {
-            throw new Exception("Channel does not exist");
+            throw new IllegalArgumentException("Channel does not exist");
         }
 
-        try {
-            message = channel.retrieveMessageById(messageID).complete();
-        } catch (ErrorResponseException e) {
-            throw new Exception("Message does not exist");
-        }
+        message = channel.retrieveMessageById(messageID).complete();
 
         if (roles == null) {
             return;
@@ -143,12 +139,12 @@ public class RoleMenu {
         message.editMessageEmbeds(getEmbed(true)).queue();
     }
 
-    public void addReaction(RoleReaction newReaction) throws Exception {
+    public void addReaction(RoleReaction newReaction) throws IllegalArgumentException {
         for (RoleReaction reaction : reactions) {
             if (reaction.role().equals(newReaction.role())) {
-                throw new Exception("Role already exists in menu");
+                throw new IllegalArgumentException("Role already exists in menu");
             } else if (reaction.emoji().equals(newReaction.emoji())) {
-                throw new Exception("Emoji already being used in menu");
+                throw new IllegalArgumentException("Emoji already being used in menu");
             }
         }
 
@@ -160,16 +156,16 @@ public class RoleMenu {
             if (emote != null) {
                 message.addReaction(emote).queue();
             } else {
-                throw new Exception("Emote does not exist");
+                throw new IllegalArgumentException("Emote does not exist");
             }
         }
         updateMessage();
     }
 
-    public void removeReaction(String name) throws Exception {
+    public void removeReaction(String name) throws IllegalArgumentException {
         List<RoleReaction> filtered = reactions.stream().filter(roleReaction -> roleReaction.role().getName().equalsIgnoreCase(name)).toList();
         if (filtered.size() != 1) {
-            throw new Exception("Could not find role to remove");
+            throw new IllegalArgumentException("Could not find role to remove");
         }
         RoleReaction reaction = filtered.get(0);
         reactions.remove(reaction);
