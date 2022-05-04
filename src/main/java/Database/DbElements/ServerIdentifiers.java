@@ -12,14 +12,18 @@ import java.util.function.Supplier;
 // These identifiers are used in database access to ensure information is located correctly
 public enum ServerIdentifiers implements DiscordIdentifiers {
     Modules("Modules_Enabled", ServerEventManager.class, ServerEventManager::new, new ServerEventManagerCodec()),
-    MusicVolume("Music_Volume", Integer.class, () -> 20, null),
-    Prefix("Prefix", String.class, () -> ";", null),
-    PublicRoles("Public_Roles", List.class, ArrayList::new, null);
+    MusicVolume("Music_Volume", Integer.class, () -> 20),
+    Prefix("Prefix", String.class, () -> ";"),
+    PublicRoles("Public_Roles", List.class, ArrayList::new);
 
     public final String identifier;
     public final Class<?> dataType;
     public final Supplier<Object> defaultSupplier;
     public final Codec<?> codec;
+
+    ServerIdentifiers(String identifier, Class<?> dataType, Supplier<Object> defaultValue) {
+        this(identifier, dataType, defaultValue, null);
+    }
 
     ServerIdentifiers(String identifier, Class<?> dataType, Supplier<Object> defaultValue, Codec<?> codec) {
         this.identifier = identifier;
