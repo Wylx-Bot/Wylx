@@ -37,11 +37,7 @@ public class ServerEventManager {
 	private final HashMap<String, Boolean> eventExceptionMap = new HashMap<>();
 
 	public ServerEventManager() {
-		// Initialize masterEventMap/module map
-		for(EventPackage module : eventPackages){
-			String moduleName = module.getClass().getSimpleName().toLowerCase();
-			setModule(moduleName, true, false);
-		}
+		fillDefaults();
 	}
 
 	public boolean checkEvent(Event event){
@@ -125,10 +121,9 @@ public class ServerEventManager {
 	}
 
 	private void fillDefaults(){
+		// Enable every module/command
 		for(EventPackage module : eventPackages){
 			String moduleName = module.getClass().getSimpleName().toLowerCase();
-
-			// Load the module that didn't exist
 			setModule(moduleName, true, false);
 		}
 	}
