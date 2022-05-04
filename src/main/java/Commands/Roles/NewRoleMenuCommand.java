@@ -4,7 +4,7 @@ import Core.Events.Commands.CommandContext;
 import Core.Events.Commands.ServerCommand;
 import Commands.Roles.RolesUtil.RoleMenu;
 import Core.Wylx;
-import Database.RoleMenuIdentifiers;
+import Database.DbElements.RoleMenuIdentifiers;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;

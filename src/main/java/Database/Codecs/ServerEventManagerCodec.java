@@ -23,16 +23,6 @@ public class ServerEventManagerCodec implements Codec<ServerEventManager> {
             eventManager.setModule(moduleName, reader.readBoolean(), false);
         }
 
-        // Add in any modules that didn't exist in the DB
-        for(EventPackage module : eventPackages){
-            String moduleName = module.getClass().getSimpleName().toLowerCase();
-            // If the module is already loaded don't set it to default
-            if(eventManager.getModuleMap().containsKey(moduleName)) continue;
-
-            // Load the module that didn't exist
-            eventManager.setModule(moduleName, true, false);
-        }
-
         boolean exceptions = reader.readBoolean();
         while(reader.readBsonType() != BsonType.END_OF_DOCUMENT){
             eventManager.setEvent(reader.readName(), reader.readBoolean(), false);

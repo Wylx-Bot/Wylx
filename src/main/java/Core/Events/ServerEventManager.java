@@ -8,6 +8,8 @@ import Database.DbElements.ServerIdentifiers;
 
 import java.util.HashMap;
 
+import static Core.Processing.MessageProcessing.eventPackages;
+
 public class ServerEventManager {
 
 	// List of all process packages copied from message processing
@@ -33,6 +35,14 @@ public class ServerEventManager {
 	private final HashMap<String, Boolean> moduleMap = new HashMap<>();
 	// Map of events that are exceptions to their modules
 	private final HashMap<String, Boolean> eventExceptionMap = new HashMap<>();
+
+	public ServerEventManager() {
+		// Initialize masterEventMap/module map
+		for(EventPackage module : eventPackages){
+			String moduleName = module.getClass().getSimpleName().toLowerCase();
+			setModule(moduleName, true, false);
+		}
+	}
 
 	public boolean checkEvent(Event event){
 		return checkEvent(event.getClass().getSimpleName().toLowerCase());

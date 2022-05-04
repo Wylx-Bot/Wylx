@@ -2,8 +2,8 @@ package Core.Processing;
 
 import Commands.Roles.RolesUtil.RoleMenu;
 import Core.Wylx;
-import Database.DiscordRoleMenu;
-import Database.RoleMenuIdentifiers;
+import Database.DbElements.DiscordRoleMenu;
+import Database.DbElements.RoleMenuIdentifiers;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.message.react.GenericMessageReactionEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;

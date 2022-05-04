@@ -1,6 +1,8 @@
-package Database;
+package Database.DbElements;
 
 import Commands.Roles.RolesUtil.RoleMenu;
+import Database.Codecs.RoleMenuCodec;
+import Database.DiscordIdentifiers;
 import org.bson.codecs.Codec;
 
 import java.util.function.Supplier;
@@ -9,7 +11,7 @@ import java.util.function.Supplier;
 public enum RoleMenuIdentifiers implements DiscordIdentifiers {
     // We never want to create a menu unless the user asked for one
     // Just return null if default is asked for
-    ROLE_MENU("Role_Menu", RoleMenu.class, RoleMenu::new, new RoleMenu());
+    ROLE_MENU("Role_Menu", RoleMenu.class, () -> null, new RoleMenuCodec());
 
     public final String identifier;
     public final Class<?> dataType;

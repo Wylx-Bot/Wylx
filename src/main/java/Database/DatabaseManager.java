@@ -1,6 +1,7 @@
 package Database;
 
 import Core.WylxEnvConfig;
+import Database.DbElements.DiscordRoleMenu;
 import Database.DbElements.DiscordServer;
 import Database.DbElements.DiscordUser;
 import com.mongodb.ConnectionString;
