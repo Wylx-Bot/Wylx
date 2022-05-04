@@ -90,10 +90,8 @@ public abstract class DiscordElement<IdentifierType extends DiscordIdentifiers> 
     public <T> T getSettingOrNull(IdentifierType identifier) {
         // Check cache for the element before going to the DB
         T cachedObject = (T) cacheMap.get(identifier.getIdentifier());
-        if(cachedObject != null){
-            System.out.println("Cache Read");
+        if(cachedObject != null)
             return cachedObject;
-        }
 
         // Get the document relevant to our setting
         Document settingDoc = settingsCollection.find(exists(identifier.getIdentifier())).first();
@@ -104,8 +102,9 @@ public abstract class DiscordElement<IdentifierType extends DiscordIdentifiers> 
 
         // Place to put the data we get
         T data;
+        Codec<T> codec = (Codec<T>) identifier.getCodec();
         // Non-complex can be decoded with default codecs
-        if (!settingDoc.get("complex", false)) {
+        if (codec == null) {
             data = settingDoc.get(identifier.getIdentifier(), (T) identifier.getDefaultValue());
         } else {
             // For complex objects we first need to turn our setting into a bson doc to be decoded
@@ -117,7 +116,6 @@ public abstract class DiscordElement<IdentifierType extends DiscordIdentifiers> 
         }
 
         cacheMap.put(identifier.getIdentifier(), data);
-        System.out.println("Full Read");
         return data;
     }
 
@@ -165,8 +163,6 @@ public abstract class DiscordElement<IdentifierType extends DiscordIdentifiers> 
 
         // Put data into document
         settingDoc = new Document().append(identifier.getIdentifier(), data);
-        // Record if the data is complex
-        settingDoc.put("complex", data instanceof BsonDocument);
         // Insert data into db
         settingsCollection.insertOne(settingDoc);
     }

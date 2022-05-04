@@ -32,7 +32,7 @@ public class FightUserStats {
         this.expMultLevel = expMultLevel;
         this.speedLevel = speedLevel;
 
-        this.hp = (int) (DEFAULT_HP * FightUtil.calcMultiplier(this.hpLevel));
+        resetHP();
     }
 
     private static final DatabaseManager db = Wylx.getInstance().getDb();
