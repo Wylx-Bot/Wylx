@@ -1,2 +1,6 @@
-package Database.DbElements;public class DiscordGlobal {
+package Database.DbElements;
+
+import Database.DiscordElement;
+
+public class DiscordGlobal extends DiscordElement<GlobalIdentifiers> {
 }
