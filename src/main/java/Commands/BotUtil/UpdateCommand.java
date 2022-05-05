@@ -71,9 +71,11 @@ public class UpdateCommand extends ThreadedCommand {
             }
             String stdError = stdErrorBuilder.toString();
 
+            // Build message for discord
             StringBuilder msgString = new StringBuilder(exitCode == 0 ? GIT_SUCCESS : GIT_ERROR);
 
             if (stdOutput.length() + stdError.length() < (GIT_OUTPUT_MAX_LEN - msgString.length())) {
+                // Send a message with git output if it'll fit
                 if (stdError.length() > 0)
                     msgString.append(START_ERROR_OUTPUT).append(stdErrorBuilder).append(END_OUTPUT);
                 if (stdOutput.length() > 0)
@@ -81,6 +83,7 @@ public class UpdateCommand extends ThreadedCommand {
 
                 event.getChannel().sendMessage(msgString).queue();
             } else {
+                // Otherwise send files containing git output
                 event.getChannel().sendFile(stdOuputBuilder.toString().getBytes(), "Stdout.txt")
                         .addFile(stdErrorBuilder.toString().getBytes(), "Stderr.txt")
                         .append(msgString).queue();
