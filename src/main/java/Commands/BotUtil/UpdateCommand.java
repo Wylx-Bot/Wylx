@@ -31,7 +31,7 @@ public class UpdateCommand extends ThreadedCommand {
     public void runCommandThread(CommandContext ctx) {
         MessageReceivedEvent event = ctx.event();
         String[] args = ctx.args();
-        System.out.println("HI");
+
         if (args.length == 2 && Wylx.getInstance().getWylxConfig().release) {
             event.getChannel().sendMessage("Unable to use different branch on RELEASE").queue();
             return;
@@ -110,7 +110,7 @@ public class UpdateCommand extends ThreadedCommand {
             }
 
         } catch (Exception e) {
-            event.getChannel().sendMessage("Exception while running gradlew").queue();
+            event.getChannel().sendMessage("Exception while running gradlew\n" + e.getMessage()).queue();
         }
     }
 
@@ -128,7 +128,8 @@ public class UpdateCommand extends ThreadedCommand {
             }
 
         } catch (Exception e) {
-            event.getChannel().sendMessage("Exception while running gradlew").queue();
+
+            event.getChannel().sendMessage("Exception while running gradlew\n" + e.getMessage()).queue();
         }
     }
 }
