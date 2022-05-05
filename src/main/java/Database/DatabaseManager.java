@@ -1,6 +1,7 @@
 package Database;
 
 import Core.WylxEnvConfig;
+import Database.DbElements.DiscordGlobal;
 import Database.DbElements.DiscordRoleMenu;
 import Database.DbElements.DiscordServer;
 import Database.DbElements.DiscordUser;
@@ -21,11 +22,13 @@ public class DatabaseManager {
     private final MongoClient client;
     private final HashMap<String, DiscordServer> serverCache = new HashMap<>();
     private final HashMap<String, DiscordUser> userCache = new HashMap<>();
+    private final DiscordGlobal globalDB;
     private final HashMap<String, DiscordRoleMenu> roleMenuCache = new HashMap<>();
 
     public DatabaseManager(WylxEnvConfig config) {
         connectionString = new ConnectionString(config.dbURL);
         client = getMongoClient();
+        globalDB = new DiscordGlobal(client);
     }
 
     private MongoClient getMongoClient() {
@@ -78,5 +81,9 @@ public class DatabaseManager {
         if(!roleMenuCache.containsKey(messageID))
             roleMenuCache.put(messageID, new DiscordRoleMenu(client, messageID));
         return roleMenuCache.get(messageID);
+    }
+
+    public DiscordGlobal getGlobal() {
+        return globalDB;
     }
 }
