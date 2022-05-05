@@ -3,13 +3,25 @@ package Commands.BotUtil;
 import Core.Events.Commands.CommandContext;
 import Core.Events.Commands.ThreadedCommand;
 import Core.Wylx;
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.requests.RestAction;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
 public class UpdateCommand extends ThreadedCommand {
     private static final String MAIN_BRANCH = "main";
+    private static final String GIT_ERROR = "An error occurred while pulling from Git\n";
+    private static final String GIT_SUCCESS = "Pulled from git successfully\n";
+    private static final String START_ERROR_OUTPUT = "Error Out:\n```";
+    private static final String START_STDOUT_OUTPUT = "Stdout:\n```";
+    private static final String END_OUTPUT = "\n```";
+    private static final int DISCORD_MAX_LEN = 2000;
+    private static final int GIT_OUTPUT_MAX_LEN = DISCORD_MAX_LEN
+            - START_ERROR_OUTPUT.length()
+            - START_STDOUT_OUTPUT.length()
+            - (2 * END_OUTPUT.length());
 
     UpdateCommand() {
         super ("update", CommandPermission.BOT_ADMIN, "Update and build");
@@ -19,7 +31,8 @@ public class UpdateCommand extends ThreadedCommand {
     public void runCommandThread(CommandContext ctx) {
         MessageReceivedEvent event = ctx.event();
         String[] args = ctx.args();
-        if (args.length == 2 && !Wylx.getInstance().getWylxConfig().release) {
+        System.out.println("HI");
+        if (args.length == 2 && Wylx.getInstance().getWylxConfig().release) {
             event.getChannel().sendMessage("Unable to use different branch on RELEASE").queue();
             return;
         }
@@ -43,29 +56,42 @@ public class UpdateCommand extends ThreadedCommand {
             BufferedReader errInput = new BufferedReader(new
                     InputStreamReader(proc.getErrorStream()));
 
+            int exitCode = proc.waitFor();
 
-            if (proc.waitFor() != 0) {
-                event.getChannel().sendMessage("An error occurred while updating.").queue();
-                StringBuilder errOutput = new StringBuilder("Error Output:\n```");
-                while (errInput.ready()) {
-                    errOutput.append(errInput.readLine()).append("\n");
-                }
-                errOutput.append("\n```");
-                event.getChannel().sendMessage(errOutput.toString()).queue();
-            }
-
-            StringBuilder stdOutput = new StringBuilder("Stdout:\n```");
+            // Read output from git pull
+            StringBuilder stdOuputBuilder = new StringBuilder();
             while (stdInput.ready()) {
-                stdOutput.append(stdInput.readLine()).append("\n");
+                stdOuputBuilder.append(stdInput.readLine()).append("\n");
             }
-            stdOutput.append("\n```");
-            event.getChannel().sendMessage(stdOutput.toString()).queue();
+            String stdOutput = stdOuputBuilder.toString();
+
+            StringBuilder stdErrorBuilder = new StringBuilder();
+            while (errInput.ready()) {
+                stdErrorBuilder.append(errInput.readLine()).append("\n");
+            }
+            String stdError = stdErrorBuilder.toString();
+
+            StringBuilder msgString = new StringBuilder(exitCode == 0 ? GIT_SUCCESS : GIT_ERROR);
+
+            if (stdOutput.length() + stdError.length() < (GIT_OUTPUT_MAX_LEN - msgString.length())) {
+                if (stdError.length() > 0)
+                    msgString.append(START_ERROR_OUTPUT).append(stdErrorBuilder).append(END_OUTPUT);
+                if (stdOutput.length() > 0)
+                    msgString.append(START_STDOUT_OUTPUT).append(stdOuputBuilder).append(END_OUTPUT);
+
+                event.getChannel().sendMessage(msgString).queue();
+            } else {
+                event.getChannel().sendFile(stdOuputBuilder.toString().getBytes(), "Stdout.txt")
+                        .addFile(stdErrorBuilder.toString().getBytes(), "Stderr.txt")
+                        .append(msgString).queue();
+
+            }
 
             stdInput.close();
             errInput.close();
             return proc.exitValue() == 0;
         } catch (Exception e) {
-            event.getChannel().sendMessage("Exception while running git").queue();
+            event.getChannel().sendMessage("Exception while running git\n" + e.getMessage()).queue();
             return false;
         }
     }
