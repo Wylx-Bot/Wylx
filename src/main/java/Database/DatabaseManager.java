@@ -83,7 +83,7 @@ public class DatabaseManager {
         return roleMenuCache.get(messageID);
     }
 
-    public DiscordGlobal getGlobal(){
+    public DiscordGlobal getGlobal() {
         return globalDB;
     }
 }
