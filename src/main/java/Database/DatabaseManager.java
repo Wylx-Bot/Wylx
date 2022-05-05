@@ -1,6 +1,7 @@
 package Database;
 
 import Core.WylxEnvConfig;
+import Database.DbElements.DiscordGlobal;
 import Database.DbElements.DiscordServer;
 import Database.DbElements.DiscordUser;
 import com.mongodb.ConnectionString;
@@ -22,10 +23,12 @@ public class DatabaseManager {
     private final MongoClient client;
     private final HashMap<String, DiscordServer> serverCache = new HashMap<>();
     private final HashMap<String, DiscordUser> userCache = new HashMap<>();
+    private final DiscordGlobal globalDB;
 
     public DatabaseManager(WylxEnvConfig config) {
         connectionString = new ConnectionString(config.dbURL);
         client = getMongoClient();
+        globalDB = new DiscordGlobal(client);
     }
 
     private MongoClient getMongoClient() {
@@ -72,5 +75,9 @@ public class DatabaseManager {
             userCache.put(userID, new DiscordUser(client, userID));
 
         return userCache.get(userID);
+    }
+
+    public DiscordGlobal getGlobal(){
+        return globalDB;
     }
 }
