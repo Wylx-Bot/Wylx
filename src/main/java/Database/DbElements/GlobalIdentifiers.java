@@ -22,21 +22,21 @@ public enum GlobalIdentifiers implements DiscordIdentifiers {
 
     @Override
     public String getIdentifier() {
-        return null;
+        return identifier;
     }
 
     @Override
     public Class<?> getDataType() {
-        return null;
+        return dataType;
     }
 
     @Override
     public Codec<?> getCodec() {
-        return null;
+        return codec;
     }
 
     @Override
     public Object getDefaultValue() {
-        return null;
+        return defaultSupplier.get();
     }
 }
