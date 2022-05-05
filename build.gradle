@@ -28,5 +28,5 @@ dependencies {
 }
 
 application {
-    mainClassName="Core.Wylx"
+    mainClassName="com.wylxbot.wylx.Wylx"
 }
