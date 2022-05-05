@@ -1,6 +1,7 @@
 package Core;
 
 import Core.Processing.MessageProcessing;
+import Core.Processing.ReactionProcessing;
 import Core.Processing.VoiceChannelProcessing;
 import Database.DatabaseManager;
 import io.github.cdimascio.dotenv.Dotenv;
@@ -51,7 +52,9 @@ public class Wylx {
 
         try {
             jda = JDABuilder.createDefault(token)
-                    .addEventListeners(new MessageProcessing(), new VoiceChannelProcessing())
+                    .addEventListeners(new MessageProcessing(),
+                            new VoiceChannelProcessing(),
+                            new ReactionProcessing())
                     .build();
         } catch (LoginException e) {
             e.printStackTrace();
