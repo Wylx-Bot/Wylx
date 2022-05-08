@@ -135,7 +135,7 @@ public class RoleMenu {
         message.editMessageEmbeds(getEmbed(true)).queue();
     }
 
-    public void addReaction(RoleReaction newReaction) throws IllegalArgumentException, ErrorResponseException {
+    public void addReaction(RoleReaction newReaction) throws IllegalArgumentException {
         for (RoleReaction reaction : reactions) {
             if (reaction.role().equals(newReaction.role())) {
                 throw new IllegalArgumentException("Role already exists in menu");
