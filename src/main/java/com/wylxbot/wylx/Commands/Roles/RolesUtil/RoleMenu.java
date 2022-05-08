@@ -6,12 +6,15 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.exceptions.ErrorResponseException;
+import net.dv8tion.jda.api.requests.ErrorResponse;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 public class RoleMenu {
+
+    private static int MAX_REACTIONS = 20; // Discord limit
 
     private String title;
 
@@ -132,7 +135,7 @@ public class RoleMenu {
         message.editMessageEmbeds(getEmbed(true)).queue();
     }
 
-    public void addReaction(RoleReaction newReaction) throws IllegalArgumentException {
+    public void addReaction(RoleReaction newReaction) throws IllegalArgumentException, ErrorResponseException {
         for (RoleReaction reaction : reactions) {
             if (reaction.role().equals(newReaction.role())) {
                 throw new IllegalArgumentException("Role already exists in menu");
@@ -141,18 +144,32 @@ public class RoleMenu {
             }
         }
 
-        reactions.add(newReaction);
-        if (newReaction.emoji().isUnicode()) {
-            message.addReaction(newReaction.emoji().getAsMention()).queue();
-        } else {
-            Emote emote = Wylx.getInstance().getJDA().getEmoteById(newReaction.emoji().getId());
-            if (emote != null) {
-                message.addReaction(emote).queue();
+        try {
+            addReactionToMessage(newReaction.emoji());
+        } catch (ErrorResponseException e) {
+            if (e.getErrorResponse() == ErrorResponse.TOO_MANY_REACTIONS) {
+                throw new IllegalArgumentException("Discord has a max limit of 20 unique emojis per message. Please create a new menu or remove other roles from this menu.");
             } else {
-                throw new IllegalArgumentException("Emote does not exist");
+                throw new IllegalArgumentException(e.getMessage());
             }
         }
+
+        reactions.add(newReaction);
         updateMessage();
+    }
+
+    private void addReactionToMessage(Emoji emoji) throws IllegalArgumentException, ErrorResponseException {
+        if (emoji.isUnicode()) {
+            message.addReaction(emoji.getAsMention()).complete();
+            return;
+        }
+
+        Emote emote = Wylx.getInstance().getJDA().getEmoteById(emoji.getId());
+        if (emote != null) {
+            message.addReaction(emote).complete();
+        } else {
+            throw new IllegalArgumentException("Emote does not exist");
+        }
     }
 
     public void removeReaction(String name) throws IllegalArgumentException {
