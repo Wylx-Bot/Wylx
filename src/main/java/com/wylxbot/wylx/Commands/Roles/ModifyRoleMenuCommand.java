@@ -55,7 +55,6 @@ public class ModifyRoleMenuCommand extends ServerCommand {
         // DMs may be blocked, attempt to send DM before adding a listener
         try {
             DMListener listener = new DMListener(menu, user, ctx.event().getGuild());
-            ctx.event().getJDA().addEventListener(listener);
             DMListenerUserManager.getInstance().addDMListener(user, listener);
         } catch (ErrorResponseException e) {
             ctx.event().getMessage().reply("User private messages are blocked! Make sure that DMs are enabled for this guild.").queue();

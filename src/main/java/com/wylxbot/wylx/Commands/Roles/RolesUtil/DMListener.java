@@ -38,15 +38,13 @@ public class DMListener extends ListenerAdapter {
             @Override
             public void run() {
                 privateChannel.sendMessage("Timed out. Finished editing Role Menu").queue();
-                quit();
+                DMListenerUserManager.getInstance().removeDMListener(user);
             }
         }, TIMEOUT);
     }
 
     public void quit() {
         timer.cancel();
-        user.getJDA().removeEventListener(this);
-        DMListenerUserManager.getInstance().removeDMListener(user);
     }
 
     @Override
@@ -67,7 +65,7 @@ public class DMListener extends ListenerAdapter {
         switch (command) {
             case "quit" -> {
                 event.getChannel().sendMessage("Finished editing Role Menu").queue();
-                quit();
+                DMListenerUserManager.getInstance().removeDMListener(user);
                 return;
             }
             case "settitle" -> {
