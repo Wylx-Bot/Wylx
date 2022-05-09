@@ -47,6 +47,11 @@ public class ModifyRoleMenuCommand extends ServerCommand {
             return;
         }
 
+        if (!menu.getGuildID().equals(ctx.guildID())) {
+            ctx.event().getMessage().reply("Menu is from another server, please run ?modifyrolemenu from that server.").queue();
+            return;
+        }
+
         // DMs may be blocked, attempt to send DM before adding a listener
         try {
             DMListener listener = new DMListener(menu, user, ctx.event().getGuild());
