@@ -10,7 +10,7 @@ public class BotUtilPackage extends EventPackage {
                 new ServerCommand[]{
                         new PingCommand(),
                         new RestartCommand(),
-                        new SystemCommand(),
+                        new StatusCommand(),
                         new UpdateCommand(),
                         new Help(),
                         new InviteCommand(),

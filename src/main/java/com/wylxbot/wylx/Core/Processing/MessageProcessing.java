@@ -16,6 +16,8 @@ import com.wylxbot.wylx.Core.Events.EventPackage;
 import com.wylxbot.wylx.Core.Events.ServerEventManager;
 import com.wylxbot.wylx.Core.Events.SilentEvents.SilentEvent;
 import com.wylxbot.wylx.Core.Music.WylxPlayerManager;
+import com.wylxbot.wylx.Database.DbElements.DiscordGlobal;
+import com.wylxbot.wylx.Database.DbElements.GlobalIdentifiers;
 import com.wylxbot.wylx.Wylx;
 import com.wylxbot.wylx.Core.WylxEnvConfig;
 import com.wylxbot.wylx.Database.DatabaseManager;
@@ -68,6 +70,8 @@ public class MessageProcessing extends ListenerAdapter {
 
     @Override
     public void onMessageReceived(@NotNull MessageReceivedEvent event) {
+        long startTime = System.currentTimeMillis();
+
         Wylx wylx = Wylx.getInstance();
         DatabaseManager dbManager = wylx.getDb();
         String memberID = event.getAuthor().getId();
@@ -116,6 +120,7 @@ public class MessageProcessing extends ListenerAdapter {
                 } else {
                     event.getMessage().reply("You don't have permission to use this command!").queue();
                 }
+                updateAverageCommand(startTime);
                 return;
             }
         }
@@ -123,9 +128,57 @@ public class MessageProcessing extends ListenerAdapter {
         for(SilentEvent silentEvent : silentEvents){
             if(eventManager.checkEvent(silentEvent) && silentEvent.check(event, serverPrefix)){
                 silentEvent.runEvent(event, serverPrefix);
+                updateAverageSilentEvent(startTime);
                 return;
             }
         }
+
+        updateAverageNoOp(startTime);
+    }
+
+    private void updateAverageCommand(long startTime) {
+        DiscordGlobal globalDB = Wylx.getInstance().getDb().getGlobal();
+
+        // time from this run
+        long runTime = System.currentTimeMillis() - startTime;
+        // Load previous data
+        int commandsRun = globalDB.getSetting(GlobalIdentifiers.CommandsProcessed);
+        long prevAvg = globalDB.getSetting(GlobalIdentifiers.AverageCommandTime);
+        // Calc new avg
+        long newAvg = ((prevAvg * commandsRun) / (commandsRun + 1)) + (runTime / (commandsRun + 1));
+        // Write new data
+        globalDB.setSetting(GlobalIdentifiers.CommandsProcessed, commandsRun + 1);
+        globalDB.setSetting(GlobalIdentifiers.AverageCommandTime, newAvg);
+    }
+
+    private void updateAverageNoOp(long startTime) {
+        DiscordGlobal globalDB = Wylx.getInstance().getDb().getGlobal();
+
+        // time from this run
+        long runTime = System.currentTimeMillis() - startTime;
+        // Load previous data
+        int noOpsRun = globalDB.getSetting(GlobalIdentifiers.NoOpsProcessed);
+        long prevAvg = globalDB.getSetting(GlobalIdentifiers.AverageNoOpTime);
+        // Calc new avg
+        long newAvg = ((prevAvg * noOpsRun) / (noOpsRun + 1)) + (runTime / (noOpsRun + 1));
+        // Write new data
+        globalDB.setSetting(GlobalIdentifiers.NoOpsProcessed, noOpsRun + 1);
+        globalDB.setSetting(GlobalIdentifiers.AverageNoOpTime, newAvg);
+    }
+
+    private void updateAverageSilentEvent(long startTime) {
+        DiscordGlobal globalDB = Wylx.getInstance().getDb().getGlobal();
+
+        // time from this run
+        long runTime = System.currentTimeMillis() - startTime;
+        // Load previous data
+        int eventsRun = globalDB.getSetting(GlobalIdentifiers.SilentEventsProcessed);
+        long prevAvg = globalDB.getSetting(GlobalIdentifiers.AverageSilentEventTime);
+        // Calc new avg
+        long newAvg = ((prevAvg * eventsRun) / (eventsRun + 1)) + (runTime / (eventsRun + 1));
+        // Write new data
+        globalDB.setSetting(GlobalIdentifiers.SilentEventsProcessed, eventsRun + 1);
+        globalDB.setSetting(GlobalIdentifiers.AverageSilentEventTime, newAvg);
     }
 
     private String getPrefix(DiscordServer server, Wylx wylx) {
