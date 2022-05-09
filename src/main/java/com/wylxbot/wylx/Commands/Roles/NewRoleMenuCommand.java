@@ -39,6 +39,11 @@ public class NewRoleMenuCommand extends ServerCommand {
             return;
         }
 
+        if (!newChannel.getGuild().getId().equals(ctx.guildID())) {
+            event.getMessage().reply("This text channel is not from this server!").queue();
+            return;
+        }
+
         Member self = event.getGuild().getSelfMember();
         if (!self.hasPermission(newChannel, Permission.MESSAGE_ADD_REACTION)) {
             event.getMessage().reply("Wylx does not have permission to react in that channel!").queue();
