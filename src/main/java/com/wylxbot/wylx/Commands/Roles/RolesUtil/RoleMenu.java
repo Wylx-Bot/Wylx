@@ -13,9 +13,6 @@ import java.util.List;
 import java.util.Map;
 
 public class RoleMenu {
-
-    private static int MAX_REACTIONS = 20; // Discord limit
-
     private String title;
 
     private final String guildID;
