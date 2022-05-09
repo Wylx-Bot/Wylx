@@ -48,7 +48,8 @@ public class ModifyRoleMenuCommand extends ServerCommand {
         }
 
         if (!menu.getGuildID().equals(ctx.guildID())) {
-            ctx.event().getMessage().reply("Menu is from another server, please run ?modifyrolemenu from that server.").queue();
+            String str = String.format("Menu is from another server, please run %smodifyRoleMenu from that server.", ctx.prefix());
+            ctx.event().getMessage().reply(str).queue();
             return;
         }
 
