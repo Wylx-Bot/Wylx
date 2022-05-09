@@ -1,11 +1,8 @@
 package com.wylxbot.wylx.Commands.Roles;
 
-import com.wylxbot.wylx.Commands.Roles.RolesUtil.DMListener;
-import com.wylxbot.wylx.Commands.Roles.RolesUtil.DMListenerUserManager;
+import com.wylxbot.wylx.Commands.Roles.RolesUtil.*;
 import com.wylxbot.wylx.Core.Events.Commands.CommandContext;
 import com.wylxbot.wylx.Core.Events.Commands.ServerCommand;
-import com.wylxbot.wylx.Commands.Roles.RolesUtil.RoleMenu;
-import com.wylxbot.wylx.Commands.Roles.RolesUtil.RoleReaction;
 import com.wylxbot.wylx.Wylx;
 import com.wylxbot.wylx.Database.DbElements.DiscordRoleMenu;
 import com.wylxbot.wylx.Database.DbElements.RoleMenuIdentifiers;
@@ -55,6 +52,8 @@ public class ModifyRoleMenuCommand extends ServerCommand {
 
         // DMs may be blocked, attempt to send DM before adding a listener
         try {
+            // Remove old sesion if it exists
+            DMListenerUserManager.getInstance().removeDMListener(user, DMListenerQuitReason.INTERRUPTED);
             DMListener listener = new DMListener(menu, user, ctx.event().getGuild());
             DMListenerUserManager.getInstance().addDMListener(user, listener);
         } catch (ErrorResponseException e) {

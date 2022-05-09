@@ -18,17 +18,16 @@ public class DMListenerUserManager {
 
     public void addDMListener(User user, DMListener listener) {
         lock.lock();
-        removeDMListener(user);
         dmMap.put(user.getIdLong(), listener);
         user.getJDA().addEventListener(listener);
         lock.unlock();
     }
 
-    public void removeDMListener(User user) {
+    public void removeDMListener(User user, DMListenerQuitReason reason) {
         lock.lock();
         DMListener listener = dmMap.remove(user.getIdLong());
         if (listener != null) {
-            listener.quit();
+            listener.quit(reason);
             user.getJDA().removeEventListener(listener);
         }
         lock.unlock();

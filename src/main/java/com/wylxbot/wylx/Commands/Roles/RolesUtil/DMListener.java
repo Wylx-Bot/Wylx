@@ -37,13 +37,21 @@ public class DMListener extends ListenerAdapter {
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                privateChannel.sendMessage("Timed out. Finished editing Role Menu").queue();
-                DMListenerUserManager.getInstance().removeDMListener(user);
+                DMListenerUserManager.getInstance().removeDMListener(user, DMListenerQuitReason.TIMEOUT);
             }
         }, TIMEOUT);
     }
 
-    public void quit() {
+    public void quit(DMListenerQuitReason reason) {
+        switch (reason) {
+            case TIMEOUT -> privateChannel.sendMessage("Timed out. Finished editing Role Menu").queue();
+            case QUIT_COMMAND -> privateChannel.sendMessage("Finished editing Role Menu").queue();
+            case INTERRUPTED -> {
+                String str = String.format("Existing session interrupted! Ending edit on %s to start next session", menu.getMessageID());
+                privateChannel.sendMessage(str).queue();
+            }
+        }
+
         timer.cancel();
     }
 
@@ -64,8 +72,7 @@ public class DMListener extends ListenerAdapter {
 
         switch (command) {
             case "quit" -> {
-                event.getChannel().sendMessage("Finished editing Role Menu").queue();
-                DMListenerUserManager.getInstance().removeDMListener(user);
+                DMListenerUserManager.getInstance().removeDMListener(user, DMListenerQuitReason.QUIT_COMMAND);
                 return;
             }
             case "settitle" -> {
