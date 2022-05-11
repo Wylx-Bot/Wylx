@@ -9,21 +9,21 @@ import java.util.TimerTask;
 
 public class WylxStats {
     private long commandsProcessed;
-    private long averageCommandTime;
+    private double averageCommandTime;
 
     private long silentEventsProcessed;
-    private long averageSilentEventTime;
+    private double averageSilentEventTime;
 
     private long noOpsProcessed;
-    private long averageNoOpTime;
+    private double averageNoOpTime;
 
     private final Timer writeTimer = new Timer("WylxStatsWriteTimer");
 
     private static final long TEN_MINUTES_IN_MS = 600000;
 
-    public WylxStats(long commandsProcessed, long averageCommandTime,
-                     long silentEventsProcessed, long averageSilentEventTime,
-                     long noOpsProcessed, long averageNoOpTime) {
+    public WylxStats(long commandsProcessed, double averageCommandTime,
+                     long silentEventsProcessed, double averageSilentEventTime,
+                     long noOpsProcessed, double averageNoOpTime) {
         this.commandsProcessed = commandsProcessed;
         this.averageCommandTime = averageCommandTime;
         this.silentEventsProcessed = silentEventsProcessed;
@@ -65,9 +65,9 @@ public class WylxStats {
         averageSilentEventTime = runningAverageCalculation(averageSilentEventTime, silentEventsProcessed++, runTime);
     }
 
-    private long runningAverageCalculation(long oldAvg, long oldCount, long newDataPoint) {
-        long adjustedOldAvg = (oldAvg * oldCount) / (oldCount + 1);
-        long newAvg = adjustedOldAvg + (newDataPoint / (oldCount + 1));
+    private double runningAverageCalculation(double oldAvg, long oldCount, long newDataPoint) {
+        double adjustedOldAvg = oldAvg * oldCount;
+        double newAvg = (adjustedOldAvg + newDataPoint) / (oldCount + 1);
         return newAvg;
     }
 
@@ -75,7 +75,7 @@ public class WylxStats {
         return commandsProcessed;
     }
 
-    public long getAverageCommandTime() {
+    public double getAverageCommandTime() {
         return averageCommandTime;
     }
 
@@ -83,7 +83,7 @@ public class WylxStats {
         return silentEventsProcessed;
     }
 
-    public long getAverageSilentEventTime() {
+    public double getAverageSilentEventTime() {
         return averageSilentEventTime;
     }
 
@@ -91,7 +91,7 @@ public class WylxStats {
         return noOpsProcessed;
     }
 
-    public long getAverageNoOpTime() {
+    public double getAverageNoOpTime() {
         return averageNoOpTime;
     }
 }

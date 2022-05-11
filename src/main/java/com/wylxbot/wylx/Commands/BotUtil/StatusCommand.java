@@ -100,11 +100,11 @@ public class StatusCommand extends ServerCommand {
         embed.addField("Wylx Stats",
                 String.format("""
                         | \u2005\u2005\u2005\u2005\u2005\u2005\u200A\u200ACommands Processed:\u2005\u2005\u2005\u2005\t%d commands
-                        | \u2005\u2005\u200AAverage Command Time:\u2005\u2005\u2005\u2005\t%d ms
+                        | \u2005\u2005\u200AAverage Command Time:\u2005\u2005\u2005\u2005\t%.02f ms
                         | \u2005\u2005\u2005\u2005\u2008Silent Events Processed:\u2005\u2005\u2005\u2005\t%d events
-                        | \u200AAverage Silent Event Time:\u2005\u2005\u2005\u2005\t%d ms
+                        | \u200AAverage Silent Event Time:\u2005\u2005\u2005\u2005\t%.02f ms
                         | \u2005\u2005\u2005\u2008\u200ANoOp Events Processed:\u2005\u2005\u2005\u2005\t%d noops
-                        | \u2005\u2005\u2005\u2005\u2005\u2005\u2005\u2005\u2005\u2005Average NoOp Time:\u2005\u2005\u2005\u2005\t%d ms
+                        | \u2005\u2005\u2005\u2005\u2005\u2005\u2005\u2005\u2005\u2005Average NoOp Time:\u2005\u2005\u2005\u2005\t%.02f ms
                         """,
                         wylxStats.getCommandsProcessed(),
                         wylxStats.getAverageCommandTime(),
