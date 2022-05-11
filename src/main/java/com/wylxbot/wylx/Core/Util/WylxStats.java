@@ -19,6 +19,8 @@ public class WylxStats {
 
     private final Timer writeTimer = new Timer("WylxStatsWriteTimer");
 
+    private static final long TEN_MINUTES_IN_MS = 600000;
+
     public WylxStats(long commandsProcessed, long averageCommandTime,
                      long silentEventsProcessed, long averageSilentEventTime,
                      long noOpsProcessed, long averageNoOpTime) {
@@ -39,28 +41,34 @@ public class WylxStats {
 
                 globalDB.setSetting(GlobalIdentifiers.BotStats, stats);
             }
-        }, 0, 600000);
+        }, 0, TEN_MINUTES_IN_MS);
     }
 
     public void updateAverageCommand(long startTime) {
         // time from this run
         long runTime = System.currentTimeMillis() - startTime;
         // Calc new avg
-        averageCommandTime = ((averageCommandTime * commandsProcessed) / (++commandsProcessed)) + (runTime / (commandsProcessed));
+        averageCommandTime = runningAverageCalculation(averageCommandTime, commandsProcessed++, runTime);
     }
 
     public void updateAverageNoOp(long startTime) {
         // time from this run
         long runTime = System.currentTimeMillis() - startTime;
         // Calc new avg
-        averageNoOpTime = ((averageNoOpTime * noOpsProcessed) / (++noOpsProcessed)) + (runTime / (noOpsProcessed));
+        averageNoOpTime = runningAverageCalculation(averageNoOpTime, noOpsProcessed++, runTime);
     }
 
     public void updateAverageSilentEvent(long startTime) {
         // time from this run
         long runTime = System.currentTimeMillis() - startTime;
         // Calc new avg
-        averageSilentEventTime = ((averageSilentEventTime * silentEventsProcessed) / (++silentEventsProcessed)) + (runTime / (silentEventsProcessed));
+        averageSilentEventTime = runningAverageCalculation(averageSilentEventTime, silentEventsProcessed++, runTime);
+    }
+
+    private long runningAverageCalculation(long oldAvg, long oldCount, long newDataPoint) {
+        long adjustedOldAvg = (oldAvg * oldCount) / (oldCount + 1);
+        long newAvg = adjustedOldAvg + (newDataPoint / (oldCount + 1));
+        return newAvg;
     }
 
     public long getCommandsProcessed() {
