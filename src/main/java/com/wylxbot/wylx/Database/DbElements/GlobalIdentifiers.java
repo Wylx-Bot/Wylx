@@ -8,7 +8,7 @@ import org.bson.codecs.Codec;
 import java.util.function.Supplier;
 
 public enum GlobalIdentifiers implements DiscordIdentifiers {
-    BotStats("Wylx_Stats", WylxStats.class, () -> new WylxStats(0, 0, 0, 0,0, 0), new WylxStatsCodec());
+    BotStats("Wylx_Stats", WylxStats.class, () -> new WylxStats(0, 0, 0, 0, 0, 0), new WylxStatsCodec());
 
     public final String identifier;
     public final Class<?> dataType;
