@@ -1,17 +1,14 @@
 package com.wylxbot.wylx.Database.DbElements;
 
+import com.wylxbot.wylx.Core.Util.WylxStats;
+import com.wylxbot.wylx.Database.Codecs.WylxStatsCodec;
 import com.wylxbot.wylx.Database.DiscordIdentifiers;
 import org.bson.codecs.Codec;
 
 import java.util.function.Supplier;
 
 public enum GlobalIdentifiers implements DiscordIdentifiers {
-    CommandsProcessed("Commands_Processed", Integer.class, () -> 0),
-    AverageCommandTime("Average_Command_Time", Long.class, () -> 0L),
-    SilentEventsProcessed("Silent_Events_Processed", Integer.class, () -> 0),
-    AverageSilentEventTime("Average_Silent_Event_Time", Long.class, () -> 0L),
-    NoOpsProcessed("NoOps_Processed", Integer.class, () -> 0),
-    AverageNoOpTime("Average_NoOp_Time", Long.class, () -> 0L);
+    BotStats("Wylx_Stats", WylxStats.class, () -> new WylxStats(0, 0, 0, 0,0, 0), new WylxStatsCodec());
 
     public final String identifier;
     public final Class<?> dataType;

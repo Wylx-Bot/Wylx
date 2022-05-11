@@ -3,6 +3,7 @@ package com.wylxbot.wylx.Commands.BotUtil;
 import com.wylxbot.wylx.Core.Events.Commands.CommandContext;
 import com.wylxbot.wylx.Core.Events.Commands.ServerCommand;
 import com.wylxbot.wylx.Core.Util.ProgressBar;
+import com.wylxbot.wylx.Core.Util.WylxStats;
 import com.wylxbot.wylx.Database.DbElements.DiscordGlobal;
 import com.wylxbot.wylx.Database.DbElements.GlobalIdentifiers;
 import com.wylxbot.wylx.Wylx;
@@ -95,6 +96,7 @@ public class StatusCommand extends ServerCommand {
         embed.addField(systemName, systemBuilder, false);
 
         // Build stats section
+        WylxStats wylxStats = globalDB.getSetting(GlobalIdentifiers.BotStats);
         embed.addField("Wylx Stats",
                 String.format("""
                         | \u2005\u2005\u2005\u2005\u2005\u2005\u200A\u200ACommands Processed:\u2005\u2005\u2005\u2005\t%d commands
@@ -104,12 +106,12 @@ public class StatusCommand extends ServerCommand {
                         | \u2005\u2005\u2005\u2008\u200ANoOp Events Processed:\u2005\u2005\u2005\u2005\t%d noops
                         | \u2005\u2005\u2005\u2005\u2005\u2005\u2005\u2005\u2005\u2005Average NoOp Time:\u2005\u2005\u2005\u2005\t%d ms
                         """,
-                        (Integer) globalDB.getSetting(GlobalIdentifiers.CommandsProcessed),
-                        Math.round((Long) globalDB.getSetting(GlobalIdentifiers.AverageCommandTime)),
-                        (Integer) globalDB.getSetting(GlobalIdentifiers.SilentEventsProcessed),
-                        Math.round((Long) globalDB.getSetting(GlobalIdentifiers.AverageSilentEventTime)),
-                        (Integer) globalDB.getSetting(GlobalIdentifiers.NoOpsProcessed),
-                        Math.round((Long) globalDB.getSetting(GlobalIdentifiers.AverageNoOpTime))),false);
+                        wylxStats.getCommandsProcessed(),
+                        wylxStats.getAverageCommandTime(),
+                        wylxStats.getSilentEventsProcessed(),
+                        wylxStats.getAverageSilentEventTime(),
+                        wylxStats.getNoOpsProcessed(),
+                        wylxStats.getAverageNoOpTime()),false);
 
 
         event.getChannel().sendMessageEmbeds(embed.build()).queue();
