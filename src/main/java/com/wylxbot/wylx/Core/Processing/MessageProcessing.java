@@ -16,6 +16,9 @@ import com.wylxbot.wylx.Core.Events.EventPackage;
 import com.wylxbot.wylx.Core.Events.ServerEventManager;
 import com.wylxbot.wylx.Core.Events.SilentEvents.SilentEvent;
 import com.wylxbot.wylx.Core.Music.WylxPlayerManager;
+import com.wylxbot.wylx.Core.Util.WylxStats;
+import com.wylxbot.wylx.Database.DbElements.DiscordGlobal;
+import com.wylxbot.wylx.Database.DbElements.GlobalIdentifiers;
 import com.wylxbot.wylx.Wylx;
 import com.wylxbot.wylx.Core.WylxEnvConfig;
 import com.wylxbot.wylx.Database.DatabaseManager;
@@ -68,8 +71,11 @@ public class MessageProcessing extends ListenerAdapter {
 
     @Override
     public void onMessageReceived(@NotNull MessageReceivedEvent event) {
+        long startTime = System.currentTimeMillis();
+
         Wylx wylx = Wylx.getInstance();
         DatabaseManager dbManager = wylx.getDb();
+        WylxStats wylxStats = dbManager.getGlobal().getSetting(GlobalIdentifiers.BotStats);
         String memberID = event.getAuthor().getId();
 
         //Ignore messages from the bot and in DMs
@@ -116,6 +122,7 @@ public class MessageProcessing extends ListenerAdapter {
                 } else {
                     event.getMessage().reply("You don't have permission to use this command!").queue();
                 }
+                wylxStats.updateAverageCommand(startTime);
                 return;
             }
         }
@@ -123,9 +130,12 @@ public class MessageProcessing extends ListenerAdapter {
         for(SilentEvent silentEvent : silentEvents){
             if(eventManager.checkEvent(silentEvent) && silentEvent.check(event, serverPrefix)){
                 silentEvent.runEvent(event, serverPrefix);
+                wylxStats.updateAverageSilentEvent(startTime);
                 return;
             }
         }
+
+        wylxStats.updateAverageNoOp(startTime);
     }
 
     private String getPrefix(DiscordServer server, Wylx wylx) {
