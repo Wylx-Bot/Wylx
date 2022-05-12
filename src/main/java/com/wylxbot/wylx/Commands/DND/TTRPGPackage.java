@@ -8,7 +8,8 @@ public class TTRPGPackage extends EventPackage {
     public TTRPGPackage() {
         super(
                 new ServerCommand[]{
-                    new MathCommand()
+                    new MathCommand(),
+                    new SpellCommand()
                 }, new SilentEvent[]{
                     new DiceRoll()
                 }
