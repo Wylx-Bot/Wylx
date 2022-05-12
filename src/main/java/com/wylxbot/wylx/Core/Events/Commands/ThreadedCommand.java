@@ -8,41 +8,21 @@ import java.util.TimerTask;
 public abstract class ThreadedCommand extends ServerCommand{
     private final long timeout;
 
-    @Deprecated
-    public ThreadedCommand(String keyword, CommandPermission cmdPerm) {
-        this(keyword, cmdPerm, "Some Dev is using deprecated features");
+    public ThreadedCommand(String keyword, CommandPermission cmdPerm, String description, String ... aliases) {
+        this(keyword, cmdPerm, description,300000, aliases);
     }
 
-    public ThreadedCommand(String keyword, CommandPermission cmdPerm, String description) {
-        this(keyword, cmdPerm, description,300000);
-    }
-
-    @Deprecated
-    public ThreadedCommand(String keyword, CommandPermission cmdPerm, long timeout) {
-        this(keyword, cmdPerm, "Some Dev is using deprecated features", timeout);
-    }
-
-    public ThreadedCommand(String keyword, CommandPermission cmdPerm, String description, long timeout) {
-        super (keyword, cmdPerm, description);
+    public ThreadedCommand(String keyword, CommandPermission cmdPerm, String description, long timeout, String ... aliases) {
+        super (keyword, cmdPerm, description, aliases);
         this.timeout = timeout;
     }
 
-    @Deprecated
-    public ThreadedCommand(String keyword, CommandPermission cmdPerm, Permission perm) {
-        this(keyword, cmdPerm, perm, "Some Dev is using deprecated features");
+    public ThreadedCommand(String keyword, CommandPermission cmdPerm, Permission perm, String description, String ... aliases) {
+        this(keyword, cmdPerm, perm, description, 300000, aliases);
     }
 
-    public ThreadedCommand(String keyword, CommandPermission cmdPerm, Permission perm, String description) {
-        this(keyword, cmdPerm, perm, description, 300000);
-    }
-
-    @Deprecated
-    public ThreadedCommand(String keyword, CommandPermission cmdPerm, Permission perm, long timeout) {
-        this(keyword, cmdPerm, perm, "Some Dev is using deprecated features", timeout);
-    }
-
-    public ThreadedCommand(String keyword, CommandPermission cmdPerm, Permission perm, String description, long timeout) {
-        super(keyword, cmdPerm, perm, description);
+    public ThreadedCommand(String keyword, CommandPermission cmdPerm, Permission perm, String description, long timeout, String ... aliases) {
+        super(keyword, cmdPerm, perm, description, aliases);
         this.timeout = timeout;
     }
 
