@@ -37,7 +37,7 @@ public class SpellBuilder {
             String[] spellLists = capitalizeWords(lineElements[8]).split(" ");
             String description = lineElements[9].replaceAll(";\\|;", ",");
 
-            spellMap.put(name.replaceAll(" Ua", "").toLowerCase(), new Spell(name, source, level, school, castingTime, range, components, duration, description, spellLists));
+            spellMap.put(name.toLowerCase().replaceAll(" ua", ""), new Spell(name, source, level, school, castingTime, range, components, duration, description, spellLists));
         }
     }
 
