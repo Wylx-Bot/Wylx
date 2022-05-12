@@ -25,10 +25,6 @@ public abstract class ServerCommand extends Event {
     private final String[] aliases;
     protected final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    public ServerCommand(String keyword, CommandPermission cmdPerm, String description){
-        this(keyword, cmdPerm, description, new String[]{});
-    }
-
     public ServerCommand(String keyword, CommandPermission cmdPerm, String description, String ... aliases){
         this.keyword = keyword;
         this.cmdPerm = cmdPerm;
@@ -40,10 +36,6 @@ public abstract class ServerCommand extends Event {
             logger.error("Discord Permission Not Specified");
             System.exit(-1);
         }
-    }
-
-    public ServerCommand(String keyword, CommandPermission cmdPerm, Permission perm, String description) {
-        this(keyword, cmdPerm, perm, description, new String[]{});
     }
 
     public ServerCommand(String keyword, CommandPermission cmdPerm, Permission perm, String description, String ... aliases) {

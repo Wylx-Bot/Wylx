@@ -6,11 +6,6 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 public abstract class SilentEvent extends Event {
     private final String description;
 
-    @Deprecated
-    public SilentEvent(){
-        this("Some Dev is using deprecated features");
-    }
-
     public SilentEvent(String description){
         this.description = description;
     }
