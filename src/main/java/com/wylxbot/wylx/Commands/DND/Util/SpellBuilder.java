@@ -5,9 +5,7 @@ import com.wylxbot.wylx.Wylx;
 import org.apache.commons.lang3.StringUtils;
 
 import java.awt.*;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Locale;
+import java.util.*;
 
 public class SpellBuilder {
     private final static int MAX_ERRORS = 3;
@@ -79,23 +77,22 @@ public class SpellBuilder {
     }
 
     public String[] getCloseSpellNames(String spellName){
-        String[] results = new String[5];
-        Integer[] distances = new Integer[]{LIST_MAX_ERRORS, LIST_MAX_ERRORS, LIST_MAX_ERRORS, LIST_MAX_ERRORS, LIST_MAX_ERRORS};
+        LinkedList<String> results = new LinkedList<>(Arrays.asList(new String[5]));
+        LinkedList<Integer> distances = new LinkedList<>(Arrays.asList(LIST_MAX_ERRORS, LIST_MAX_ERRORS, LIST_MAX_ERRORS, LIST_MAX_ERRORS, LIST_MAX_ERRORS));
 
         for(String key : spellMap.keySet()){
-            Integer distance = StringUtils.getLevenshteinDistance(key, spellName);
-            for(int i = 0; i < distances.length; i++){
-                if(distances[i] > distance){
-                    pushBack(results, i);
-                    pushBack(distances, i);
-                    results[i] = key;
-                    distances[i] = distance;
-                    i = 5;
+            int distance = StringUtils.getLevenshteinDistance(key, spellName);
+            Iterator<Integer> distanceIterator = distances.iterator();
+            for(int i = 0; i < 5; i++){
+                if(distanceIterator.next() > distance){
+                    results.add(i, key);
+                    distances.add(i, distance);
+                    break;
                 }
             }
         }
 
-        return results;
+        return results.subList(0, 5).toArray(new String[5]);
     }
 
     private <T> void pushBack(T[] array, int pushFrom){
