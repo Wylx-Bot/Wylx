@@ -33,7 +33,9 @@ public class Spell {
         spellEmbed.setTitle(name);
         spellEmbed.setColor(SpellBuilder.getInstance().getSchoolColor(school));
         // Format the header for the section
-        String header = String.format("%s Level %s From %s", getNumberWithSuffix(level), school, source);
+        String header = level == 0 ?
+                String.format("Cantrip, %s From %s", school, source) :
+                String.format("%s Level, %s From %s", getNumberWithSuffix(level), school, source);
         // Format the message into the style we want to present
         String formattedMessage = String.format("""
                 **Casting Time:** %s
