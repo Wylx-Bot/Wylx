@@ -50,7 +50,8 @@ public class Spell {
                 duration,
                 components,
                 String.join(", ", spellLists),
-                description);
+                description
+            );
         // Trim the message so it doesn't exceed the max allowable length for embeds
         if(formattedMessage.length() > 1024){
             formattedMessage = formattedMessage.substring(0, 1021) + "...";
