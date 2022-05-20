@@ -8,7 +8,6 @@ import java.awt.*;
 import java.util.*;
 
 public class SpellBuilder {
-    private final static int MAX_ERRORS = 3;
     private final static int LIST_MAX_ERRORS = 100;
 
     private final HashMap<String, Spell> spellMap = new HashMap<>();
@@ -54,28 +53,6 @@ public class SpellBuilder {
         return output.substring(0, output.length() - 1);
     }
 
-
-    public String getClosestSpellName(String spellName){
-        spellName = spellName.toLowerCase(Locale.ROOT);
-
-        // try to get just based on spell name
-        Spell spell = spellMap.get(spellName);
-        if(spell != null) return spellName;
-
-        // If there wasn't an exact match find the closest spell
-        int bestDistance = MAX_ERRORS;
-        String bestKey = null;
-        for(String key : spellMap.keySet()) {
-            int distance = StringUtils.getLevenshteinDistance(key, spellName);
-            if(distance < bestDistance){
-                bestKey = key;
-                bestDistance = distance;
-            }
-        }
-
-        return bestKey;
-    }
-
     public String[] getCloseSpellNames(String spellName){
         LinkedList<String> results = new LinkedList<>(Arrays.asList(new String[5]));
         LinkedList<Integer> distances = new LinkedList<>(Arrays.asList(LIST_MAX_ERRORS, LIST_MAX_ERRORS, LIST_MAX_ERRORS, LIST_MAX_ERRORS, LIST_MAX_ERRORS));
@@ -93,14 +70,6 @@ public class SpellBuilder {
         }
 
         return results.subList(0, 5).toArray(new String[5]);
-    }
-
-    private <T> void pushBack(T[] array, int pushFrom){
-        if(pushFrom >= array.length-1) return;
-
-        T currentVal = array[pushFrom];
-        pushBack(array, pushFrom + 1);
-        array[pushFrom + 1] = currentVal;
     }
 
     public Spell getSpell(String spellName) {

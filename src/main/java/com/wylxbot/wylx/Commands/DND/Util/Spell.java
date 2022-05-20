@@ -3,30 +3,7 @@ package com.wylxbot.wylx.Commands.DND.Util;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 
-public class Spell {
-    public final String name;
-    public final String source;
-    public final int level;
-    public final String school;
-    public final String castingTime;
-    public final String range;
-    public final String components;
-    public final String duration;
-    public final String description;
-    public final String[] spellLists;
-
-    protected Spell(String name, String source, int level, String school, String castingTime, String range, String components, String duration, String description, String[] spellLists) {
-        this.name = name;
-        this.source = source;
-        this.level = level;
-        this.school = school;
-        this.castingTime = castingTime;
-        this.range = range;
-        this.components = components;
-        this.duration = duration;
-        this.description = description;
-        this.spellLists = spellLists;
-    }
+public record Spell(String name, String source, int level, String school, String castingTime, String range, String components, String duration, String description, String[] spellLists) {
 
     public MessageEmbed getSpellEmbed() {
         EmbedBuilder spellEmbed = new EmbedBuilder();

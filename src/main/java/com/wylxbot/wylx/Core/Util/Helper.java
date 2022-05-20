@@ -172,28 +172,31 @@ public class Helper {
      * be processed
      * @param msg The message that reactions will be added to / listened to
      * @param user The user allowed to interact with the message, null for everyone
-     * @param consumers List of consumers, length must be in range [1, 9]
+     * @param reactionConsumer consumer that deals with the chosen option
+     * @param numberOfOptions how many choices to give the user, number from 1 to 9
      */
-    public static void chooseFromListWithReactions(Message msg, User user, Consumer<MessageReactionAddEvent> ... consumers){
-        if(consumers.length > 9 || consumers.length < 1) throw new IllegalArgumentException("Consumer count must be between 1 and 9");
+    public static void chooseFromListWithReactions(Message msg, User user, int numberOfOptions, Consumer<Integer> reactionConsumer){
+        if(numberOfOptions > 9 || numberOfOptions < 1) throw new IllegalArgumentException("Consumer count must be between 1 and 9");
 
-        Wylx.getInstance().getJDA().addEventListener(new ReactionListenerContainer(msg, user, consumers));
+        Wylx.getInstance().getJDA().addEventListener(new ReactionListenerContainer(msg, user, numberOfOptions, reactionConsumer));
     }
 
     private static class ReactionListenerContainer extends ListenerAdapter{
-        private final Consumer<MessageReactionAddEvent>[] consumerList;
+        private final Consumer<Integer> reactionConsumer;
+        private final int numberOfOptions;
         private final Message msg;
         private final User user;
 
         private final Timer timer = new Timer();
         private final static long FIVE_MINUTES_IN_MS = 300000;
 
-        private ReactionListenerContainer(Message msg, User user, Consumer<MessageReactionAddEvent>[] consumerList){
-            this.consumerList = consumerList;
+        private ReactionListenerContainer(Message msg, User user, int numberOfOptions, Consumer<Integer> reactionConsumer){
+            this.reactionConsumer = reactionConsumer;
+            this.numberOfOptions = numberOfOptions;
             this.msg = msg;
             this.user = user;
 
-            for(int i = 0; i < consumerList.length; i++){
+            for(int i = 0; i < numberOfOptions; i++){
                 msg.addReaction(numbToEmoji.get(i+1)).queue();
             }
             msg.addReaction(X).queue();
@@ -220,7 +223,10 @@ public class Helper {
             // If not valid emoji return
             if(!numbToEmoji.contains(event.getReactionEmote().getAsCodepoints())) return;
 
-            consumerList[Character.getNumericValue(event.getReactionEmote().getEmoji().charAt(0)) - 1].accept(event);
+            int chosen = Character.getNumericValue(event.getReactionEmote().getEmoji().charAt(0));
+            if(chosen > numberOfOptions) return;
+
+            reactionConsumer.accept(chosen);
             quit();
         }
 
