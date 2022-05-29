@@ -3,7 +3,7 @@ package com.wylxbot.wylx.Commands.DND.Util;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 
-public record Spell(String name, String source, int level, String school, String castingTime, String range, String components, String duration, String description, String[] spellLists) {
+public record Spell(String name, String source, int level, String school, String castingTime, String range, String components, String duration, String description, String[] classSpellLists) {
 
     public MessageEmbed getSpellEmbed() {
         EmbedBuilder spellEmbed = new EmbedBuilder();
@@ -26,7 +26,7 @@ public record Spell(String name, String source, int level, String school, String
                 range,
                 duration,
                 components,
-                String.join(", ", spellLists),
+                String.join(", ", classSpellLists),
                 description
             );
         // Trim the message so it doesn't exceed the max allowable length for embeds

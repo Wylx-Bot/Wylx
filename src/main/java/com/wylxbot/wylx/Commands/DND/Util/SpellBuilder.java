@@ -34,10 +34,10 @@ public class SpellBuilder {
             String range = lineElements[5];
             String components = capitalizeWords(lineElements[6]);
             String duration = StringUtils.capitalize(lineElements[7]);
-            String[] spellLists = capitalizeWords(lineElements[8]).split(" ");
+            String[] classSpellLists = capitalizeWords(lineElements[8]).split(" ");
             String description = lineElements[9].replaceAll(";\\|;", ",");
 
-            spellMap.put(name.toLowerCase().replaceAll(" ua", ""), new Spell(name, source, level, school, castingTime, range, components, duration, description, spellLists));
+            spellMap.put(name.toLowerCase().replaceAll(" ua", ""), new Spell(name, source, level, school, castingTime, range, components, duration, description, classSpellLists));
         }
     }
 
