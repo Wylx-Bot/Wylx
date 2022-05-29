@@ -3,9 +3,12 @@ package com.wylxbot.wylx.Core.Util;
 import com.wylxbot.wylx.Wylx;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.react.GenericMessageReactionEvent;
+import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 import net.dv8tion.jda.api.exceptions.ErrorHandler;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.InteractionHook;
@@ -16,13 +19,11 @@ import net.dv8tion.jda.api.requests.restaction.MessageAction;
 import org.jetbrains.annotations.NotNull;
 
 import java.time.Duration;
-import java.util.Collection;
-import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
+import java.util.function.Consumer;
 
 public class Helper {
     private static final int MILLISECONDS_PER_SECOND = 1000;
@@ -159,5 +160,80 @@ public class Helper {
                 interactionEndRunnable.accept(msg, true);
             }
         }, ONE_HOUR);
+    }
+
+    private final static List<String> numbToEmoji = Arrays.asList("U+30U+fe0fU+20e3", "U+31U+fe0fU+20e3", "U+32U+fe0fU+20e3", "U+33U+fe0fU+20e3", "U+34U+fe0fU+20e3",
+            "U+35U+fe0fU+20e3", "U+36U+fe0fU+20e3", "U+37U+fe0fU+20e3", "U+38U+fe0fU+20e3", "U+39U+fe0fU+20e3");
+
+    /**
+     * Adds emoji to the supplied message corresponding to the provided consumers, on the user adding a reaction to one
+     * of the emoji the corresponding consumer is called and given the event, the listener then removes itself
+     * The listener also times out after 5 minutes, if the user does not respond in this time their response will not
+     * be processed
+     * @param msg The message that reactions will be added to / listened to
+     * @param user The user allowed to interact with the message, null for everyone
+     * @param reactionConsumer consumer that deals with the chosen option
+     * @param numberOfOptions how many choices to give the user, number from 1 to 9
+     */
+    public static void chooseFromListWithReactions(Message msg, User user, int numberOfOptions, Consumer<Integer> reactionConsumer){
+        if(numberOfOptions > 9 || numberOfOptions < 1) throw new IllegalArgumentException("Consumer count must be between 1 and 9");
+
+        Wylx.getInstance().getJDA().addEventListener(new ReactionListenerContainer(msg, user, numberOfOptions, reactionConsumer));
+    }
+
+    private static class ReactionListenerContainer extends ListenerAdapter{
+        private final Consumer<Integer> reactionConsumer;
+        private final int numberOfOptions;
+        private final Message msg;
+        private final User user;
+
+        private final Timer timer = new Timer();
+        private final static long FIVE_MINUTES_IN_MS = 300000;
+
+        private ReactionListenerContainer(Message msg, User user, int numberOfOptions, Consumer<Integer> reactionConsumer){
+            this.reactionConsumer = reactionConsumer;
+            this.numberOfOptions = numberOfOptions;
+            this.msg = msg;
+            this.user = user;
+
+            for(int i = 0; i < numberOfOptions; i++){
+                msg.addReaction(numbToEmoji.get(i+1)).queue();
+            }
+            msg.addReaction(X).queue();
+
+            timer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    quit();
+                }
+            }, FIVE_MINUTES_IN_MS);
+        }
+
+        @Override
+        public void onMessageReactionAdd(@NotNull MessageReactionAddEvent event) {
+            if(!event.getMessageId().equals(msg.getId()) ||
+                    (user != null && !event.getUserId().equals(user.getId()))) return;
+
+            // Quit emote
+            if(event.getReactionEmote().getAsCodepoints().equals(X)){
+                quit();
+                return;
+            }
+
+            // If not valid emoji return
+            if(!numbToEmoji.contains(event.getReactionEmote().getAsCodepoints())) return;
+
+            int chosen = Character.getNumericValue(event.getReactionEmote().getEmoji().charAt(0));
+            if(chosen > numberOfOptions) return;
+
+            reactionConsumer.accept(chosen);
+            quit();
+        }
+
+        private void quit(){
+            timer.cancel();
+            msg.delete().queue();
+            msg.getJDA().removeEventListener(this);
+        }
     }
 }
