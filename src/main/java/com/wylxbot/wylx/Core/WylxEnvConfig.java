@@ -9,7 +9,7 @@ public class WylxEnvConfig {
     public final String betaDiscordToken;
     public final String betaPrefix;
 
-    publi c WylxEnvConfig(Dotenv env) {
+    public WylxEnvConfig(Dotenv env) {
         this.release = Boolean.parseBoolean(env.get("RELEASE", "false"));
         this.dbURL = env.get("MONGODB_URL", "mongodb://localhost:27017");
         this.releaseDiscordToken = env.get("DISCORD_TOKEN");
