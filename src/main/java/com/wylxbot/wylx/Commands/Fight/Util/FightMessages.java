@@ -42,8 +42,8 @@ public class FightMessages {
         "{p2} was forced to re-machine {r} parts by {p1}",
         "{p1} broke {p2}'s SD card",
         // Responses below by WaterGame2023
-        "{p2} was told to use windows by {p1}",
-        "{p2} was forced to update windows by {p1}",
+        "{p2} was told to use Windows by {p1}",
+        "{p2} was forced to update Windows by {p1}",
         "{p1} used rm -rf on {p2}",
         "{p2} got knocked the Hab by {p1}",
         "{p2} lost connection to the field courtesy of {p1}",
