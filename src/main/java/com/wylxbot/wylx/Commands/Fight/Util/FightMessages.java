@@ -45,11 +45,11 @@ public class FightMessages {
         "{p2} was told to use Windows by {p1}",
         "{p2} was forced to update Windows by {p1}",
         "{p1} used rm -rf on {p2}",
-        "{p2} got knocked the Hab by {p1}",
+        "{p2} got knocked off the Hab by {p1}",
         "{p2} lost connection to the field courtesy of {p1}",
         "{p2} was forced to use C++ for the robot code by {p1}',
         "{p2} was told to touch grass by {p1}',
-        "{p2} DDoSed by {p1}',
+        "{p2} DDoSed {p1}',
         "{p2} got pushed off the hangar by {p1},
     };
 
