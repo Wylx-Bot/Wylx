@@ -9,9 +9,6 @@ public class RolePackage extends EventPackage {
     public RolePackage() {
         super(
                 new ServerCommand[]{
-                        new RoleCommand(),
-                        new AddRoleCommand(),
-                        new RemoveRoleCommand(),
                         new NewRoleMenuCommand(),
                         new ModifyRoleMenuCommand(),
                 }, new SilentEvent[]{}
