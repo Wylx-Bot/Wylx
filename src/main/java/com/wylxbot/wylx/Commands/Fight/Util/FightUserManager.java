@@ -7,12 +7,6 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class FightUserManager {
 
-    public enum UserFightStatus {
-        NONE,
-        FIGHTING,
-        SKILLPOINTS;
-    }
-
     private final HashMap<Long, UserFightStatus> fightMap = new HashMap<>();
     private final ReentrantLock lock = new ReentrantLock();
 

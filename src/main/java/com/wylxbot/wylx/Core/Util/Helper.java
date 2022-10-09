@@ -164,7 +164,7 @@ public class Helper {
         }, ONE_HOUR);
     }
 
-    public final static List<String> numbToEmoji = Arrays.asList("U+30U+fe0fU+20e3", "U+31U+fe0fU+20e3", "U+32U+fe0fU+20e3", "U+33U+fe0fU+20e3", "U+34U+fe0fU+20e3",
+    private final static List<String> numbToEmoji = Arrays.asList("U+30U+fe0fU+20e3", "U+31U+fe0fU+20e3", "U+32U+fe0fU+20e3", "U+33U+fe0fU+20e3", "U+34U+fe0fU+20e3",
             "U+35U+fe0fU+20e3", "U+36U+fe0fU+20e3", "U+37U+fe0fU+20e3", "U+38U+fe0fU+20e3", "U+39U+fe0fU+20e3");
 
     /**

@@ -1,9 +1,6 @@
 package com.wylxbot.wylx.Commands.Fight;
 
-import com.wylxbot.wylx.Commands.Fight.Util.FightStatTypes;
-import com.wylxbot.wylx.Commands.Fight.Util.FightUserManager;
-import com.wylxbot.wylx.Commands.Fight.Util.FightUserStats;
-import com.wylxbot.wylx.Commands.Fight.Util.FightUtil;
+import com.wylxbot.wylx.Commands.Fight.Util.*;
 import com.wylxbot.wylx.Core.Events.Commands.CommandContext;
 import com.wylxbot.wylx.Core.Events.Commands.ServerCommand;
 import com.wylxbot.wylx.Core.Util.Helper;
@@ -19,7 +16,7 @@ import net.dv8tion.jda.api.entities.MessageEmbed;
 public class SkillPointsCommand extends ServerCommand {
 
     public SkillPointsCommand() {
-        super("skillpoints", CommandPermission.EVERYONE, "Provides the ping from the bot to discord",
+        super("skillpoints", CommandPermission.EVERYONE, "Run to spend skill points acquired by leveling up while fighting",
                 "sp", "skill");
     }
 
@@ -28,16 +25,20 @@ public class SkillPointsCommand extends ServerCommand {
         Member member = ctx.event().getMember();
         assert member != null;
 
-        if(FightCommand.isFightingList.getUserStatus(member) != FightUserManager.UserFightStatus.NONE){
+        if(FightCommand.isFightingList.getUserStatus(member) != UserFightStatus.NONE){
             ctx.event().getMessage().reply("Cannot spend skill points while fighting").queue();
             return;
         }
 
-        FightUserStats stats = FightUserStats.getUserStats(member);
-        FightCommand.isFightingList.setUserFightStatus(member, FightUserManager.UserFightStatus.SKILLPOINTS);
+        FightCommand.isFightingList.setUserFightStatus(member, UserFightStatus.SKILLPOINTS);
 
         ctx.event().getChannel().sendMessageEmbeds(buildEmbed(ctx.event().getGuild(), member)).queue(message -> {
-            Helper.chooseFromListWithReactions(message, member.getUser(), 5, this::upgradeSkill, true, this::endSelection);
+            Helper.chooseFromListWithReactions(message,
+                    member.getUser(),
+                    5,
+                    this::upgradeSkill,
+                    true,
+                    this::endSelection);
         });
     }
 
@@ -54,7 +55,15 @@ public class SkillPointsCommand extends ServerCommand {
         embed.setAuthor(member.getEffectiveName() + "'s stats in " + guild.getName(),
                 null, member.getAvatarUrl());
         embed.setDescription("Level: " + stats.getLvl() + "\nEXP: (" + stats.getExp() + " / " + exp + ")");
-        embed.addField("Stat Levels", String.format(":one: HP: %d\n:two: Speed: %d\n:three: Damage: %d\n:four: EXP Multiplier: %d\n:five: Reset Skill Points\n:x: Stop Editing",
+        embed.addField("Stat Levels", String.format(
+                """
+                :one: HP: %d
+                :two: Speed: %d
+                :three: Damage: %d
+                :four: EXP Multiplier: %d
+                :five: Reset Skill Points
+                :x: Stop Editing
+                """,
                 stats.getStatLvl(FightStatTypes.HP),
                 stats.getStatLvl(FightStatTypes.SPEED),
                 stats.getStatLvl(FightStatTypes.DAMAGE),
@@ -67,12 +76,16 @@ public class SkillPointsCommand extends ServerCommand {
 
     private void upgradeSkill(Helper.SelectionResults selectionResults){
         Member member = selectionResults.event().getGuild().getMemberById(selectionResults.event().getUserId());
+
+        // Check that the member is actually loaded
         if(member == null){
+            // Wait for server members to be loaded before attempting again
             selectionResults.event().getGuild().loadMembers(members -> {
                 upgradeSkill(selectionResults);
             });
         }
 
+        // There should be no way to get here without member being loaded, check anyway
         assert member != null;
 
         int skillPos = selectionResults.result();
@@ -104,6 +117,6 @@ public class SkillPointsCommand extends ServerCommand {
 
         assert member != null;
 
-        FightCommand.isFightingList.setUserFightStatus(member, FightUserManager.UserFightStatus.NONE);
+        FightCommand.isFightingList.setUserFightStatus(member, UserFightStatus.NONE);
     }
 }
