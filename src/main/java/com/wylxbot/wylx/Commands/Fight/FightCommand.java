@@ -61,8 +61,8 @@ public class FightCommand extends ThreadedCommand {
         }
 
         // Check if users are fighting
-        if (isFightingList.userIsFighting(player1) ||
-            isFightingList.userIsFighting(player2)) {
+        if (isFightingList.getUserStatus(player1) == FightUserManager.UserFightStatus.FIGHTING ||
+            isFightingList.getUserStatus(player2) == FightUserManager.UserFightStatus.FIGHTING) {
             msg.reply("One of the above users is currently fighting! Please wait").queue();
             return;
         }
@@ -71,14 +71,15 @@ public class FightCommand extends ThreadedCommand {
         FightUserStats player2Stats = FightUserStats.getUserStats(player2);
 
         // Users cannot be changing SP when they go to fight
-        if(player1Stats.isChangingSP || player2Stats.isChangingSP){
+        if (isFightingList.getUserStatus(player1) == FightUserManager.UserFightStatus.SKILLPOINTS ||
+                isFightingList.getUserStatus(player2) == FightUserManager.UserFightStatus.SKILLPOINTS) {
             msg.getChannel().sendMessage("Please finish spending skill points before fighting").queue();
             return;
         }
 
         // Prevent the user from fighting multiple times
-        isFightingList.setUserIsFighting(player1, true);
-        isFightingList.setUserIsFighting(player2, true);
+        isFightingList.setUserFightStatus(player1, FightUserManager.UserFightStatus.FIGHTING);
+        isFightingList.setUserFightStatus(player2, FightUserManager.UserFightStatus.FIGHTING);
 
         String headerStr = String.format("__**%s** [lvl: %d] vs **%s** [lvl: %d]__",
                 player1.getEffectiveName(), player1Stats.getLvl(),
@@ -97,8 +98,8 @@ public class FightCommand extends ThreadedCommand {
             botMsg = replaceStringWithUsers(botMsg, bot, user);
 
             msg.getChannel().sendMessage(botMsg + noExpStr).complete();
-            isFightingList.setUserIsFighting(player1, false);
-            isFightingList.setUserIsFighting(player2, false);
+            isFightingList.setUserFightStatus(player1, FightUserManager.UserFightStatus.NONE);
+            isFightingList.setUserFightStatus(player2, FightUserManager.UserFightStatus.NONE);
             return;
         }
 
@@ -109,8 +110,8 @@ public class FightCommand extends ThreadedCommand {
             dupMsg = replaceStringWithUsers(dupMsg, player1Stats, player2Stats);
 
             msg.getChannel().sendMessage(dupMsg + noExpStr).complete();
-            isFightingList.setUserIsFighting(player1, false);
-            isFightingList.setUserIsFighting(player2, false);
+            isFightingList.setUserFightStatus(player1, FightUserManager.UserFightStatus.NONE);
+            isFightingList.setUserFightStatus(player2, FightUserManager.UserFightStatus.NONE);
             return;
         }
 
@@ -181,8 +182,8 @@ public class FightCommand extends ThreadedCommand {
         // Fight is done, save and let other fights occur
         player1.save();
         player2.save();
-        isFightingList.setUserIsFighting(player1.user, false);
-        isFightingList.setUserIsFighting(player2.user, false);
+        isFightingList.setUserFightStatus(player1.user, FightUserManager.UserFightStatus.NONE);
+        isFightingList.setUserFightStatus(player2.user, FightUserManager.UserFightStatus.NONE);
 
         // Wait 30 seconds before cleaning up fight messages
         try {

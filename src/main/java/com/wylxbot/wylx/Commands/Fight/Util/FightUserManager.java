@@ -7,19 +7,25 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class FightUserManager {
 
-    private final HashMap<Long, Boolean> fightMap = new HashMap<>();
+    public enum UserFightStatus {
+        NONE,
+        FIGHTING,
+        SKILLPOINTS;
+    }
+
+    private final HashMap<Long, UserFightStatus> fightMap = new HashMap<>();
     private final ReentrantLock lock = new ReentrantLock();
 
-    public boolean userIsFighting(Member user) {
+    public UserFightStatus getUserStatus(Member user) {
         lock.lock();
-        boolean result = fightMap.getOrDefault(user.getIdLong(), false);
+        UserFightStatus result = fightMap.getOrDefault(user.getIdLong(), UserFightStatus.NONE);
         lock.unlock();
         return result;
     }
 
-    public void setUserIsFighting(Member user, boolean isFighting) {
+    public void setUserFightStatus(Member user, UserFightStatus status) {
         lock.lock();
-        fightMap.put(user.getIdLong(), isFighting);
+        fightMap.put(user.getIdLong(), status);
         lock.unlock();
     }
 

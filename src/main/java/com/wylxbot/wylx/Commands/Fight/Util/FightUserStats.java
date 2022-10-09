@@ -22,8 +22,6 @@ public class FightUserStats {
     private int expMultLevel = 0;   // Level used for Experience multiplier
     private int speedLevel = 0;     // Level used for initial turn bias
 
-    public boolean isChangingSP = false;
-
     public FightUserStats() {}
 
     public FightUserStats(int exp, int level, int hpLevel, int damageLevel, int expMultLevel, int speedLevel){

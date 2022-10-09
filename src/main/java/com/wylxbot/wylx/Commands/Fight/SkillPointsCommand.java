@@ -1,6 +1,7 @@
 package com.wylxbot.wylx.Commands.Fight;
 
 import com.wylxbot.wylx.Commands.Fight.Util.FightStatTypes;
+import com.wylxbot.wylx.Commands.Fight.Util.FightUserManager;
 import com.wylxbot.wylx.Commands.Fight.Util.FightUserStats;
 import com.wylxbot.wylx.Commands.Fight.Util.FightUtil;
 import com.wylxbot.wylx.Core.Events.Commands.CommandContext;
@@ -11,19 +12,9 @@ import com.wylxbot.wylx.Database.DbElements.DiscordUser;
 import com.wylxbot.wylx.Database.DbElements.UserIdentifiers;
 import com.wylxbot.wylx.Wylx;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.api.events.message.react.GenericMessageReactionEvent;
-import net.dv8tion.jda.api.interactions.components.ActionRow;
-import net.dv8tion.jda.api.interactions.components.buttons.Button;
-import net.dv8tion.jda.api.interactions.components.selections.SelectMenu;
-
-import java.util.Collection;
-import java.util.List;
 
 public class SkillPointsCommand extends ServerCommand {
 
@@ -37,13 +28,13 @@ public class SkillPointsCommand extends ServerCommand {
         Member member = ctx.event().getMember();
         assert member != null;
 
-        if(FightCommand.isFightingList.userIsFighting(member)){
+        if(FightCommand.isFightingList.getUserStatus(member) != FightUserManager.UserFightStatus.NONE){
             ctx.event().getMessage().reply("Cannot spend skill points while fighting").queue();
             return;
         }
 
         FightUserStats stats = FightUserStats.getUserStats(member);
-        stats.isChangingSP = true;
+        FightCommand.isFightingList.setUserFightStatus(member, FightUserManager.UserFightStatus.SKILLPOINTS);
 
         ctx.event().getChannel().sendMessageEmbeds(buildEmbed(ctx.event().getGuild(), member)).queue(message -> {
             Helper.chooseFromListWithReactions(message, member.getUser(), 5, this::upgradeSkill, true, this::endSelection);
@@ -113,7 +104,6 @@ public class SkillPointsCommand extends ServerCommand {
 
         assert member != null;
 
-        FightUserStats stats = FightUserStats.getUserStats(member);
-        stats.isChangingSP = false;
+        FightCommand.isFightingList.setUserFightStatus(member, FightUserManager.UserFightStatus.NONE);
     }
 }
