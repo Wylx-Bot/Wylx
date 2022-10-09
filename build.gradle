@@ -20,6 +20,7 @@ repositories {
 }
 
 dependencies {
+    implementation("org.apache.commons:commons-lang3:3.12.0")
     implementation("io.github.cdimascio:dotenv-kotlin:6.2.2")
     implementation("net.dv8tion:JDA:5.0.0-alpha.5")
     implementation("ch.qos.logback:logback-classic:1.2.10+")
@@ -28,5 +29,5 @@ dependencies {
 }
 
 application {
-    mainClassName="Core.Wylx"
+    mainClassName="com.wylxbot.wylx.Wylx"
 }
