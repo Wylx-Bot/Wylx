@@ -19,7 +19,7 @@ import java.util.regex.Pattern;
 public class FightCommand extends ThreadedCommand {
 
     private final Random random = new Random();
-    private final FightUserManager isFightingList = new FightUserManager();
+    public static final FightUserManager isFightingList = new FightUserManager();
 
     private final Pattern mentionPattern = Message.MentionType.USER.getPattern();
     private final String noExpStr = "\nThere is no EXP to be found here";
@@ -67,12 +67,18 @@ public class FightCommand extends ThreadedCommand {
             return;
         }
 
+        FightUserStats player1Stats = FightUserStats.getUserStats(player1);
+        FightUserStats player2Stats = FightUserStats.getUserStats(player2);
+
+        // Users cannot be changing SP when they go to fight
+        if(player1Stats.isChangingSP || player2Stats.isChangingSP){
+            msg.getChannel().sendMessage("Please finish spending skill points before fighting").queue();
+            return;
+        }
+
         // Prevent the user from fighting multiple times
         isFightingList.setUserIsFighting(player1, true);
         isFightingList.setUserIsFighting(player2, true);
-
-        FightUserStats player1Stats = FightUserStats.getUserStats(player1);
-        FightUserStats player2Stats = FightUserStats.getUserStats(player2);
 
         String headerStr = String.format("__**%s** [lvl: %d] vs **%s** [lvl: %d]__",
                 player1.getEffectiveName(), player1Stats.getLvl(),

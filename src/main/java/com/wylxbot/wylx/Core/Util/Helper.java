@@ -2,6 +2,7 @@ package com.wylxbot.wylx.Core.Util;
 
 import com.wylxbot.wylx.Wylx;
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.User;
@@ -9,6 +10,7 @@ import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.react.GenericMessageReactionEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
+import net.dv8tion.jda.api.events.message.react.MessageReactionRemoveEvent;
 import net.dv8tion.jda.api.exceptions.ErrorHandler;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.InteractionHook;
@@ -162,7 +164,7 @@ public class Helper {
         }, ONE_HOUR);
     }
 
-    private final static List<String> numbToEmoji = Arrays.asList("U+30U+fe0fU+20e3", "U+31U+fe0fU+20e3", "U+32U+fe0fU+20e3", "U+33U+fe0fU+20e3", "U+34U+fe0fU+20e3",
+    public final static List<String> numbToEmoji = Arrays.asList("U+30U+fe0fU+20e3", "U+31U+fe0fU+20e3", "U+32U+fe0fU+20e3", "U+33U+fe0fU+20e3", "U+34U+fe0fU+20e3",
             "U+35U+fe0fU+20e3", "U+36U+fe0fU+20e3", "U+37U+fe0fU+20e3", "U+38U+fe0fU+20e3", "U+39U+fe0fU+20e3");
 
     /**
@@ -174,27 +176,37 @@ public class Helper {
      * @param user The user allowed to interact with the message, null for everyone
      * @param reactionConsumer consumer that deals with the chosen option
      * @param numberOfOptions how many choices to give the user, number from 1 to 9
+     * @param allowMultiple sets if the user should be allowed to interact multiple times
      */
-    public static void chooseFromListWithReactions(Message msg, User user, int numberOfOptions, Consumer<Integer> reactionConsumer){
+    public static void chooseFromListWithReactions(Message msg, User user, int numberOfOptions, Consumer<SelectionResults> reactionConsumer, boolean allowMultiple){
+        chooseFromListWithReactions(msg, user, numberOfOptions, reactionConsumer, allowMultiple, null);
+    }
+    public static void chooseFromListWithReactions(Message msg, User user, int numberOfOptions, Consumer<SelectionResults> reactionConsumer, boolean allowMultiple, BiConsumer<Guild, String> quitConsumer){
         if(numberOfOptions > 9 || numberOfOptions < 1) throw new IllegalArgumentException("Consumer count must be between 1 and 9");
 
-        Wylx.getInstance().getJDA().addEventListener(new ReactionListenerContainer(msg, user, numberOfOptions, reactionConsumer));
+        Wylx.getInstance().getJDA().addEventListener(new ReactionListenerContainer(msg, user, numberOfOptions, reactionConsumer, allowMultiple, quitConsumer));
     }
 
+    public record SelectionResults(int result, GenericMessageReactionEvent event){}
+
     private static class ReactionListenerContainer extends ListenerAdapter{
-        private final Consumer<Integer> reactionConsumer;
+        private final Consumer<SelectionResults> reactionConsumer;
+        private final BiConsumer<Guild, String> quitConsumer;
         private final int numberOfOptions;
         private final Message msg;
         private final User user;
+        private final boolean allowMultiple;
 
         private final Timer timer = new Timer();
         private final static long FIVE_MINUTES_IN_MS = 300000;
 
-        private ReactionListenerContainer(Message msg, User user, int numberOfOptions, Consumer<Integer> reactionConsumer){
+        private ReactionListenerContainer(Message msg, User user, int numberOfOptions, Consumer<SelectionResults> reactionConsumer, boolean allowMultiple, BiConsumer<Guild, String> quitConsumer){
             this.reactionConsumer = reactionConsumer;
+            this.quitConsumer = quitConsumer;
             this.numberOfOptions = numberOfOptions;
             this.msg = msg;
             this.user = user;
+            this.allowMultiple = allowMultiple;
 
             for(int i = 0; i < numberOfOptions; i++){
                 msg.addReaction(numbToEmoji.get(i+1)).queue();
@@ -210,7 +222,7 @@ public class Helper {
         }
 
         @Override
-        public void onMessageReactionAdd(@NotNull MessageReactionAddEvent event) {
+        public void onGenericMessageReaction(@NotNull GenericMessageReactionEvent event) {
             if(!event.getMessageId().equals(msg.getId()) ||
                     (user != null && !event.getUserId().equals(user.getId()))) return;
 
@@ -226,12 +238,13 @@ public class Helper {
             int chosen = Character.getNumericValue(event.getReactionEmote().getEmoji().charAt(0));
             if(chosen > numberOfOptions) return;
 
-            reactionConsumer.accept(chosen);
-            quit();
+            reactionConsumer.accept(new SelectionResults(chosen, event));
+            if(!allowMultiple) quit();
         }
 
         private void quit(){
             timer.cancel();
+            if(quitConsumer != null) quitConsumer.accept(msg.getGuild(), user.getId());
             msg.delete().queue();
             msg.getJDA().removeEventListener(this);
         }

@@ -22,6 +22,8 @@ public class FightUserStats {
     private int expMultLevel = 0;   // Level used for Experience multiplier
     private int speedLevel = 0;     // Level used for initial turn bias
 
+    public boolean isChangingSP = false;
+
     public FightUserStats() {}
 
     public FightUserStats(int exp, int level, int hpLevel, int damageLevel, int expMultLevel, int speedLevel){
@@ -78,6 +80,23 @@ public class FightUserStats {
         };
     }
 
+    public void upgradeStat(FightStatTypes stat){
+        if(getLvl() - getUsedPoints() <= 0) return;
+        switch(stat){
+            case HP -> this.hpLevel++;
+            case EXP -> this.expMultLevel++;
+            case SPEED -> this.speedLevel++;
+            case DAMAGE -> this.damageLevel++;
+        }
+    }
+
+    public void resetStats(){
+        this.hpLevel = 0;
+        this.expMultLevel = 0;
+        this.speedLevel = 0;
+        this.damageLevel = 0;
+    }
+
     public int getUsedPoints() {
         return this.hpLevel + this.expMultLevel + this.speedLevel + this.damageLevel;
     }
@@ -89,9 +108,5 @@ public class FightUserStats {
 
     public void save() {
         userDb.setSetting(UserIdentifiers.FightStats, this);
-    }
-
-    public int getExp() {
-        return exp;
     }
 }
