@@ -12,8 +12,7 @@ import java.util.function.Supplier;
 public enum ServerIdentifiers implements DiscordIdentifiers {
     Modules("Modules_Enabled", ServerEventManager.class, ServerEventManager::new, new ServerEventManagerCodec()),
     MusicVolume("Music_Volume", Integer.class, () -> 20),
-    Prefix("Prefix", String.class, () -> ";"),
-    PublicRoles("Public_Roles", List.class, ArrayList::new);
+    Prefix("Prefix", String.class, () -> ";");
 
     public final String identifier;
     public final Class<?> dataType;
