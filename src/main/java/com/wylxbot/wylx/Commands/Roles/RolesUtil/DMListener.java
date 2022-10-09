@@ -115,7 +115,7 @@ public class DMListener extends ListenerAdapter {
         String roleName;
 
         if (args.size() <= 1) {
-            event.getChannel().sendMessage("No emoji or role provided").queue();
+            event.getChannel().sendMessage("Please provide an emoji and role").queue();
             return false;
         }
 
@@ -155,9 +155,18 @@ public class DMListener extends ListenerAdapter {
             return false;
         }
 
+        // Check that Wylx can assign the role to other users
+        Role role = roles.get(0);
+        int rolePos = role.getPosition();
+        int wylxPos = guild.getBotRole().getPosition();
+        if(rolePos >= wylxPos){
+            event.getChannel().sendMessage("Wylx cannot assign this role, please move role below Wylx in the role hierarchy or choose another role").queue();
+            return false;
+        }
+
         // Add reaction to menu
         try {
-            menu.addReaction(new RoleReaction(roles.get(0), emoji));
+            menu.addReaction(new RoleReaction(role, emoji));
             return true;
         } catch (IllegalArgumentException e) {
             event.getChannel().sendMessage(e.getMessage()).queue();
