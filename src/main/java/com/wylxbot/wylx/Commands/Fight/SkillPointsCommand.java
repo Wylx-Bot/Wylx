@@ -61,7 +61,6 @@ public class SkillPointsCommand extends ServerCommand {
         }
 
         // If the user is changing their own sp
-        System.out.println(ctx.args().length);
         Member member = ctx.event().getMember();
         assert member != null;
 
