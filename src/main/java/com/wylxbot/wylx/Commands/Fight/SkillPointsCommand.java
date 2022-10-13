@@ -11,19 +11,57 @@ import com.wylxbot.wylx.Wylx;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class SkillPointsCommand extends ServerCommand {
 
     private static final FightUserManager userManager = FightUserManager.getInstance();
 
+    private final Pattern mentionPattern = Message.MentionType.USER.getPattern();
+
     public SkillPointsCommand() {
-        super("skillpoints", CommandPermission.EVERYONE, "Run to spend skill points acquired by leveling up while fighting",
+        super("skillpoints", CommandPermission.EVERYONE, """
+                        %{p}skillpoints - View and change your own skill points
+                        %{p}skillpoints <user> - View the skillpoints of another user
+                        """,
                 "sp", "skill");
     }
 
     @Override
     public void runCommand(CommandContext ctx) {
+
+        // If another user is mentioned
+        if(ctx.args().length == 2){
+            // attempt to find user in args
+            Matcher matcher = mentionPattern.matcher(ctx.args()[1]);
+
+            // If no user is found error
+            if(!matcher.find()){
+                ctx.event().getMessage().reply("Please mention a user to view their stats").queue();
+                return;
+            }
+
+            String targetId = matcher.group(1);
+            Member target = ctx.event().getGuild().retrieveMemberById(targetId).complete();
+
+            // If the member is null error
+            if(target == null){
+                ctx.event().getMessage().reply("Target user does not exist").queue();
+                return;
+            }
+
+            // Send the embed of the users skills
+            ctx.event().getChannel().sendMessageEmbeds(buildEmbed(ctx.event().getGuild(), target)).queue();
+
+            return;
+        }
+
+        // If the user is changing their own sp
+        System.out.println(ctx.args().length);
         Member member = ctx.event().getMember();
         assert member != null;
 
@@ -46,7 +84,7 @@ public class SkillPointsCommand extends ServerCommand {
 
     private MessageEmbed buildEmbed(Guild guild, Member member){
         DatabaseManager db = Wylx.getInstance().getDb();
-        DiscordUser dbUser = db.getUser(member.getUser().getId());
+        DiscordUser dbUser = db.getUser(member.getId());
         FightUserStats stats = dbUser.getSetting(UserIdentifiers.FightStats);
         EmbedBuilder embed = new EmbedBuilder();
 
