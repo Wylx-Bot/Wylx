@@ -79,17 +79,6 @@ public class SkillPointsCommand extends ServerCommand {
     private void upgradeSkill(Helper.SelectionResults selectionResults){
         Member member = selectionResults.event().getMember();
 
-//        // Check that the member is actually loaded
-//        if(member == null){
-//            // Wait for server members to be loaded before attempting again
-//            selectionResults.event().getGuild().loadMembers(members -> {
-//                upgradeSkill(selectionResults);
-//            });
-//        }
-//
-//        // There should be no way to get here without member being loaded, check anyway
-//        assert member != null;
-
         int skillPos = selectionResults.result();
 
         FightUserStats stats = FightUserStats.getUserStats(member);
@@ -110,15 +99,6 @@ public class SkillPointsCommand extends ServerCommand {
     }
 
     public void endSelection(Guild guild, Member member){
-//        Member member = guild.getMemberById(userId);
-//        if(member == null){
-//            guild.loadMembers(members -> {
-//                endSelection(guild, userId);
-//            });
-//        }
-//
-//        assert member != null;
-
         userManager.setUserFightStatus(member, UserFightStatus.NONE);
     }
 }
