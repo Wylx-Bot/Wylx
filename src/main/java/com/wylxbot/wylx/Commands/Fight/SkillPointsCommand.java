@@ -15,6 +15,8 @@ import net.dv8tion.jda.api.entities.MessageEmbed;
 
 public class SkillPointsCommand extends ServerCommand {
 
+    private static final FightUserManager userManager = FightUserManager.getInstance();
+
     public SkillPointsCommand() {
         super("skillpoints", CommandPermission.EVERYONE, "Run to spend skill points acquired by leveling up while fighting",
                 "sp", "skill");
@@ -25,16 +27,16 @@ public class SkillPointsCommand extends ServerCommand {
         Member member = ctx.event().getMember();
         assert member != null;
 
-        if(FightCommand.isFightingList.getUserStatus(member) != UserFightStatus.NONE){
+        if(userManager.getUserStatus(member) != UserFightStatus.NONE){
             ctx.event().getMessage().reply("Cannot spend skill points while fighting").queue();
             return;
         }
 
-        FightCommand.isFightingList.setUserFightStatus(member, UserFightStatus.SKILLPOINTS);
+        userManager.setUserFightStatus(member, UserFightStatus.SKILLPOINTS);
 
         ctx.event().getChannel().sendMessageEmbeds(buildEmbed(ctx.event().getGuild(), member)).queue(message -> {
             Helper.chooseFromListWithReactions(message,
-                    member.getUser(),
+                    member,
                     5,
                     this::upgradeSkill,
                     true,
@@ -75,18 +77,18 @@ public class SkillPointsCommand extends ServerCommand {
     }
 
     private void upgradeSkill(Helper.SelectionResults selectionResults){
-        Member member = selectionResults.event().getGuild().getMemberById(selectionResults.event().getUserId());
+        Member member = selectionResults.event().getMember();
 
-        // Check that the member is actually loaded
-        if(member == null){
-            // Wait for server members to be loaded before attempting again
-            selectionResults.event().getGuild().loadMembers(members -> {
-                upgradeSkill(selectionResults);
-            });
-        }
-
-        // There should be no way to get here without member being loaded, check anyway
-        assert member != null;
+//        // Check that the member is actually loaded
+//        if(member == null){
+//            // Wait for server members to be loaded before attempting again
+//            selectionResults.event().getGuild().loadMembers(members -> {
+//                upgradeSkill(selectionResults);
+//            });
+//        }
+//
+//        // There should be no way to get here without member being loaded, check anyway
+//        assert member != null;
 
         int skillPos = selectionResults.result();
 
@@ -107,16 +109,16 @@ public class SkillPointsCommand extends ServerCommand {
         });
     }
 
-    public void endSelection(Guild guild, String userId){
-        Member member = guild.getMemberById(userId);
-        if(member == null){
-            guild.loadMembers(members -> {
-                endSelection(guild, userId);
-            });
-        }
+    public void endSelection(Guild guild, Member member){
+//        Member member = guild.getMemberById(userId);
+//        if(member == null){
+//            guild.loadMembers(members -> {
+//                endSelection(guild, userId);
+//            });
+//        }
+//
+//        assert member != null;
 
-        assert member != null;
-
-        FightCommand.isFightingList.setUserFightStatus(member, UserFightStatus.NONE);
+        userManager.setUserFightStatus(member, UserFightStatus.NONE);
     }
 }

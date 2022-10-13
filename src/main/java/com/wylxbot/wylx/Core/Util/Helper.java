@@ -2,10 +2,7 @@ package com.wylxbot.wylx.Core.Util;
 
 import com.wylxbot.wylx.Wylx;
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageChannel;
-import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.react.GenericMessageReactionEvent;
@@ -173,39 +170,39 @@ public class Helper {
      * The listener also times out after 5 minutes, if the user does not respond in this time their response will not
      * be processed
      * @param msg The message that reactions will be added to / listened to
-     * @param user The user allowed to interact with the message, null for everyone
+     * @param member The user allowed to interact with the message, null for everyone
      * @param reactionConsumer consumer that deals with the chosen option
      * @param numberOfOptions how many choices to give the user, number from 1 to 9
      * @param allowMultiple sets if the user should be allowed to interact multiple times
      */
-    public static void chooseFromListWithReactions(Message msg, User user, int numberOfOptions, Consumer<SelectionResults> reactionConsumer, boolean allowMultiple){
-        chooseFromListWithReactions(msg, user, numberOfOptions, reactionConsumer, allowMultiple, null);
+    public static void chooseFromListWithReactions(Message msg, Member member, int numberOfOptions, Consumer<SelectionResults> reactionConsumer, boolean allowMultiple){
+        chooseFromListWithReactions(msg, member, numberOfOptions, reactionConsumer, allowMultiple, null);
     }
-    public static void chooseFromListWithReactions(Message msg, User user, int numberOfOptions, Consumer<SelectionResults> reactionConsumer, boolean allowMultiple, BiConsumer<Guild, String> quitConsumer){
+    public static void chooseFromListWithReactions(Message msg, Member member, int numberOfOptions, Consumer<SelectionResults> reactionConsumer, boolean allowMultiple, BiConsumer<Guild, Member> quitConsumer){
         if(numberOfOptions > 9 || numberOfOptions < 1) throw new IllegalArgumentException("Consumer count must be between 1 and 9");
 
-        Wylx.getInstance().getJDA().addEventListener(new ReactionListenerContainer(msg, user, numberOfOptions, reactionConsumer, allowMultiple, quitConsumer));
+        Wylx.getInstance().getJDA().addEventListener(new ReactionListenerContainer(msg, member, numberOfOptions, reactionConsumer, allowMultiple, quitConsumer));
     }
 
     public record SelectionResults(int result, GenericMessageReactionEvent event){}
 
     private static class ReactionListenerContainer extends ListenerAdapter{
         private final Consumer<SelectionResults> reactionConsumer;
-        private final BiConsumer<Guild, String> quitConsumer;
+        private final BiConsumer<Guild, Member> quitConsumer;
         private final int numberOfOptions;
         private final Message msg;
-        private final User user;
+        private final Member member;
         private final boolean allowMultiple;
 
         private final Timer timer = new Timer();
         private final static long FIVE_MINUTES_IN_MS = 300000;
 
-        private ReactionListenerContainer(Message msg, User user, int numberOfOptions, Consumer<SelectionResults> reactionConsumer, boolean allowMultiple, BiConsumer<Guild, String> quitConsumer){
+        private ReactionListenerContainer(Message msg, Member member, int numberOfOptions, Consumer<SelectionResults> reactionConsumer, boolean allowMultiple, BiConsumer<Guild, Member> quitConsumer){
             this.reactionConsumer = reactionConsumer;
             this.quitConsumer = quitConsumer;
             this.numberOfOptions = numberOfOptions;
             this.msg = msg;
-            this.user = user;
+            this.member = member;
             this.allowMultiple = allowMultiple;
 
             for(int i = 0; i < numberOfOptions; i++){
@@ -224,7 +221,7 @@ public class Helper {
         @Override
         public void onGenericMessageReaction(@NotNull GenericMessageReactionEvent event) {
             if(!event.getMessageId().equals(msg.getId()) ||
-                    (user != null && !event.getUserId().equals(user.getId()))) return;
+                    (member != null && !event.getUserId().equals(member.getId()))) return;
 
             // Quit emote
             if(event.getReactionEmote().getAsCodepoints().equals(X)){
@@ -244,7 +241,7 @@ public class Helper {
 
         private void quit(){
             timer.cancel();
-            if(quitConsumer != null) quitConsumer.accept(msg.getGuild(), user.getId());
+            if(quitConsumer != null) quitConsumer.accept(msg.getGuild(), member);
             msg.delete().queue();
             msg.getJDA().removeEventListener(this);
         }
