@@ -55,7 +55,7 @@ public class SkillPointsCommand extends ServerCommand {
             }
 
             // Send the embed of the users skills
-            ctx.event().getChannel().sendMessageEmbeds(buildEmbed(ctx.event().getGuild(), target)).queue();
+            ctx.event().getChannel().sendMessageEmbeds(buildEmbedOther(ctx.event().getGuild(), target)).queue();
 
             return;
         }
@@ -72,7 +72,7 @@ public class SkillPointsCommand extends ServerCommand {
 
         userManager.setUserFightStatus(member, UserFightStatus.SKILLPOINTS);
 
-        ctx.event().getChannel().sendMessageEmbeds(buildEmbed(ctx.event().getGuild(), member)).queue(message -> {
+        ctx.event().getChannel().sendMessageEmbeds(buildEmbedPersonal(ctx.event().getGuild(), member)).queue(message -> {
             Helper.chooseFromListWithReactions(message,
                     member,
                     5,
@@ -82,7 +82,7 @@ public class SkillPointsCommand extends ServerCommand {
         });
     }
 
-    private MessageEmbed buildEmbed(Guild guild, Member member){
+    private MessageEmbed buildEmbedPersonal(Guild guild, Member member){
         DatabaseManager db = Wylx.getInstance().getDb();
         DiscordUser dbUser = db.getUser(member.getId());
         FightUserStats stats = dbUser.getSetting(UserIdentifiers.FightStats);
@@ -114,6 +114,34 @@ public class SkillPointsCommand extends ServerCommand {
         return embed.build();
     }
 
+    private MessageEmbed buildEmbedOther(Guild guild, Member member){
+        DatabaseManager db = Wylx.getInstance().getDb();
+        DiscordUser dbUser = db.getUser(member.getId());
+        FightUserStats stats = dbUser.getSetting(UserIdentifiers.FightStats);
+        EmbedBuilder embed = new EmbedBuilder();
+
+        int exp = FightUtil.calcEXPForLevel(stats.getLvl());
+        int pointsToSpend = stats.getLvl() - stats.getUsedPoints();
+
+        embed.setColor(guild.getSelfMember().getColor());
+        embed.setAuthor(member.getEffectiveName() + "'s stats in " + guild.getName(),
+                null, member.getAvatarUrl());
+        embed.setDescription("Level: " + stats.getLvl() + "\nEXP: (" + stats.getExp() + " / " + exp + ")");
+        embed.addField("Stat Levels", String.format(
+                """
+                HP: %d
+                Speed: %d
+                Damage: %d
+                EXP Multiplier: %d
+                """,
+                stats.getStatLvl(FightStatTypes.HP),
+                stats.getStatLvl(FightStatTypes.SPEED),
+                stats.getStatLvl(FightStatTypes.DAMAGE),
+                stats.getStatLvl(FightStatTypes.EXP)), false);
+
+        return embed.build();
+    }
+
     private void upgradeSkill(Helper.SelectionResults selectionResults){
         Member member = selectionResults.event().getMember();
 
@@ -132,7 +160,7 @@ public class SkillPointsCommand extends ServerCommand {
         stats.save();
 
         selectionResults.event().retrieveMessage().queue(message -> {
-            message.editMessageEmbeds(buildEmbed(selectionResults.event().getGuild(), member)).queue();
+            message.editMessageEmbeds(buildEmbedPersonal(selectionResults.event().getGuild(), member)).queue();
         });
     }
 
