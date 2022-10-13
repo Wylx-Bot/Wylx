@@ -7,7 +7,8 @@ import com.wylxbot.wylx.Core.Events.SilentEvents.SilentEvent;
 public class FightPackage extends EventPackage {
     public FightPackage() {
         super(new ServerCommand[]{
-                new FightCommand()
+                new FightCommand(),
+                new SkillPointsCommand(),
         }, new SilentEvent[]{}
         );
     }

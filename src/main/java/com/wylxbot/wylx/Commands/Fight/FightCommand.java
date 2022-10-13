@@ -1,11 +1,8 @@
 package com.wylxbot.wylx.Commands.Fight;
 
+import com.wylxbot.wylx.Commands.Fight.Util.*;
 import com.wylxbot.wylx.Core.Events.Commands.CommandContext;
 import com.wylxbot.wylx.Core.Events.Commands.ThreadedCommand;
-import com.wylxbot.wylx.Commands.Fight.Util.FightMessages;
-import com.wylxbot.wylx.Commands.Fight.Util.FightStatTypes;
-import com.wylxbot.wylx.Commands.Fight.Util.FightUserManager;
-import com.wylxbot.wylx.Commands.Fight.Util.FightUserStats;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
@@ -19,7 +16,8 @@ import java.util.regex.Pattern;
 public class FightCommand extends ThreadedCommand {
 
     private final Random random = new Random();
-    private final FightUserManager isFightingList = new FightUserManager();
+
+    private static final FightUserManager userManager = FightUserManager.getInstance();
 
     private final Pattern mentionPattern = Message.MentionType.USER.getPattern();
     private final String noExpStr = "\nThere is no EXP to be found here";
@@ -60,16 +58,26 @@ public class FightCommand extends ThreadedCommand {
             return;
         }
 
+        UserFightStatus player1Status = userManager.getUserStatus(player1);
+        UserFightStatus player2Status = userManager.getUserStatus(player2);
+
         // Check if users are fighting
-        if (isFightingList.userIsFighting(player1) ||
-            isFightingList.userIsFighting(player2)) {
+        if (player1Status == UserFightStatus.FIGHTING ||
+            player2Status == UserFightStatus.FIGHTING) {
             msg.reply("One of the above users is currently fighting! Please wait").queue();
             return;
         }
 
+        // Users cannot be changing SP when they go to fight
+        if (player1Status == UserFightStatus.SKILLPOINTS ||
+                player2Status == UserFightStatus.SKILLPOINTS) {
+            msg.getChannel().sendMessage("Please finish spending skill points before fighting").queue();
+            return;
+        }
+
         // Prevent the user from fighting multiple times
-        isFightingList.setUserIsFighting(player1, true);
-        isFightingList.setUserIsFighting(player2, true);
+        userManager.setUserFightStatus(player1, UserFightStatus.FIGHTING);
+        userManager.setUserFightStatus(player2, UserFightStatus.FIGHTING);
 
         FightUserStats player1Stats = FightUserStats.getUserStats(player1);
         FightUserStats player2Stats = FightUserStats.getUserStats(player2);
@@ -91,8 +99,8 @@ public class FightCommand extends ThreadedCommand {
             botMsg = replaceStringWithUsers(botMsg, bot, user);
 
             msg.getChannel().sendMessage(botMsg + noExpStr).complete();
-            isFightingList.setUserIsFighting(player1, false);
-            isFightingList.setUserIsFighting(player2, false);
+            userManager.setUserFightStatus(player1, UserFightStatus.NONE);
+            userManager.setUserFightStatus(player2, UserFightStatus.NONE);
             return;
         }
 
@@ -103,8 +111,8 @@ public class FightCommand extends ThreadedCommand {
             dupMsg = replaceStringWithUsers(dupMsg, player1Stats, player2Stats);
 
             msg.getChannel().sendMessage(dupMsg + noExpStr).complete();
-            isFightingList.setUserIsFighting(player1, false);
-            isFightingList.setUserIsFighting(player2, false);
+            userManager.setUserFightStatus(player1, UserFightStatus.NONE);
+            userManager.setUserFightStatus(player2, UserFightStatus.NONE);
             return;
         }
 
@@ -175,8 +183,8 @@ public class FightCommand extends ThreadedCommand {
         // Fight is done, save and let other fights occur
         player1.save();
         player2.save();
-        isFightingList.setUserIsFighting(player1.user, false);
-        isFightingList.setUserIsFighting(player2.user, false);
+        userManager.setUserFightStatus(player1.user, UserFightStatus.NONE);
+        userManager.setUserFightStatus(player2.user, UserFightStatus.NONE);
 
         // Wait 30 seconds before cleaning up fight messages
         try {

@@ -51,8 +51,11 @@ public class SpellCommand extends ThreadedCommand {
         }
 
         ctx.event().getChannel().sendMessage(messageTxt).queue(msg -> {
-            Helper.chooseFromListWithReactions(msg, ctx.event().getAuthor(), chosenSpells.length,
-                    chosenSpellIndex -> sendSpellInfo(chosenSpells[chosenSpellIndex-1], ctx.event().getChannel()));
+            Helper.chooseFromListWithReactions(msg,
+                    ctx.event().getMember(),
+                    chosenSpells.length,
+                    chosenSpellIndex -> sendSpellInfo(chosenSpells[chosenSpellIndex.result()-1], ctx.event().getChannel()),
+                    false);
         });
     }
 
