@@ -7,8 +7,16 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class FightUserManager {
 
+    private final static FightUserManager INSTANCE = new FightUserManager();
+
     private final HashMap<Long, UserFightStatus> fightMap = new HashMap<>();
     private final ReentrantLock lock = new ReentrantLock();
+
+    private FightUserManager(){}
+
+    public static FightUserManager getInstance(){
+        return INSTANCE;
+    }
 
     public UserFightStatus getUserStatus(Member user) {
         lock.lock();
