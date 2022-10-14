@@ -142,7 +142,7 @@ public class SkillPointsCommand extends ServerCommand {
     }
 
     private void upgradeSkill(Helper.SelectionResults selectionResults){
-        Member member = selectionResults.event().getMember();
+        Member member = selectionResults.event().retrieveMember().complete();
 
         int skillPos = selectionResults.result();
 
