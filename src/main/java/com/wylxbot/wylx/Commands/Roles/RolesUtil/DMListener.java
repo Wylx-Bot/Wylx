@@ -3,6 +3,11 @@ package com.wylxbot.wylx.Commands.Roles.RolesUtil;
 import com.wylxbot.wylx.Database.DbElements.RoleMenuIdentifiers;
 import com.wylxbot.wylx.Wylx;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
+import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
+import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -111,7 +116,7 @@ public class DMListener extends ListenerAdapter {
     }
 
     private boolean addRole(List<String> args, String options, MessageReceivedEvent event) {
-        Emoji emoji;
+        EmojiUnion emoji;
         String roleName;
 
         if (args.size() <= 1) {
@@ -129,18 +134,18 @@ public class DMListener extends ListenerAdapter {
             }
 
             // Get emote by name
-            List<Emote> emotes = guild.getEmotesByName(options.substring(1, secondColon), true);
+            List<RichCustomEmoji> emotes = guild.getEmojisByName(options.substring(1, secondColon), true);
             if (emotes.size() == 0) {
                 event.getChannel().sendMessage("Invalid emote").queue();
                 return false;
             }
 
-            emoji = Emoji.fromEmote(emotes.get(0));
+            emoji = (EmojiUnion) emotes.get(0);
             roleName = options.substring(emoji.getName().length() + 2);
         } else {
             // Unicode emote or custom emote
-            emoji = Emoji.fromMarkdown(args.get(1));
-            roleName = options.substring(emoji.getAsMention().length());
+            emoji = Emoji.fromFormatted(args.get(1));
+            roleName = options.substring(emoji.getFormatted().length());
         }
 
         // Get role now
@@ -157,9 +162,7 @@ public class DMListener extends ListenerAdapter {
 
         // Check that Wylx can assign the role to other users
         Role role = roles.get(0);
-        int rolePos = role.getPosition();
-        int wylxPos = guild.getBotRole().getPosition();
-        if(rolePos >= wylxPos){
+        if(!guild.getSelfMember().canInteract(role)){
             event.getChannel().sendMessage("Wylx cannot assign this role, please move role below Wylx in the role hierarchy or choose another role").queue();
             return false;
         }

@@ -5,8 +5,11 @@ import com.wylxbot.wylx.Database.DbElements.ServerIdentifiers;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
+import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
+import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 import net.dv8tion.jda.api.exceptions.ErrorResponseException;
-import net.dv8tion.jda.api.requests.ErrorResponse;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,28 +49,38 @@ public class RoleMenu {
             return;
         }
 
-        roles.forEach((roleID, emojiID) -> {
+        boolean updateMenu = false;
+
+        for (Map.Entry<String, String> entry : roles.entrySet()) {
+            String roleID = entry.getKey();
+            String emojiInput = entry.getValue();
+
             Role role = jda.getRoleById(roleID);
             // Remove if invalid
             if (role == null) {
-                return;
+                updateMenu = true;
+                continue;
             }
 
-            Emoji emoji;
-            try {
-                Emote emote = jda.getEmoteById(emojiID);
-                if (emote == null) {
-                    return;
-                } else {
-                    emoji = Emoji.fromEmote(emote);
+            EmojiUnion emoji;
+            if (emojiInput.matches("[0-9]+")) {
+                RichCustomEmoji customEmoji = jda.getEmojiById(emojiInput);
+                if (customEmoji == null) {
+                    updateMenu = true;
+                    continue;
                 }
-            } catch (NumberFormatException e) {
-                emoji = Emoji.fromUnicode(emojiID);
+                emoji = (EmojiUnion) customEmoji;
+            } else {
+                // Unicode
+                emoji = Emoji.fromFormatted(emojiInput);
             }
 
             reactions.add(new RoleReaction(role, emoji));
-        });
+        }
 
+        if (updateMenu) {
+            updateMessage();
+        }
     }
 
     public static MessageEmbed getEmptyEmbed() {
@@ -81,6 +94,7 @@ public class RoleMenu {
         EmbedBuilder builder = new EmbedBuilder();
         builder.setAuthor(this.title);
         StringBuilder string = new StringBuilder("React to get a role!\n\n");
+
         if (reactions.size() == 0) {
             String prefix = Wylx.getInstance().getDb().getServer(guildID).getSetting(ServerIdentifiers.Prefix);
             string.append("This list is currently empty. To add roles, please use\n`");
@@ -92,7 +106,7 @@ public class RoleMenu {
             reactions.forEach(reaction -> {
                 String roleStr = mentionRoles ? reaction.role().getAsMention() : reaction.role().getName();
                 String line = String.format("%s - %s\n",
-                        reaction.emoji().getAsMention(),
+                        reaction.emoji().getFormatted(),
                         roleStr);
                 string.append(line);
             });
@@ -142,12 +156,17 @@ public class RoleMenu {
         }
 
         try {
-            addReactionToMessage(newReaction.emoji());
+            message.addReaction(newReaction.emoji()).complete();
         } catch (ErrorResponseException e) {
-            if (e.getErrorResponse() == ErrorResponse.TOO_MANY_REACTIONS) {
-                throw new IllegalArgumentException("Discord has a max limit of 20 unique emojis per message. Please create a new menu or remove other roles from this menu.");
-            } else {
-                throw new IllegalArgumentException(e.getMessage());
+            switch(e.getErrorResponse()) {
+                case TOO_MANY_REACTIONS ->
+                        throw new IllegalArgumentException("Discord has a max limit of 20 unique emojis per message." +
+                                " Please create a new menu or remove other roles from this menu.");
+                case UNKNOWN_EMOJI -> throw new IllegalArgumentException("Emoji does not exist!");
+                case UNKNOWN_MESSAGE -> throw new IllegalArgumentException("Message was deleted!");
+                case MISSING_PERMISSIONS -> throw new IllegalArgumentException("I do not have permission to react" +
+                        "to the menu!");
+                default -> throw new IllegalArgumentException(e.getMessage());
             }
         }
 
@@ -155,33 +174,21 @@ public class RoleMenu {
         updateMessage();
     }
 
-    private void addReactionToMessage(Emoji emoji) throws IllegalArgumentException, ErrorResponseException {
-        if (emoji.isUnicode()) {
-            message.addReaction(emoji.getAsMention()).complete();
-            return;
-        }
-
-        Emote emote = Wylx.getInstance().getJDA().getEmoteById(emoji.getId());
-        if (emote != null) {
-            message.addReaction(emote).complete();
-        } else {
-            throw new IllegalArgumentException("Emote does not exist");
-        }
-    }
-
     public void removeReaction(String name) throws IllegalArgumentException {
         List<RoleReaction> filtered = reactions.stream().filter(roleReaction -> roleReaction.role().getName().equalsIgnoreCase(name)).toList();
         if (filtered.size() != 1) {
             throw new IllegalArgumentException("Could not find role to remove");
         }
+
         RoleReaction reaction = filtered.get(0);
         reactions.remove(reaction);
-        if (reaction.emoji().isUnicode()) {
-            message.clearReactions(reaction.emoji().getAsMention()).queue();
-        } else {
-            Emote emote = Wylx.getInstance().getJDA().getEmoteById(reaction.emoji().getId());
-            if (emote != null) {
-                message.clearReactions(emote).queue();
+
+        try {
+            message.clearReactions(reaction.emoji()).queue();
+        } catch (ErrorResponseException e) {
+            switch(e.getErrorResponse()) {
+                case UNKNOWN_MESSAGE -> throw new IllegalArgumentException("Message was deleted!");
+                case MISSING_ACCESS -> throw new IllegalArgumentException("Lost permissions to view role menu!");
             }
         }
 

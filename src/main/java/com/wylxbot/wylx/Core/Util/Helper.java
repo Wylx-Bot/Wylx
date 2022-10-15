@@ -3,19 +3,19 @@ package com.wylxbot.wylx.Core.Util;
 import com.wylxbot.wylx.Wylx;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
+import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
+import net.dv8tion.jda.api.entities.emoji.UnicodeEmoji;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.react.GenericMessageReactionEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 import net.dv8tion.jda.api.exceptions.ErrorHandler;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
-import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.requests.ErrorResponse;
-import net.dv8tion.jda.api.requests.restaction.MessageAction;
+import net.dv8tion.jda.api.requests.restaction.MessageCreateAction;
 import org.jetbrains.annotations.NotNull;
 
 import java.time.Duration;
@@ -32,8 +32,8 @@ public class Helper {
     private static final int ONE_HOUR = MINUTES_PER_HOUR * SECONDS_PER_MINUTE * MILLISECONDS_PER_SECOND;
 
     // Validates the users choice, if they select :check: it runs the runnable, if they select :x: do nothing
-    public static final String CHECK = "U+2705";
-    public static final String X = "U+274c";
+    public static final EmojiUnion CHECK = Emoji.fromFormatted("U+2705");
+    public static final EmojiUnion X = Emoji.fromFormatted("U+274c");
     public static void validate(String description, MessageReceivedEvent event, Runnable runnable){
         event.getChannel().deleteMessageById(event.getMessageId()).queue();
         event.getChannel().sendMessage(description).queue(message -> {
@@ -60,11 +60,11 @@ public class Helper {
         @Override
         public void onGenericMessageReaction(@NotNull GenericMessageReactionEvent event) {
             if(event.getMessageIdLong() == messageID && event.getUserIdLong() == userID){
-                if(event.getReactionEmote().getAsCodepoints().equals(CHECK)){
+                if(event.getEmoji().equals(CHECK)){
                     event.getChannel().deleteMessageById(messageID).queue();
                     runnable.run();
                     Wylx.getInstance().getJDA().removeEventListener(this);
-                } else if(event.getReactionEmote().getAsCodepoints().equals(X)){
+                } else if(event.getEmoji().equals(X)){
                     event.getChannel().sendMessage("Cancelled").queue();
                     Wylx.getInstance().getJDA().removeEventListener(this);
                 }
@@ -77,39 +77,11 @@ public class Helper {
      * @param msg Message to send
      * @param timeout Time until message is deleted
      */
-    public static void selfDestructingMsg(MessageAction msg, Duration timeout) {
+    public static void selfDestructingMsg(MessageCreateAction msg, Duration timeout) {
         msg.queue(message -> {
             ErrorHandler errorHandler = new ErrorHandler().ignore(ErrorResponse.UNKNOWN_MESSAGE);
             message.delete().queueAfter(timeout.toSeconds(), TimeUnit.SECONDS, null, errorHandler);
         });
-    }
-
-    public static void validateButtons(String description, MessageReceivedEvent event, Runnable runnable) {
-        long messageId = event.getMessageIdLong();
-        List<ActionRow> rows = List.of(ActionRow.of(
-                Button.success(CHECK, "Continue"),
-                Button.danger(X, "Cancel")
-        ));
-
-        createButtonInteraction((ButtonInteractionEvent buttonEvent, Object ctx) -> {
-            if (buttonEvent.getUser().getIdLong() == event.getAuthor().getIdLong()) {
-                if (buttonEvent.getComponentId().equals(CHECK)) {
-                    event.getChannel().deleteMessageById(messageId).queue();
-                    runnable.run();
-                } else {
-                    buttonEvent.editMessage("Cancelled")
-                            .flatMap(InteractionHook::editOriginalComponents)
-                            .queue();
-                }
-                return true;
-            }
-            return false;
-        }, (Message sentMessage, Boolean timedOut) -> {
-            if (timedOut) {
-                sentMessage.editMessage("Timed Out")
-                        .flatMap(Message::editMessageComponents).queue();
-            }
-        }, rows, event.getChannel().sendMessage(description), null);
     }
 
     /**
@@ -128,11 +100,11 @@ public class Helper {
     public static void createButtonInteraction(BiFunction<ButtonInteractionEvent, Object, Boolean> interactionRunnable,
                                                BiConsumer<Message, Boolean> interactionEndRunnable,
                                                Collection<ActionRow> actionRows,
-                                               MessageAction toSend,
+                                               MessageCreateAction toSend,
                                                Object ctx) {
 
         Timer timer = new Timer();
-        Message msg = toSend.setActionRows(actionRows).complete();
+        Message msg = toSend.setComponents(actionRows).complete();
         JDA jda = Wylx.getInstance().getJDA();
 
         ListenerAdapter adapter = new ListenerAdapter() {
@@ -162,8 +134,18 @@ public class Helper {
         }, ONE_HOUR);
     }
 
-    private final static List<String> numbToEmoji = Arrays.asList("U+30U+fe0fU+20e3", "U+31U+fe0fU+20e3", "U+32U+fe0fU+20e3", "U+33U+fe0fU+20e3", "U+34U+fe0fU+20e3",
-            "U+35U+fe0fU+20e3", "U+36U+fe0fU+20e3", "U+37U+fe0fU+20e3", "U+38U+fe0fU+20e3", "U+39U+fe0fU+20e3");
+    private final static List<UnicodeEmoji> numbToEmoji = Arrays.asList(
+            Emoji.fromUnicode("U+30U+fe0fU+20e3"),
+            Emoji.fromUnicode("U+31U+fe0fU+20e3"),
+            Emoji.fromUnicode("U+32U+fe0fU+20e3"),
+            Emoji.fromUnicode("U+33U+fe0fU+20e3"),
+            Emoji.fromUnicode("U+34U+fe0fU+20e3"),
+            Emoji.fromUnicode("U+35U+fe0fU+20e3"),
+            Emoji.fromUnicode("U+36U+fe0fU+20e3"),
+            Emoji.fromUnicode("U+37U+fe0fU+20e3"),
+            Emoji.fromUnicode("U+38U+fe0fU+20e3"),
+            Emoji.fromUnicode("U+39U+fe0fU+20e3")
+            );
 
     /**
      * Adds emoji to the supplied message corresponding to the provided consumers, on the user adding a reaction to one
@@ -215,15 +197,20 @@ public class Helper {
                     (user != null && !event.getUserId().equals(user.getId()))) return;
 
             // Quit emote
-            if(event.getReactionEmote().getAsCodepoints().equals(X)){
+            if(event.getEmoji().equals(X)){
                 quit();
                 return;
             }
 
-            // If not valid emoji return
-            if(!numbToEmoji.contains(event.getReactionEmote().getAsCodepoints())) return;
+            try {
+                // Check that emoji is a number 0-9
+                if (!numbToEmoji.contains(event.getEmoji().asUnicode())) return;
+            } catch (IllegalStateException e) {
+                // Not a unicode emoji!
+                return;
+            }
 
-            int chosen = Character.getNumericValue(event.getReactionEmote().getEmoji().charAt(0));
+            int chosen = Character.getNumericValue(event.getEmoji().getAsReactionCode().charAt(0));
             if(chosen > numberOfOptions) return;
 
             reactionConsumer.accept(chosen);

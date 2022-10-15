@@ -8,7 +8,7 @@ import com.wylxbot.wylx.Commands.Fight.Util.FightUserManager;
 import com.wylxbot.wylx.Commands.Fight.Util.FightUserStats;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import java.util.ArrayList;
@@ -40,7 +40,7 @@ public class FightCommand extends ThreadedCommand {
 
         assert player1 != null;
 
-        if (msg.mentionsEveryone()) {
+        if (msg.getMentions().mentionsEveryone()) {
             msg.reply("How are you supposed to fight everyone here? That seems *really* difficult...").queue();
             return;
         }
