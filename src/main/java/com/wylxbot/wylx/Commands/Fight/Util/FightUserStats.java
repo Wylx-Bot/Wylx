@@ -64,6 +64,10 @@ public class FightUserStats {
         return level;
     }
 
+    public int getExp() {
+        return exp;
+    }
+
     // Returns level of a skill
     public int getStatLvl(FightStatTypes stat) {
         return switch (stat) {
@@ -74,6 +78,27 @@ public class FightUserStats {
         };
     }
 
+    public void upgradeStat(FightStatTypes stat){
+        if(getLvl() - getUsedPoints() <= 0) return;
+        switch(stat){
+            case HP -> this.hpLevel++;
+            case EXP -> this.expMultLevel++;
+            case SPEED -> this.speedLevel++;
+            case DAMAGE -> this.damageLevel++;
+        }
+    }
+
+    public void resetStats(){
+        this.hpLevel = 0;
+        this.expMultLevel = 0;
+        this.speedLevel = 0;
+        this.damageLevel = 0;
+    }
+
+    public int getUsedPoints() {
+        return this.hpLevel + this.expMultLevel + this.speedLevel + this.damageLevel;
+    }
+
     // Returns multiplier based off of the level of the skill
     public double getStatMultiplier(FightStatTypes stat) {
         return FightUtil.calcMultiplier(getStatLvl(stat));
@@ -81,9 +106,5 @@ public class FightUserStats {
 
     public void save() {
         userDb.setSetting(UserIdentifiers.FightStats, this);
-    }
-
-    public int getExp() {
-        return exp;
     }
 }
