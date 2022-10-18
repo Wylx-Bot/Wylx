@@ -197,7 +197,7 @@ public class RoleMenu {
 
     public Role getReactionFromEmote(Emoji emoji) {
         for (RoleReaction reaction : reactions) {
-            if (reaction.emoji().equals(emoji)) {
+            if (reaction.emoji().getAsReactionCode().equals(emoji.getAsReactionCode())) {
                 return reaction.role();
             }
         }
