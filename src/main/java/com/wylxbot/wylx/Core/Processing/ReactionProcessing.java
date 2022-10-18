@@ -16,10 +16,6 @@ import net.dv8tion.jda.api.requests.ErrorResponse;
 import org.jetbrains.annotations.NotNull;
 
 public class ReactionProcessing extends ListenerAdapter {
-    @Override
-    public void onMessageDelete(@NotNull MessageDeleteEvent event) {
-
-    }
 
     @Override
     public void onMessageReactionAdd(@NotNull MessageReactionAddEvent event) {

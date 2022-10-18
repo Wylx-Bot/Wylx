@@ -138,16 +138,16 @@ public class Helper {
     }
 
     private final static List<UnicodeEmoji> numbToEmoji = Arrays.asList(
-            Emoji.fromUnicode("U+30U+fe0fU+20e3"),
-            Emoji.fromUnicode("U+31U+fe0fU+20e3"),
-            Emoji.fromUnicode("U+32U+fe0fU+20e3"),
-            Emoji.fromUnicode("U+33U+fe0fU+20e3"),
-            Emoji.fromUnicode("U+34U+fe0fU+20e3"),
-            Emoji.fromUnicode("U+35U+fe0fU+20e3"),
-            Emoji.fromUnicode("U+36U+fe0fU+20e3"),
-            Emoji.fromUnicode("U+37U+fe0fU+20e3"),
-            Emoji.fromUnicode("U+38U+fe0fU+20e3"),
-            Emoji.fromUnicode("U+39U+fe0fU+20e3")
+            Emoji.fromUnicode("U+30U+fe0fU+20e3"), // Emoji 0
+            Emoji.fromUnicode("U+31U+fe0fU+20e3"), // Emoji 1
+            Emoji.fromUnicode("U+32U+fe0fU+20e3"), // Emoji 2
+            Emoji.fromUnicode("U+33U+fe0fU+20e3"), // Emoji 3
+            Emoji.fromUnicode("U+34U+fe0fU+20e3"), // Emoji 4
+            Emoji.fromUnicode("U+35U+fe0fU+20e3"), // Emoji 5
+            Emoji.fromUnicode("U+36U+fe0fU+20e3"), // Emoji 6
+            Emoji.fromUnicode("U+37U+fe0fU+20e3"), // Emoji 7
+            Emoji.fromUnicode("U+38U+fe0fU+20e3"), // Emoji 8
+            Emoji.fromUnicode("U+39U+fe0fU+20e3")  // Emoji 9
             );
 
     /**
