@@ -4,6 +4,7 @@ import com.wylxbot.wylx.Core.Events.Commands.CommandContext;
 import com.wylxbot.wylx.Core.Events.Commands.ThreadedCommand;
 import com.wylxbot.wylx.Wylx;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.utils.FileUpload;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -82,9 +83,10 @@ public class UpdateCommand extends ThreadedCommand {
                 event.getChannel().sendMessage(msgString).queue();
             } else {
                 // Otherwise send files containing git output
-                event.getChannel().sendFile(stdOuputBuilder.toString().getBytes(), "Stdout.txt")
-                        .addFile(stdErrorBuilder.toString().getBytes(), "Stderr.txt")
-                        .append(msgString).queue();
+                FileUpload stdoutFile = FileUpload.fromData(stdOuputBuilder.toString().getBytes(), "Stdout.txt");
+                FileUpload stderrFile = FileUpload.fromData(stdErrorBuilder.toString().getBytes(), "Stderr.txt");
+                event.getChannel().sendFiles(stdoutFile, stderrFile)
+                        .setContent(msgString.toString()).queue();
 
             }
 

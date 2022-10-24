@@ -2,7 +2,8 @@ package com.wylxbot.wylx.Database.Codecs;
 
 import com.wylxbot.wylx.Commands.Roles.RolesUtil.RoleMenu;
 import com.wylxbot.wylx.Commands.Roles.RolesUtil.RoleReaction;
-import net.dv8tion.jda.api.entities.Emoji;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
+import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
 import org.bson.BsonReader;
 import org.bson.BsonType;
 import org.bson.BsonWriter;
@@ -77,12 +78,13 @@ public class RoleMenuCodec implements Codec<RoleMenu> {
         reactions.forEach((roleReaction -> {
             writer.writeStartDocument();
             writer.writeString(ROLE_ID, roleReaction.role().getId());
-            Emoji emoji = roleReaction.emoji();
+            EmojiUnion emoji = roleReaction.emoji();
+            writer.writeString(EMOJI_ID, emoji.getFormatted());
             // Unicode emojis have ID = 0, and come with discord
-            if (emoji.isUnicode()) {
+            if (emoji.getType() == Emoji.Type.UNICODE) {
                 writer.writeString(EMOJI_ID, emoji.getName());
             } else {
-                writer.writeString(EMOJI_ID, emoji.getId());
+                writer.writeString(EMOJI_ID, emoji.asCustom().getId());
             }
             writer.writeEndDocument();
         }));

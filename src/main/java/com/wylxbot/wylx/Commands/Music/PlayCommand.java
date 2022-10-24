@@ -9,16 +9,17 @@ import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
-import net.dv8tion.jda.api.entities.Emoji;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
+import net.dv8tion.jda.api.entities.emoji.UnicodeEmoji;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.ItemComponent;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
-import net.dv8tion.jda.api.requests.restaction.MessageAction;
+import net.dv8tion.jda.api.requests.restaction.MessageCreateAction;
 
 import java.time.Duration;
 import java.util.ArrayList;
@@ -144,13 +145,13 @@ public class PlayCommand extends ServerCommand {
                     info.author
             ));
 
-            Emoji emoji = Emoji.fromUnicode(String.format("U+003%d U+FE0F U+20E3", i + 1));
+            UnicodeEmoji emoji = Emoji.fromUnicode(String.format("U+003%d U+FE0F U+20E3", i + 1));
             components.add(Button.secondary("" + i, emoji));
         }
 
         cancelRow.add(Button.secondary("x", Emoji.fromUnicode("U+274C")));
 
-        MessageAction toSend = event.getChannel().sendMessage(builder.toString());
+        MessageCreateAction toSend = event.getChannel().sendMessage(builder.toString());
         Helper.createButtonInteraction((ButtonInteractionEvent buttonEvent, Object obj) -> {
             // Cancel search
             if (buttonEvent.getComponentId().equals("x")) {
@@ -177,7 +178,7 @@ public class PlayCommand extends ServerCommand {
                 ActionRow.of(cancelRow)), toSend, null);
     }
 
-    private void displayUsage(MessageChannel channel) {
+    private void displayUsage(MessageChannelUnion channel) {
         channel.sendMessage("""
                 Usage:
                 $play <link> <Optional: seconds to skip OR HH:MM:SS>

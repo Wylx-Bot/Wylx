@@ -9,7 +9,10 @@ import io.github.cdimascio.dotenv.Dotenv;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.managers.AudioManager;
+import net.dv8tion.jda.api.requests.GatewayIntent;
 
 import javax.security.auth.login.LoginException;
 import java.util.*;
@@ -51,16 +54,12 @@ public class Wylx {
 
         db = new DatabaseManager(wylxConfig);
 
-        try {
-            jda = JDABuilder.createDefault(token)
-                    .addEventListeners(new MessageProcessing(),
-                            new VoiceChannelProcessing(),
-                            new ReactionProcessing())
-                    .build();
-        } catch (LoginException e) {
-            e.printStackTrace();
-            System.exit(-1);
-        }
+        jda = JDABuilder.createDefault(token)
+                .enableIntents(GatewayIntent.MESSAGE_CONTENT)
+                .addEventListeners(new MessageProcessing(),
+                        new VoiceChannelProcessing(),
+                        new ReactionProcessing())
+                .build();
 
         Timer activityTimer = new Timer();
         activityTimer.scheduleAtFixedRate(new TimerTask() {

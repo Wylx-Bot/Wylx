@@ -8,7 +8,7 @@ import com.wylxbot.wylx.Database.DbElements.RoleMenuIdentifiers;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 
@@ -27,7 +27,7 @@ public class NewRoleMenuCommand extends ServerCommand {
     @Override
     public void runCommand(CommandContext ctx) {
         MessageReceivedEvent event = ctx.event();
-        List<TextChannel> channels = event.getMessage().getMentionedChannels();
+        List<TextChannel> channels = event.getMessage().getMentions().getChannels(TextChannel.class);
         if (channels.size() != 1) {
             event.getMessage().reply("Please mention 1 channel").queue();
             return;

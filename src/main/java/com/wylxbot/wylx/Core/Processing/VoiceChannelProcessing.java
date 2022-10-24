@@ -3,9 +3,8 @@ package com.wylxbot.wylx.Core.Processing;
 import com.wylxbot.wylx.Core.Music.GuildMusicManager;
 import com.wylxbot.wylx.Core.Music.WylxPlayerManager;
 import com.wylxbot.wylx.Wylx;
-import net.dv8tion.jda.api.entities.AudioChannel;
-import net.dv8tion.jda.api.events.guild.voice.GuildVoiceLeaveEvent;
-import net.dv8tion.jda.api.events.guild.voice.GuildVoiceMoveEvent;
+import net.dv8tion.jda.api.entities.channel.unions.AudioChannelUnion;
+import net.dv8tion.jda.api.events.guild.voice.GuildVoiceUpdateEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.managers.AudioManager;
 import org.jetbrains.annotations.NotNull;
@@ -17,19 +16,14 @@ public class VoiceChannelProcessing extends ListenerAdapter {
     private static final Logger logger = LoggerFactory.getLogger(VoiceChannelProcessing.class);
 
     @Override
-    public void onGuildVoiceMove(@NotNull GuildVoiceMoveEvent event) {
-        checkVoiceChannel(event.getGuild().getId());
-    }
-
-    @Override
-    public void onGuildVoiceLeave(@NotNull GuildVoiceLeaveEvent event) {
+    public void onGuildVoiceUpdate(@NotNull GuildVoiceUpdateEvent event) {
         checkVoiceChannel(event.getGuild().getId());
     }
 
     private void checkVoiceChannel(String guildID) {
         GuildMusicManager guildMusicManager = WylxPlayerManager.getInstance().getGuildManager(guildID);
         AudioManager manager =  Wylx.getInstance().getGuildAudioManager(guildID);
-        AudioChannel channel = manager.getConnectedChannel();
+        AudioChannelUnion channel = manager.getConnectedChannel();
 
         if (channel == null) {
             guildMusicManager.stop();
