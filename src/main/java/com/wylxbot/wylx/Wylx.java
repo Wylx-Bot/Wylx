@@ -55,7 +55,7 @@ public class Wylx {
         db = new DatabaseManager(wylxConfig);
 
         jda = JDABuilder.createDefault(token)
-                .enableIntents(GatewayIntent.MESSAGE_CONTENT)
+                .enableIntents(GatewayIntent.MESSAGE_CONTENT, GatewayIntent.GUILD_VOICE_STATES)
                 .addEventListeners(new MessageProcessing(),
                         new VoiceChannelProcessing(),
                         new ReactionProcessing())

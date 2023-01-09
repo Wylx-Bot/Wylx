@@ -46,6 +46,18 @@ public class MusicUtils {
         return false;
     }
 
+    public enum VoiceCommandBlockedReason {
+        MEMBER_NOT_IN_VOICE("You are not in a voice channel!"),
+        MEMBER_IN_DIFF_CHANNEL("You are not in the same channel as the bot!"),
+        COMMAND_OK("");
+
+        public final String reason;
+
+        private VoiceCommandBlockedReason(String reason) {
+            this.reason = reason;
+        }
+    }
+
     /**
      * Check that bot is not in any voice channel or that user is in the same channel as bot
      *
@@ -53,7 +65,7 @@ public class MusicUtils {
      * @return True if voice commands are allowed
      */
     @SuppressWarnings("ConstantConditions")
-    public static boolean voiceCommandBlocked(CommandContext ctx) {
+    public static VoiceCommandBlockedReason voiceCommandBlocked(CommandContext ctx) {
         Wylx wylx = Wylx.getInstance();
         AudioManager audioManager = wylx.getGuildAudioManager(ctx.guildID());
         Member member = wylx.getMemberInGuild(ctx.guildID(), ctx.authorID());
@@ -61,16 +73,18 @@ public class MusicUtils {
         // Check user is in a voice channel
         // Note that JDA only caches members in voice channels, so NULL is expected a lot
         if (member == null || !member.getVoiceState().inAudioChannel())
-            return true;
+            return VoiceCommandBlockedReason.MEMBER_NOT_IN_VOICE;
 
         // If bot is not in a voice channel, then it's safe to use commands like "play"
         if (!audioManager.isConnected())
-            return false;
+            return VoiceCommandBlockedReason.COMMAND_OK;
 
         // Check that bot is in the same channel as user
-        return !wylx.userInVoiceChannel(ctx.guildID(),
-                audioManager.getConnectedChannel().getIdLong(),
-                ctx.authorID());
+        if (wylx.userInVoiceChannel(ctx.guildID(), audioManager.getConnectedChannel().getIdLong(), ctx.authorID())) {
+            return VoiceCommandBlockedReason.COMMAND_OK;
+        } else {
+            return VoiceCommandBlockedReason.MEMBER_IN_DIFF_CHANNEL;
+        }
     }
 
     /**
