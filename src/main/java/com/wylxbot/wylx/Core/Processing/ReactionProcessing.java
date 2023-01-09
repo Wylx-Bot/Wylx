@@ -11,6 +11,8 @@ import net.dv8tion.jda.api.events.message.react.GenericMessageReactionEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionRemoveEvent;
 import net.dv8tion.jda.api.exceptions.ErrorResponseException;
+import net.dv8tion.jda.api.exceptions.HierarchyException;
+import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.requests.ErrorResponse;
 import org.jetbrains.annotations.NotNull;
@@ -45,6 +47,8 @@ public class ReactionProcessing extends ListenerAdapter {
                 if (e.getErrorResponse() == ErrorResponse.UNKNOWN_ROLE) {
                     removeRole(event, role);
                 }
+            } catch (HierarchyException e) {
+                // TODO: Should probably do smth about this
             }
         }
     }
@@ -56,7 +60,15 @@ public class ReactionProcessing extends ListenerAdapter {
     }
 
     private Role checkReactionForMenu(@NotNull GenericMessageReactionEvent event) {
-        Message msg = event.getChannel().retrieveMessageById(event.getMessageId()).complete();
+        Message msg;
+
+        try {
+            msg = event.getChannel().retrieveMessageById(event.getMessageId()).complete();
+        } catch (InsufficientPermissionException e) {
+            // TODO: Should probably do smth about this
+            return null;
+        }
+
         User selfUser = event.getJDA().getSelfUser();
 
         // Check if it's a reaction to a message Wylx sent
