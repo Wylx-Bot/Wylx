@@ -48,7 +48,7 @@ public class ReactionProcessing extends ListenerAdapter {
                     removeRole(event, role);
                 }
             } catch (HierarchyException e) {
-                System.out.error("Role is higher than Bot role");
+                System.err.println("Role is higher than Bot role");
             }
         }
     }
@@ -65,7 +65,7 @@ public class ReactionProcessing extends ListenerAdapter {
         try {
             msg = event.getChannel().retrieveMessageById(event.getMessageId()).complete();
         } catch (InsufficientPermissionException e) {
-            System.out.error("No message history log");
+            System.err.println("No message history log");
             // TODO: Should probably do smth about this
             return null;
         }
