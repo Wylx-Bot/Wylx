@@ -25,10 +25,7 @@ public class VoiceChannelProcessing extends ListenerAdapter {
         AudioManager manager =  Wylx.getInstance().getGuildAudioManager(guildID);
         AudioChannelUnion channel = manager.getConnectedChannel();
 
-        if (channel == null) {
-            guildMusicManager.stop();
-            return;
-        }
+        if (channel == null) return;
 
         // Leave if we are the only user left
         if (manager.isConnected() && channel.getMembers().size() == 1) {

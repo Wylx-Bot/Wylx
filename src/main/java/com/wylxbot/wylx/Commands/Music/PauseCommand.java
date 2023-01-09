@@ -17,10 +17,14 @@ public class PauseCommand extends ServerCommand {
         MessageReceivedEvent event = ctx.event();
         if (ctx.musicManager().isNotPlaying()) {
             event.getChannel().sendMessage("Wylx is not playing music right now!").queue();
-        } else if (MusicUtils.voiceCommandBlocked(ctx)) {
-            event.getChannel().sendMessage("You are not in the same channel as the bot!").queue();
-        } else {
-            ctx.musicManager().pause(true);
         }
+
+        MusicUtils.VoiceCommandBlockedReason blocked = MusicUtils.voiceCommandBlocked(ctx);
+        if (blocked != MusicUtils.VoiceCommandBlockedReason.COMMAND_OK) {
+            event.getChannel().sendMessage(blocked.reason).queue();
+            return;
+        }
+
+        ctx.musicManager().pause(true);
     }
 }
