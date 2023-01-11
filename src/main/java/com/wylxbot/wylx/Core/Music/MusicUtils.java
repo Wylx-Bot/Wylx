@@ -49,6 +49,7 @@ public class MusicUtils {
     public enum VoiceCommandBlockedReason {
         MEMBER_NOT_IN_VOICE("You are not in a voice channel!"),
         MEMBER_IN_DIFF_CHANNEL("You are not in the same channel as the bot!"),
+        BOT_NOT_PLAYING("Wylx is not playing music right now!"),
         COMMAND_OK("");
 
         public final String reason;
@@ -76,8 +77,8 @@ public class MusicUtils {
             return VoiceCommandBlockedReason.MEMBER_NOT_IN_VOICE;
 
         // If bot is not in a voice channel, then it's safe to use commands like "play"
-        if (!audioManager.isConnected())
-            return VoiceCommandBlockedReason.COMMAND_OK;
+        if (!audioManager.isConnected() || ctx.musicManager().isNotPlaying())
+            return VoiceCommandBlockedReason.BOT_NOT_PLAYING;
 
         // Check that bot is in the same channel as user
         if (wylx.userInVoiceChannel(ctx.guildID(), audioManager.getConnectedChannel().getIdLong(), ctx.authorID())) {

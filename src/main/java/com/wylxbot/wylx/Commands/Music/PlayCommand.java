@@ -27,6 +27,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static com.wylxbot.wylx.Core.Music.MusicUtils.VoiceCommandBlockedReason;
+
 public class PlayCommand extends ServerCommand {
     private static final int MAX_SEARCH_TRACKS = 5;
     // Find &t=<nums>, but don't capture &t=
@@ -55,8 +57,8 @@ public class PlayCommand extends ServerCommand {
             return;
         }
 
-        MusicUtils.VoiceCommandBlockedReason blocked = MusicUtils.voiceCommandBlocked(ctx);
-        if (blocked != MusicUtils.VoiceCommandBlockedReason.COMMAND_OK) {
+        VoiceCommandBlockedReason blocked = MusicUtils.voiceCommandBlocked(ctx);
+        if (blocked != VoiceCommandBlockedReason.COMMAND_OK && blocked != VoiceCommandBlockedReason.BOT_NOT_PLAYING) {
             event.getChannel().sendMessage(blocked.reason).queue();
             return;
         }
