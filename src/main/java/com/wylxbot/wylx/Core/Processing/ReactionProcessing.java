@@ -64,16 +64,6 @@ public class ReactionProcessing extends ListenerAdapter {
     private Role checkReactionForMenu(@NotNull GenericMessageReactionEvent event) {
         User selfUser = event.getJDA().getSelfUser();
 
-        try {
-            Message msg = event.getChannel().retrieveMessageById(event.getMessageId()).complete();
-            // Check if it's a reaction to a message Wylx sent
-            if (!msg.getAuthor().equals(selfUser)) {
-                return null;
-            }
-        } catch (InsufficientPermissionException e) {
-            // Couldn't get message, we should continue trying to get the menus anyways
-        }
-
         // Don't give roles to Wylx
         if (event.getUserIdLong() == selfUser.getIdLong()) {
             return null;
