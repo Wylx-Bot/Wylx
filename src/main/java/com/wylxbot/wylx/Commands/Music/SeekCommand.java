@@ -30,11 +30,6 @@ public class SeekCommand extends ServerCommand {
             return;
         }
 
-        if (ctx.musicManager().isNotPlaying()) {
-            event.getChannel().sendMessage("Wylx is not playing music right now!").queue();
-            return;
-        }
-
         MusicUtils.VoiceCommandBlockedReason blocked = MusicUtils.voiceCommandBlocked(ctx);
         if (blocked != MusicUtils.VoiceCommandBlockedReason.COMMAND_OK) {
             event.getChannel().sendMessage(blocked.reason).queue();

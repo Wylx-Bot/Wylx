@@ -31,6 +31,8 @@ public class ReactionProcessing extends ListenerAdapter {
                 if (e.getErrorResponse() == ErrorResponse.UNKNOWN_ROLE) {
                     removeRole(event, role);
                 }
+            } catch (HierarchyException e) {
+                System.err.println("Role is higher than Bot role");
             }
         }
     }
@@ -60,22 +62,7 @@ public class ReactionProcessing extends ListenerAdapter {
     }
 
     private Role checkReactionForMenu(@NotNull GenericMessageReactionEvent event) {
-        Message msg;
-
-        try {
-            msg = event.getChannel().retrieveMessageById(event.getMessageId()).complete();
-        } catch (InsufficientPermissionException e) {
-            System.err.println("No message history log");
-            // TODO: Should probably do smth about this
-            return null;
-        }
-
         User selfUser = event.getJDA().getSelfUser();
-
-        // Check if it's a reaction to a message Wylx sent
-        if (!msg.getAuthor().equals(selfUser)) {
-            return null;
-        }
 
         // Don't give roles to Wylx
         if (event.getUserIdLong() == selfUser.getIdLong()) {
