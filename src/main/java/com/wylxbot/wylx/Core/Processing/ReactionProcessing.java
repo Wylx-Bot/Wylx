@@ -39,8 +39,8 @@ public class ReactionProcessing extends ListenerAdapter {
             // Attempt to DM user that an error occurred
             user.getUser().openPrivateChannel().queue((var thread) ->
                 thread.sendMessage(
-                    "Was unable to assign the role `" + role.getName() + "` in `" + guild.getName() + "`. " +
-                    "This is because `" + role.getName() + "` is above me in the role list. " +
+                    "Was unable to assign the role `@" + role.getAsMention() + "` from `" + guild.getName() + "`. " +
+                    "This is because `@" + role.getAsMention() + "` is above me in the role list. " +
                     "Please contact an admin within `" + guild.getName() + "` server to fix this."
                 ).queue(null, new ErrorHandler().ignore(ErrorResponse.CANNOT_SEND_TO_USER))
             );
@@ -66,8 +66,8 @@ public class ReactionProcessing extends ListenerAdapter {
             // Attempt to DM user that an error occurred
             user.getUser().openPrivateChannel().queue((var thread) ->
                 thread.sendMessage(
-                    "Was unable to remove the role `" + role.getName() + "` in `" + guild.getName() + "`. " +
-                    "This is because `" + role.getName() + "` is above me in the role list. " +
+                    "Was unable to remove the role `@" + role.getAsMention() + "` from `" + guild.getName() + "`. " +
+                    "This is because `@" + role.getAsMention() + "` is above me in the role list. `" +
                     "Please contact an admin within `" + guild.getName() + "` server to fix this."
                 ).queue(null, new ErrorHandler().ignore(ErrorResponse.CANNOT_SEND_TO_USER))
             );
