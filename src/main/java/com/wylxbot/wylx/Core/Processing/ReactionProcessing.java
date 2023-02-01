@@ -10,6 +10,7 @@ import net.dv8tion.jda.api.events.message.MessageDeleteEvent;
 import net.dv8tion.jda.api.events.message.react.GenericMessageReactionEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionRemoveEvent;
+import net.dv8tion.jda.api.exceptions.ErrorHandler;
 import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import net.dv8tion.jda.api.exceptions.HierarchyException;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
@@ -22,36 +23,54 @@ public class ReactionProcessing extends ListenerAdapter {
     @Override
     public void onMessageReactionAdd(@NotNull MessageReactionAddEvent event) {
         Role role = checkReactionForMenu(event);
-        if (role != null) {
-            Member user = event.retrieveMember().complete();
-            Guild guild = event.getGuild();
-            try {
-                guild.addRoleToMember(user, role).complete();
-            } catch (ErrorResponseException e) {
-                if (e.getErrorResponse() == ErrorResponse.UNKNOWN_ROLE) {
-                    removeRole(event, role);
-                }
-            } catch (HierarchyException e) {
-                System.err.println("Role is higher than Bot role");
+        if (role == null) {
+            return;
+        }
+
+        Member user = event.retrieveMember().complete();
+        Guild guild = event.getGuild();
+        try {
+            guild.addRoleToMember(user, role).complete();
+        } catch (ErrorResponseException e) {
+            if (e.getErrorResponse() == ErrorResponse.UNKNOWN_ROLE) {
+                removeRole(event, role);
             }
+        } catch (HierarchyException e) {
+            // Attempt to DM user that an error occurred
+            user.getUser().openPrivateChannel().queue((var thread) ->
+                thread.sendMessage(
+                    "Was unable to assign the role `" + role.getName() + "` in `" + guild.getName() + "`. " +
+                    "This is because `" + role.getName() + "` is above me in the role list. " +
+                    "Please contact an admin within `" + guild.getName() + "` server to fix this."
+                ).queue(null, new ErrorHandler().ignore(ErrorResponse.CANNOT_SEND_TO_USER))
+            );
         }
     }
 
     @Override
     public void onMessageReactionRemove(@NotNull MessageReactionRemoveEvent event) {
         Role role = checkReactionForMenu(event);
-        if (role != null) {
-            Member user = event.retrieveMember().complete();
-            Guild guild = event.getGuild();
-            try {
-                guild.removeRoleFromMember(user, role).complete();
-            } catch (ErrorResponseException e) {
-                if (e.getErrorResponse() == ErrorResponse.UNKNOWN_ROLE) {
-                    removeRole(event, role);
-                }
-            } catch (HierarchyException e) {
-                System.err.println("Role is higher than Bot role");
+        if (role == null) {
+            return;
+        }
+
+        Member user = event.retrieveMember().complete();
+        Guild guild = event.getGuild();
+        try {
+            guild.removeRoleFromMember(user, role).complete();
+        } catch (ErrorResponseException e) {
+            if (e.getErrorResponse() == ErrorResponse.UNKNOWN_ROLE) {
+                removeRole(event, role);
             }
+        } catch (HierarchyException e) {
+            // Attempt to DM user that an error occurred
+            user.getUser().openPrivateChannel().queue((var thread) ->
+                thread.sendMessage(
+                    "Was unable to remove the role `" + role.getName() + "` in `" + guild.getName() + "`. " +
+                    "This is because `" + role.getName() + "` is above me in the role list. " +
+                    "Please contact an admin within `" + guild.getName() + "` server to fix this."
+                ).queue(null, new ErrorHandler().ignore(ErrorResponse.CANNOT_SEND_TO_USER))
+            );
         }
     }
 
