@@ -18,6 +18,8 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.requests.ErrorResponse;
 import org.jetbrains.annotations.NotNull;
 
+import java.text.MessageFormat;
+
 public class ReactionProcessing extends ListenerAdapter {
 
     @Override
@@ -34,16 +36,11 @@ public class ReactionProcessing extends ListenerAdapter {
         } catch (ErrorResponseException e) {
             if (e.getErrorResponse() == ErrorResponse.UNKNOWN_ROLE) {
                 removeRole(event, role);
+                dmErrorMessage(user, role, ReactionActionType.Assign, ReactionFailureReason.UnknownRole);
             }
         } catch (HierarchyException e) {
             // Attempt to DM user that an error occurred
-            user.getUser().openPrivateChannel().queue((var thread) ->
-                thread.sendMessage(
-                    "Was unable to assign the role `@" + role.getAsMention() + "` from `" + guild.getName() + "`. " +
-                    "This is because `@" + role.getAsMention() + "` is above me in the role list. " +
-                    "Please contact an admin within `" + guild.getName() + "` server to fix this."
-                ).queue(null, new ErrorHandler().ignore(ErrorResponse.CANNOT_SEND_TO_USER))
-            );
+            dmErrorMessage(user, role, ReactionActionType.Assign, ReactionFailureReason.Hierarchy);
         }
     }
 
@@ -61,17 +58,47 @@ public class ReactionProcessing extends ListenerAdapter {
         } catch (ErrorResponseException e) {
             if (e.getErrorResponse() == ErrorResponse.UNKNOWN_ROLE) {
                 removeRole(event, role);
+                dmErrorMessage(user, role, ReactionActionType.Remove, ReactionFailureReason.UnknownRole);
             }
         } catch (HierarchyException e) {
             // Attempt to DM user that an error occurred
-            user.getUser().openPrivateChannel().queue((var thread) ->
-                thread.sendMessage(
-                    "Was unable to remove the role `@" + role.getAsMention() + "` from `" + guild.getName() + "`. " +
-                    "This is because `@" + role.getAsMention() + "` is above me in the role list. `" +
-                    "Please contact an admin within `" + guild.getName() + "` server to fix this."
-                ).queue(null, new ErrorHandler().ignore(ErrorResponse.CANNOT_SEND_TO_USER))
-            );
+            dmErrorMessage(user, role, ReactionActionType.Remove, ReactionFailureReason.Hierarchy);
         }
+    }
+
+
+    private enum ReactionActionType {
+        Assign,
+        Remove,
+    }
+
+    private enum ReactionFailureReason {
+        Hierarchy,
+        UnknownRole
+    }
+
+    private void dmErrorMessage(Member user, Role role, ReactionActionType type, ReactionFailureReason reason) {
+        Guild guild = user.getGuild();
+        String typeStr = switch(type) {
+            case Assign -> "assign";
+            case Remove -> "remove";
+        };
+
+        String reasonStr = switch(reason) {
+            case Hierarchy -> "is above me in the role list";
+            case UnknownRole -> "does not exist anymore";
+        };
+
+        String msg = MessageFormat.format(
+                "Was unable to {0} the role `@{1}` from `{2}`. " +
+                "This is because `@{1}` {3}.\n" +
+                "Please contact an admin from `{2}` to fix this.",
+                typeStr, role.getName(), guild.getName(), reasonStr);
+
+        user.getUser().openPrivateChannel().queue((var thread) ->
+                thread.sendMessage(msg).queue(null,
+                        new ErrorHandler().ignore(ErrorResponse.CANNOT_SEND_TO_USER))
+        );
     }
 
     private void removeRole(@NotNull GenericMessageReactionEvent event, Role roleToRemove) {
