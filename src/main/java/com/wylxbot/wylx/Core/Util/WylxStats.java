@@ -89,4 +89,10 @@ public class WylxStats {
     public double getAverageNoOpTime() {
         return stats.averageNoOpTime;
     }
+
+    public void close() {
+        writeTimer.cancel();
+        DatabaseManager db = Wylx.getInstance().getDb();
+        db.setCmdStats(stats);
+    }
 }

@@ -150,4 +150,8 @@ public class MessageProcessing extends ListenerAdapter {
 
         return config.betaPrefix;
     }
+
+    public void close() {
+        stats.close();
+    }
 }
