@@ -1,6 +1,7 @@
 package com.wylxbot.wylx.Core.Processing;
 
 import com.wylxbot.wylx.Commands.Roles.RolesUtil.RoleMenu;
+import com.wylxbot.wylx.Database.Pojos.DBRoleMenu;
 import com.wylxbot.wylx.Wylx;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
@@ -98,9 +99,10 @@ public class ReactionProcessing extends ListenerAdapter {
     }
 
     private void removeRole(@NotNull GenericMessageReactionEvent event, Role roleToRemove) {
-        DiscordRoleMenu roleDb = Wylx.getInstance().getDb().getRoleMenu(event.getMessageId());
-        RoleMenu menu = roleDb.getSettingOrNull(RoleMenuIdentifiers.ROLE_MENU);
+        DBRoleMenu roleDb = Wylx.getInstance().getDb().getRoleMenu(event.getMessageId());
+        RoleMenu menu = new RoleMenu(roleDb.messageId, roleDb.channelId, roleDb.guildId, roleDb.title, roleDb.roles);
         menu.removeReaction(roleToRemove.getName());
+        Wylx.getInstance().getDb().setRoleMenu(event.getMessageId(), menu.getDBEntry());
     }
 
     private Role checkReactionForMenu(@NotNull GenericMessageReactionEvent event) {
@@ -112,13 +114,13 @@ public class ReactionProcessing extends ListenerAdapter {
         }
 
         // Check for menu
-        DiscordRoleMenu roleDb = Wylx.getInstance().getDb().getRoleMenu(event.getMessageId());
-        RoleMenu menu = roleDb.getSettingOrNull(RoleMenuIdentifiers.ROLE_MENU);
-        if (menu == null) {
+        DBRoleMenu roleDb = Wylx.getInstance().getDb().getRoleMenu(event.getMessageId());
+        if (roleDb == null) {
             return null;
         }
 
         EmojiUnion emoji = event.getEmoji();
+        RoleMenu menu = new RoleMenu(roleDb.messageId, roleDb.channelId, roleDb.guildId, roleDb.title, roleDb.roles);
         return menu.getReactionFromEmote(emoji);
     }
 }

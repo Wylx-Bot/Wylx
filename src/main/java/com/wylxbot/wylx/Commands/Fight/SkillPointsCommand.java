@@ -80,9 +80,7 @@ public class SkillPointsCommand extends ServerCommand {
     }
 
     private MessageEmbed buildEmbedPersonal(Guild guild, Member member){
-        DatabaseManager db = Wylx.getInstance().getDb();
-        DiscordUser dbUser = db.getUser(member.getId());
-        FightUserStats stats = dbUser.getSetting(UserIdentifiers.FightStats);
+        FightUserStats stats = FightUserStats.getUserStats(member);
         EmbedBuilder embed = new EmbedBuilder();
 
         int exp = FightUtil.calcEXPForLevel(stats.getLvl());
@@ -112,13 +110,10 @@ public class SkillPointsCommand extends ServerCommand {
     }
 
     private MessageEmbed buildEmbedOther(Guild guild, Member member){
-        DatabaseManager db = Wylx.getInstance().getDb();
-        DiscordUser dbUser = db.getUser(member.getId());
-        FightUserStats stats = dbUser.getSetting(UserIdentifiers.FightStats);
+        FightUserStats stats = FightUserStats.getUserStats(member);
         EmbedBuilder embed = new EmbedBuilder();
 
         int exp = FightUtil.calcEXPForLevel(stats.getLvl());
-        int pointsToSpend = stats.getLvl() - stats.getUsedPoints();
 
         embed.setColor(guild.getSelfMember().getColor());
         embed.setAuthor(member.getEffectiveName() + "'s stats in " + guild.getName(),

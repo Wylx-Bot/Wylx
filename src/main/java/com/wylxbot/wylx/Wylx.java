@@ -56,7 +56,7 @@ public class Wylx {
 
         jda = JDABuilder.createDefault(token)
                 .enableIntents(GatewayIntent.MESSAGE_CONTENT)
-                .addEventListeners(new MessageProcessing(),
+                .addEventListeners(new MessageProcessing(db),
                         new VoiceChannelProcessing(),
                         new ReactionProcessing())
                 .build();

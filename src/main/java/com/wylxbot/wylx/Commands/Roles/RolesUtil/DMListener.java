@@ -102,9 +102,9 @@ public class DMListener extends ListenerAdapter {
             default -> { return; }
         }
 
+
         // Save changes
-        Wylx.getInstance().getDb().getRoleMenu(menu.getMessageID())
-                .setSetting(RoleMenuIdentifiers.ROLE_MENU, menu);
+        Wylx.getInstance().getDb().setRoleMenu(menu.getMessageID(), menu.getDBEntry());
 
         // Display new menu
         try {

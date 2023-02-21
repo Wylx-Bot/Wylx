@@ -3,6 +3,7 @@ package com.wylxbot.wylx.Commands.Roles;
 import com.wylxbot.wylx.Commands.Roles.RolesUtil.*;
 import com.wylxbot.wylx.Core.Events.Commands.CommandContext;
 import com.wylxbot.wylx.Core.Events.Commands.ServerCommand;
+import com.wylxbot.wylx.Database.Pojos.DBRoleMenu;
 import com.wylxbot.wylx.Wylx;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
@@ -27,14 +28,14 @@ public class ModifyRoleMenuCommand extends ServerCommand {
             return;
         }
 
-        DiscordRoleMenu roleDb = Wylx.getInstance().getDb().getRoleMenu(ctx.args()[1]);
-        RoleMenu menu = roleDb.getSettingOrNull(RoleMenuIdentifiers.ROLE_MENU);
-        if (menu == null) {
+        DBRoleMenu roleDb = Wylx.getInstance().getDb().getRoleMenu(ctx.args()[1]);
+        if (roleDb == null) {
             ctx.event().getMessage().reply("Could not find menu").queue();
             return;
         }
 
-        if (!menu.getGuildID().equals(ctx.guildID())) {
+        RoleMenu menu = new RoleMenu(roleDb.messageId, roleDb.channelId, roleDb.guildId, roleDb.title, roleDb.roles);
+        if (!roleDb.guildId.equals(ctx.guildID())) {
             String str = String.format("Menu is from another server, please run %smodifyRoleMenu from that server.", ctx.prefix());
             ctx.event().getMessage().reply(str).queue();
             return;

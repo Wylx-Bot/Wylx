@@ -62,8 +62,7 @@ public class NewRoleMenuCommand extends ServerCommand {
 
         try {
             RoleMenu menu = new RoleMenu(newMessage.getId(), newChannel.getId(), event.getGuild().getId());
-            Wylx.getInstance().getDb().getRoleMenu(newMessage.getId())
-                    .setSetting(RoleMenuIdentifiers.ROLE_MENU, menu);
+            Wylx.getInstance().getDb().setRoleMenu(newMessage.getId(), menu.getDBEntry());
         } catch (IllegalArgumentException | ErrorResponseException e) {
             // This really shouldn't happen, as we know channel + message exist
             logger.error("Failed to create new Role Menu");

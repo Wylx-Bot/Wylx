@@ -1,6 +1,10 @@
 package com.wylxbot.wylx.Database;
 
 import com.mongodb.client.MongoCollection;
+import com.mongodb.client.model.InsertOneOptions;
+import com.mongodb.client.model.ReplaceOptions;
+import com.mongodb.client.model.UpdateOptions;
+import com.mongodb.client.model.Updates;
 import com.wylxbot.wylx.Core.WylxEnvConfig;
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
@@ -12,8 +16,8 @@ import org.bson.Document;
 import org.bson.codecs.configuration.CodecProvider;
 import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.codecs.pojo.PojoCodecProvider;
+import org.bson.conversions.Bson;
 
-import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
 import static com.mongodb.MongoClientSettings.getDefaultCodecRegistry;
@@ -72,31 +76,32 @@ public class DatabaseManager {
         var iter = serversCollection.find(eq("_id", serverId));
         DBServer server = iter.first();
         if (server == null) {
-            server = new DBServer(
-                    serverId,
-                    new HashMap<>(),
-                    new HashMap<>(),
-                    20,
-                    "$");
+            server = new DBServer(serverId);
             serversCollection.insertOne(server);
         }
 
         return server;
     }
 
+    public void setServer(String serverId, DBServer replace) {
+        Bson filter = eq("_id", serverId);
+        serversCollection.replaceOne(filter, replace);
+    }
+
     public DBUser getUser(String userID) {
         var iter = usersCollection.find(eq("_id", userID));
         DBUser user = iter.first();
         if (user == null) {
-            user = new DBUser(
-                    userID,
-                    "LOL",
-                    false,
-                    new DBUserFightStats(0, 0, 0, 0, 0, 0));
+            user = new DBUser(userID);
             usersCollection.insertOne(user);
         }
 
         return user;
+    }
+
+    public void setUser(String userID, DBUser replace) {
+        Bson filter = eq("_id", userID);
+        usersCollection.replaceOne(filter, replace);
     }
 
     public DBRoleMenu getRoleMenu(String messageID) {
@@ -104,22 +109,26 @@ public class DatabaseManager {
         return iter.first();
     }
 
-    public DBCommandStats getGlobal() {
-        var iter = statsCollection.find(eq("_id", "STATS"));
+    public void setRoleMenu(String messageID, DBRoleMenu replace) {
+        Bson filter = eq("_id", messageID);
+        roleMenuCollection.replaceOne(filter, replace);
+    }
+
+    public DBCommandStats getCmdStats() {
+        var iter = statsCollection.find(eq("_id", DBCommandStats.KEY_ID));
         DBCommandStats stats = iter.first();
         if (stats == null) {
-            stats = new DBCommandStats(
-                "STATS",
-                    0,
-                    0,
-                    0,
-                    0,
-                    0,
-                    0
-            );
+            stats = new DBCommandStats();
             statsCollection.insertOne(stats);
         }
 
         return stats;
+    }
+
+    public void setCmdStats(DBCommandStats stats) {
+        statsCollection.replaceOne(
+                eq("_id", DBCommandStats.KEY_ID),
+                stats,
+                new ReplaceOptions().upsert(true));
     }
 }

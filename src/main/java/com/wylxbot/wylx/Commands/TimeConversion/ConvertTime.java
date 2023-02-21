@@ -1,6 +1,7 @@
 package com.wylxbot.wylx.Commands.TimeConversion;
 
 import com.wylxbot.wylx.Core.Events.SilentEvents.SilentEvent;
+import com.wylxbot.wylx.Database.Pojos.DBUser;
 import com.wylxbot.wylx.Wylx;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
@@ -24,16 +25,16 @@ public class ConvertTime extends SilentEvent {
     // TODO: Only convert to the timezones that people in the server have
     @Override
     public void runEvent(MessageReceivedEvent event, String prefix) {
-        DiscordUser dUser = Wylx.getInstance().getDb().getUser(event.getAuthor().getId());
-        Timezone userTimezone = Timezone.getTimezone(dUser.getSetting(UserIdentifiers.Timezone));
+        DBUser dbUser = Wylx.getInstance().getDb().getUser(event.getAuthor().getId());
+        Timezone userTimezone = Timezone.getTimezone(dbUser.timezone);
 
         // Cant do conversions if we don't know the user's timezone
         if(userTimezone == null) {
             // Don't prompt a user more than once (spam)
-            Boolean timezonePrompted = dUser.getSetting(UserIdentifiers.TimezonePrompted);
-            if(timezonePrompted) return;
+            if(dbUser.timezonePrompted) return;
             // Set it so the user doesn't get prompted multiple times
-            dUser.setSetting(UserIdentifiers.TimezonePrompted, true);
+            dbUser.timezonePrompted = true;
+            Wylx.getInstance().getDb().setUser(event.getAuthor().getId(), dbUser);
 
             event.getMessage().reply("Please set your timezone using " + prefix + "settimezone <timezone>").queue();
             return;

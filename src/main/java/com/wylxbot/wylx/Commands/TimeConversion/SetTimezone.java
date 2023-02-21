@@ -2,6 +2,7 @@ package com.wylxbot.wylx.Commands.TimeConversion;
 
 import com.wylxbot.wylx.Core.Events.Commands.CommandContext;
 import com.wylxbot.wylx.Core.Events.Commands.ServerCommand;
+import com.wylxbot.wylx.Database.Pojos.DBUser;
 import com.wylxbot.wylx.Wylx;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -36,8 +37,9 @@ public class SetTimezone extends ServerCommand {
             return;
         }
 
-        DiscordUser dUser = Wylx.getInstance().getDb().getUser(ctx.authorID());
-        dUser.setSetting(UserIdentifiers.Timezone, timezone.abrv);
+        DBUser dUser = Wylx.getInstance().getDb().getUser(ctx.authorID());
+        dUser.timezone = timezone.abrv;
+        Wylx.getInstance().getDb().setUser(ctx.authorID(), dUser);
         ctx.event().getChannel().sendMessage("Set Timezone to: " + timezone.abrv).queue();
     }
 
