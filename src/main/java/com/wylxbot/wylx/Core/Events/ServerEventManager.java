@@ -3,8 +3,6 @@ package com.wylxbot.wylx.Core.Events;
 import com.wylxbot.wylx.Core.Processing.MessageProcessing;
 import com.wylxbot.wylx.Wylx;
 import com.wylxbot.wylx.Database.DatabaseManager;
-import com.wylxbot.wylx.Database.DbElements.DiscordServer;
-import com.wylxbot.wylx.Database.DbElements.ServerIdentifiers;
 
 import java.util.HashMap;
 

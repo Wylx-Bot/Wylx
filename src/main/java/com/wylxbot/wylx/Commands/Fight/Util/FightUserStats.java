@@ -2,8 +2,6 @@ package com.wylxbot.wylx.Commands.Fight.Util;
 
 import com.wylxbot.wylx.Wylx;
 import com.wylxbot.wylx.Database.DatabaseManager;
-import com.wylxbot.wylx.Database.DbElements.DiscordUser;
-import com.wylxbot.wylx.Database.DbElements.UserIdentifiers;
 import net.dv8tion.jda.api.entities.Member;
 
 public class FightUserStats {

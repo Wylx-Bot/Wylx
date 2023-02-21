@@ -1,44 +1,55 @@
 package com.wylxbot.wylx.Database;
 
+import com.mongodb.client.MongoCollection;
 import com.wylxbot.wylx.Core.WylxEnvConfig;
-import com.wylxbot.wylx.Database.DbElements.DiscordGlobal;
-import com.wylxbot.wylx.Database.DbElements.DiscordRoleMenu;
-import com.wylxbot.wylx.Database.DbElements.DiscordServer;
-import com.wylxbot.wylx.Database.DbElements.DiscordUser;
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoDatabase;
+import com.wylxbot.wylx.Database.Pojos.*;
 import org.bson.Document;
+import org.bson.codecs.configuration.CodecProvider;
+import org.bson.codecs.configuration.CodecRegistry;
+import org.bson.codecs.pojo.PojoCodecProvider;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
+import static com.mongodb.MongoClientSettings.getDefaultCodecRegistry;
+import static com.mongodb.client.model.Filters.eq;
+import static org.bson.codecs.configuration.CodecRegistries.fromProviders;
+import static org.bson.codecs.configuration.CodecRegistries.fromRegistries;
+
 public class DatabaseManager {
 
-    private final ConnectionString connectionString;
+    private static final String POJOS_PACKAGE = "com.wylxbot.wylx.Database.Pojos";
+
     private final MongoClient client;
-    private final HashMap<String, DiscordServer> serverCache = new HashMap<>();
-    private final HashMap<String, DiscordUser> userCache = new HashMap<>();
-    private final DiscordGlobal globalDB;
-    private final HashMap<String, DiscordRoleMenu> roleMenuCache = new HashMap<>();
+    private final MongoCollection<DBRoleMenu> roleMenuCollection;
+    private final MongoCollection<DBServer> serversCollection;
+    private final MongoCollection<DBUser> usersCollection;
+    private final MongoCollection<DBCommandStats> statsCollection;
 
     public DatabaseManager(WylxEnvConfig config) {
-        connectionString = new ConnectionString(config.dbURL);
-        client = getMongoClient();
-        globalDB = new DiscordGlobal(client);
-    }
-
-    private MongoClient getMongoClient() {
-        MongoClientSettings clientSettings = MongoClientSettings.builder()
-                .applyConnectionString(connectionString)
+        ConnectionString connStr = new ConnectionString(config.dbURL);
+        client = MongoClients.create(MongoClientSettings.builder()
+                .applyConnectionString(connStr)
                 .applicationName("Wylx")
                 .applyToConnectionPoolSettings(
-                        builder -> builder.maxWaitTime(1000, TimeUnit.MILLISECONDS))
-                .build();
-        return MongoClients.create(clientSettings);
+                        builder -> builder.maxWaitTime(1000, TimeUnit.MILLISECONDS)
+                )
+                .build());
+
+        // Combine default codec with our POJOs to represent data objects
+        CodecProvider pojoCodecProvider = PojoCodecProvider.builder().register(POJOS_PACKAGE).build();
+        CodecRegistry pojoCodecRegistry = fromRegistries(getDefaultCodecRegistry(), fromProviders(pojoCodecProvider));
+        MongoDatabase database = client.getDatabase("Wylx").withCodecRegistry(pojoCodecRegistry);
+
+        roleMenuCollection = database.getCollection("Role Menus", DBRoleMenu.class);
+        serversCollection = database.getCollection("Servers", DBServer.class);
+        usersCollection = database.getCollection("Users", DBUser.class);
+        statsCollection = database.getCollection("Stats", DBCommandStats.class);
     }
 
     public void readCluster() {
@@ -57,33 +68,58 @@ public class DatabaseManager {
         System.out.println(" --- END OF EXISTING DATABASES ---");
     }
 
-    public ArrayList<DiscordServer> getExistingServers() {
-        ArrayList<DiscordServer> servers = new ArrayList<>();
-        client.listDatabaseNames().forEach(name -> servers.add(new DiscordServer(client, name)));
-        return servers;
+    public DBServer getServer(String serverId) {
+        var iter = serversCollection.find(eq("_id", serverId));
+        DBServer server = iter.first();
+        if (server == null) {
+            server = new DBServer(
+                    serverId,
+                    new HashMap<>(),
+                    new HashMap<>(),
+                    20,
+                    "$");
+            serversCollection.insertOne(server);
+        }
+
+        return server;
     }
 
-    public DiscordServer getServer(String serverId) {
-        if(!serverCache.containsKey(serverId))
-            serverCache.put(serverId, new DiscordServer(client, serverId));
+    public DBUser getUser(String userID) {
+        var iter = usersCollection.find(eq("_id", userID));
+        DBUser user = iter.first();
+        if (user == null) {
+            user = new DBUser(
+                    userID,
+                    "LOL",
+                    false,
+                    new DBUserFightStats(0, 0, 0, 0, 0, 0));
+            usersCollection.insertOne(user);
+        }
 
-        return serverCache.get(serverId);
+        return user;
     }
 
-    public DiscordUser getUser(String userID) {
-        if(!userCache.containsKey(userID))
-            userCache.put(userID, new DiscordUser(client, userID));
-
-        return userCache.get(userID);
+    public DBRoleMenu getRoleMenu(String messageID) {
+        var iter = roleMenuCollection.find(eq("_id", messageID));
+        return iter.first();
     }
 
-    public DiscordRoleMenu getRoleMenu(String messageID) {
-        if(!roleMenuCache.containsKey(messageID))
-            roleMenuCache.put(messageID, new DiscordRoleMenu(client, messageID));
-        return roleMenuCache.get(messageID);
-    }
+    public DBCommandStats getGlobal() {
+        var iter = statsCollection.find(eq("_id", "STATS"));
+        DBCommandStats stats = iter.first();
+        if (stats == null) {
+            stats = new DBCommandStats(
+                "STATS",
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0
+            );
+            statsCollection.insertOne(stats);
+        }
 
-    public DiscordGlobal getGlobal() {
-        return globalDB;
+        return stats;
     }
 }

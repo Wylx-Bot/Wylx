@@ -2,8 +2,6 @@ package com.wylxbot.wylx.Commands.TimeConversion;
 
 import com.wylxbot.wylx.Core.Events.SilentEvents.SilentEvent;
 import com.wylxbot.wylx.Wylx;
-import com.wylxbot.wylx.Database.DbElements.DiscordUser;
-import com.wylxbot.wylx.Database.DbElements.UserIdentifiers;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import java.util.regex.Matcher;

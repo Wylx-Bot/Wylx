@@ -2,8 +2,6 @@ package com.wylxbot.wylx.Commands.ServerSettings;
 
 import com.wylxbot.wylx.Core.Events.Commands.CommandContext;
 import com.wylxbot.wylx.Core.Events.Commands.ServerCommand;
-import com.wylxbot.wylx.Database.DbElements.DiscordServer;
-import com.wylxbot.wylx.Database.DbElements.ServerIdentifiers;
 import net.dv8tion.jda.api.Permission;
 
 public class SetPrefix extends ServerCommand {

@@ -4,7 +4,6 @@ import com.wylxbot.wylx.Core.Events.Commands.CommandContext;
 import com.wylxbot.wylx.Core.Events.Commands.ServerCommand;
 import com.wylxbot.wylx.Commands.Roles.RolesUtil.RoleMenu;
 import com.wylxbot.wylx.Wylx;
-import com.wylxbot.wylx.Database.DbElements.RoleMenuIdentifiers;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;

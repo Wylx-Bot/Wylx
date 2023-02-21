@@ -3,7 +3,6 @@ package com.wylxbot.wylx.Commands.Music;
 import com.wylxbot.wylx.Core.Events.Commands.CommandContext;
 import com.wylxbot.wylx.Core.Events.Commands.ServerCommand;
 import com.wylxbot.wylx.Core.Music.MusicUtils;
-import com.wylxbot.wylx.Database.DbElements.ServerIdentifiers;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 public class VolumeCommand extends ServerCommand {

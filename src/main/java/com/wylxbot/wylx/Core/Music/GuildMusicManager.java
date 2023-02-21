@@ -2,8 +2,6 @@ package com.wylxbot.wylx.Core.Music;
 
 import com.wylxbot.wylx.Core.Util.Helper;
 import com.wylxbot.wylx.Wylx;
-import com.wylxbot.wylx.Database.DbElements.DiscordServer;
-import com.wylxbot.wylx.Database.DbElements.ServerIdentifiers;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter;

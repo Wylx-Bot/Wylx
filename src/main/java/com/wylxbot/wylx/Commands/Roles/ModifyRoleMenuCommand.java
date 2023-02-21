@@ -4,19 +4,9 @@ import com.wylxbot.wylx.Commands.Roles.RolesUtil.*;
 import com.wylxbot.wylx.Core.Events.Commands.CommandContext;
 import com.wylxbot.wylx.Core.Events.Commands.ServerCommand;
 import com.wylxbot.wylx.Wylx;
-import com.wylxbot.wylx.Database.DbElements.DiscordRoleMenu;
-import com.wylxbot.wylx.Database.DbElements.RoleMenuIdentifiers;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.exceptions.ErrorResponseException;
-import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import org.jetbrains.annotations.NotNull;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 
 public class ModifyRoleMenuCommand extends ServerCommand {
     ModifyRoleMenuCommand() {

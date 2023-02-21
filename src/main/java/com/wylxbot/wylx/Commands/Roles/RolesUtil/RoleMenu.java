@@ -1,7 +1,6 @@
 package com.wylxbot.wylx.Commands.Roles.RolesUtil;
 
 import com.wylxbot.wylx.Wylx;
-import com.wylxbot.wylx.Database.DbElements.ServerIdentifiers;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;

@@ -5,8 +5,6 @@ import com.wylxbot.wylx.Core.Events.Commands.CommandContext;
 import com.wylxbot.wylx.Core.Events.Commands.ServerCommand;
 import com.wylxbot.wylx.Core.Util.Helper;
 import com.wylxbot.wylx.Database.DatabaseManager;
-import com.wylxbot.wylx.Database.DbElements.DiscordUser;
-import com.wylxbot.wylx.Database.DbElements.UserIdentifiers;
 import com.wylxbot.wylx.Wylx;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;

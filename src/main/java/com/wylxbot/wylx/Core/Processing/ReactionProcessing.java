@@ -2,18 +2,14 @@ package com.wylxbot.wylx.Core.Processing;
 
 import com.wylxbot.wylx.Commands.Roles.RolesUtil.RoleMenu;
 import com.wylxbot.wylx.Wylx;
-import com.wylxbot.wylx.Database.DbElements.DiscordRoleMenu;
-import com.wylxbot.wylx.Database.DbElements.RoleMenuIdentifiers;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
-import net.dv8tion.jda.api.events.message.MessageDeleteEvent;
 import net.dv8tion.jda.api.events.message.react.GenericMessageReactionEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionRemoveEvent;
 import net.dv8tion.jda.api.exceptions.ErrorHandler;
 import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import net.dv8tion.jda.api.exceptions.HierarchyException;
-import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.requests.ErrorResponse;
 import org.jetbrains.annotations.NotNull;
