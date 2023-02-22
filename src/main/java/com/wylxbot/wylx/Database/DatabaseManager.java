@@ -30,9 +30,9 @@ public class DatabaseManager {
     private static final String POJOS_PACKAGE = "com.wylxbot.wylx.Database.Pojos";
 
     private final MongoClient client;
-    private final MongoCollection<DBRoleMenu> roleMenuCollection;
-    private final MongoCollection<DBServer> serversCollection;
-    private final MongoCollection<DBUser> usersCollection;
+    private final DatabaseCollection<DBRoleMenu> roleMenuCollection;
+    private final DatabaseCollection<DBServer> serversCollection;
+    private final DatabaseCollection<DBUser> usersCollection;
     private final MongoCollection<DBCommandStats> statsCollection;
 
     public DatabaseManager(WylxEnvConfig config) {
@@ -50,9 +50,9 @@ public class DatabaseManager {
         CodecRegistry pojoCodecRegistry = fromRegistries(getDefaultCodecRegistry(), fromProviders(pojoCodecProvider));
         MongoDatabase database = client.getDatabase("Wylx").withCodecRegistry(pojoCodecRegistry);
 
-        roleMenuCollection = database.getCollection("Role Menus", DBRoleMenu.class);
-        serversCollection = database.getCollection("Servers", DBServer.class);
-        usersCollection = database.getCollection("Users", DBUser.class);
+        roleMenuCollection = new DatabaseCollection<>((id) -> null, database, "Role Menus", DBRoleMenu.class);
+        serversCollection = new DatabaseCollection<>(DBServer::new, database, "Servers", DBServer.class);
+        usersCollection = new DatabaseCollection<>(DBUser::new, database, "Users", DBUser.class);
         statsCollection = database.getCollection("Stats", DBCommandStats.class);
     }
 
@@ -73,45 +73,27 @@ public class DatabaseManager {
     }
 
     public DBServer getServer(String serverId) {
-        var iter = serversCollection.find(eq("_id", serverId));
-        DBServer server = iter.first();
-        if (server == null) {
-            server = new DBServer(serverId);
-            serversCollection.insertOne(server);
-        }
-
-        return server;
+        return serversCollection.getEntryOrDefault(serverId);
     }
 
     public void setServer(String serverId, DBServer replace) {
-        Bson filter = eq("_id", serverId);
-        serversCollection.replaceOne(filter, replace);
+        serversCollection.setEntry(serverId, replace);
     }
 
     public DBUser getUser(String userID) {
-        var iter = usersCollection.find(eq("_id", userID));
-        DBUser user = iter.first();
-        if (user == null) {
-            user = new DBUser(userID);
-            usersCollection.insertOne(user);
-        }
-
-        return user;
+        return usersCollection.getEntryOrDefault(userID);
     }
 
     public void setUser(String userID, DBUser replace) {
-        Bson filter = eq("_id", userID);
-        usersCollection.replaceOne(filter, replace);
+        usersCollection.setEntry(userID, replace);
     }
 
     public DBRoleMenu getRoleMenu(String messageID) {
-        var iter = roleMenuCollection.find(eq("_id", messageID));
-        return iter.first();
+        return roleMenuCollection.getEntryOrNull(messageID);
     }
 
     public void setRoleMenu(String messageID, DBRoleMenu replace) {
-        Bson filter = eq("_id", messageID);
-        roleMenuCollection.replaceOne(filter, replace);
+        roleMenuCollection.setEntry(messageID, replace);
     }
 
     public DBCommandStats getCmdStats() {
