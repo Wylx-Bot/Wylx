@@ -29,7 +29,7 @@ public class RoleMenu {
     private final ArrayList<RoleReaction> reactions = new ArrayList<>();
 
     public RoleMenu(DBRoleMenu dbEntry) {
-        this(dbEntry.title, dbEntry.messageId, dbEntry.channelId, dbEntry.guildId, dbEntry.roles);
+        this(dbEntry.title, dbEntry._id, dbEntry.channelId, dbEntry.guildId, dbEntry.roles);
     }
 
     public RoleMenu(String messageID, String channelID, String guildID) throws IllegalArgumentException, ErrorResponseException {
@@ -211,7 +211,7 @@ public class RoleMenu {
         });
 
         DBRoleMenu ret = new DBRoleMenu();
-        ret.messageId = messageID;
+        ret._id = messageID;
         ret.channelId = channelID;
         ret.guildId = guildID;
         ret.title = title;

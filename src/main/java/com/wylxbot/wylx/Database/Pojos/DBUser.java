@@ -1,21 +1,9 @@
 package com.wylxbot.wylx.Database.Pojos;
 
-import org.bson.codecs.pojo.annotations.BsonId;
+import com.wylxbot.wylx.Database.CollectionPojo;
 
-public class DBUser {
-    @BsonId()
-    public String userId;
-    public String timezone;
-    public boolean timezonePrompted;
-    public DBUserFightStats fightStats;
-
-    // Default constructor for POJO codec
-    public DBUser() {}
-
-    public DBUser(String userId) {
-        this.userId = userId;
-        this.timezone = "LOL";
-        this.timezonePrompted = false;
-        this.fightStats = new DBUserFightStats();
-    }
+public class DBUser extends CollectionPojo {
+    public String timezone = "LOL";
+    public boolean timezonePrompted = false;
+    public DBUserFightStats fightStats = new DBUserFightStats();
 }

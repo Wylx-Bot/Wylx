@@ -50,7 +50,7 @@ public class DatabaseManager {
         CodecRegistry pojoCodecRegistry = fromRegistries(getDefaultCodecRegistry(), fromProviders(pojoCodecProvider));
         MongoDatabase database = client.getDatabase("Wylx").withCodecRegistry(pojoCodecRegistry);
 
-        roleMenuCollection = new DatabaseCollection<>((id) -> null, database, "Role Menus", DBRoleMenu.class);
+        roleMenuCollection = new DatabaseCollection<>(() -> null, database, "Role Menus", DBRoleMenu.class);
         serversCollection = new DatabaseCollection<>(DBServer::new, database, "Servers", DBServer.class);
         usersCollection = new DatabaseCollection<>(DBUser::new, database, "Users", DBUser.class);
         statsCollection = database.getCollection("Stats", DBCommandStats.class);
