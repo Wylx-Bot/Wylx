@@ -2,6 +2,7 @@ package com.wylxbot.wylx.Commands.DND;
 
 import com.wylxbot.wylx.Core.Events.Commands.CommandContext;
 import com.wylxbot.wylx.Core.Events.Commands.ServerCommand;
+import com.wylxbot.wylx.Core.Events.Commands.ThreadedCommand;
 import net.dv8tion.jda.api.utils.FileUpload;
 import org.scilab.forge.jlatexmath.TeXConstants;
 import org.scilab.forge.jlatexmath.TeXFormula;
@@ -12,7 +13,7 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-public class LaTexCommand extends ServerCommand {
+public class LaTexCommand extends ThreadedCommand {
     public LaTexCommand() {
         super("latex", CommandPermission.EVERYONE, """
                 Generates an image based on the provided LaTex formula string
@@ -21,7 +22,7 @@ public class LaTexCommand extends ServerCommand {
     }
 
     @Override
-    public void runCommand(CommandContext ctx) {
+    public void runCommandThread(CommandContext ctx) {
         String latex = ctx.parsedMsg().substring(ctx.parsedMsg().indexOf(' ') + 1);
         TeXFormula formula;
 
