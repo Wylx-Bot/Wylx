@@ -15,9 +15,9 @@ public class DatabaseCollection<T extends CollectionPojo> {
     private final Supplier<T> defaultSupplier;
     private final MongoCollection<T> collection;
 
-    public DatabaseCollection(Supplier<T> defaultSupplier, MongoDatabase db, String name, Class<T> clazz) {
+    public DatabaseCollection(Supplier<T> defaultSupplier, MongoDatabase db, String name, Class<T> collectionType) {
         this.defaultSupplier = defaultSupplier;
-        this.collection = db.getCollection(name, clazz);
+        this.collection = db.getCollection(name, collectionType);
     }
 
     public T getEntryOrNull(String id) {
