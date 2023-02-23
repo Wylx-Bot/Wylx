@@ -28,12 +28,16 @@ public class RoleMenu {
 
     private final ArrayList<RoleReaction> reactions = new ArrayList<>();
 
+    public RoleMenu(DBRoleMenu dbEntry) {
+        this(dbEntry.title, dbEntry.messageId, dbEntry.channelId, dbEntry.guildId, dbEntry.roles);
+    }
+
     public RoleMenu(String messageID, String channelID, String guildID) throws IllegalArgumentException, ErrorResponseException {
         this("Role Selection", messageID, channelID, guildID, null);
         updateMessage();
     }
 
-    public RoleMenu(String title, String messageID, String channelID, String guildID, Map<String, DBRoleMenuRole> roles) throws IllegalArgumentException, ErrorResponseException {
+    private RoleMenu(String title, String messageID, String channelID, String guildID, Map<String, DBRoleMenuRole> roles) throws IllegalArgumentException, ErrorResponseException {
         this.title = title;
         this.messageID = messageID;
         this.channelID = channelID;

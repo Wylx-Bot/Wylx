@@ -2,6 +2,8 @@ package com.wylxbot.wylx.Database;
 
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.ReplaceOptions;
+import org.bson.conversions.Bson;
 
 import java.util.function.Function;
 
@@ -32,6 +34,8 @@ public class DatabaseCollection<T> {
     }
 
     public void setEntry(String id, T entry) {
-        collection.replaceOne(eq("_id", id), entry);
+        Bson filter = eq("_id", id);
+        ReplaceOptions opts = new ReplaceOptions().upsert(true);
+        collection.replaceOne(filter, entry, opts);
     }
 }

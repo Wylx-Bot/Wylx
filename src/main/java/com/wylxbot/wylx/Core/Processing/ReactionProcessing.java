@@ -100,7 +100,7 @@ public class ReactionProcessing extends ListenerAdapter {
 
     private void removeRole(@NotNull GenericMessageReactionEvent event, Role roleToRemove) {
         DBRoleMenu roleDb = Wylx.getInstance().getDb().getRoleMenu(event.getMessageId());
-        RoleMenu menu = new RoleMenu(roleDb.messageId, roleDb.channelId, roleDb.guildId, roleDb.title, roleDb.roles);
+        RoleMenu menu = new RoleMenu(roleDb);
         menu.removeReaction(roleToRemove.getName());
         Wylx.getInstance().getDb().setRoleMenu(event.getMessageId(), menu.getDBEntry());
     }
@@ -120,7 +120,7 @@ public class ReactionProcessing extends ListenerAdapter {
         }
 
         EmojiUnion emoji = event.getEmoji();
-        RoleMenu menu = new RoleMenu(roleDb.messageId, roleDb.channelId, roleDb.guildId, roleDb.title, roleDb.roles);
+        RoleMenu menu = new RoleMenu(roleDb);
         return menu.getReactionFromEmote(emoji);
     }
 }
