@@ -73,28 +73,6 @@ public class Wylx {
         SlashCommandProcessing slash = new SlashCommandProcessing(jda);
         jda.addEventListener(slash);
 
-//        jda.updateCommands().queue();
-//        jda.updateCommands()
-//                .addCommands(Commands.slash("ping", "Get the response time!"))
-//                .addCommands(Commands.slash("bonk", "Bonk someone")
-//                        .addOption(OptionType.USER, "user", "User to bonk", true))
-//                .addCommands(Commands.slash("secret", "Super Secret command"))
-//                .addCommands(Commands.slash("roles", "Create and modify role menus!").addSubcommands(
-//                        new SubcommandData("createmenu", "wooot")
-//                                .addOption(OptionType.CHANNEL, "channel", "woot", true),
-//                        new SubcommandData("addrole", "woot")
-//                                .addOption(OptionType.ROLE, "role", "role to add", true)
-//                                .addOption(OptionType.STRING, "menu_id", "role menu", true)
-//                ))
-//                .addCommands(Commands.slash("modal", "test modal"))
-//                .addCommands(Commands.slash("subgroups", "test command").addSubcommandGroups(
-//                        new SubcommandGroupData("group", "group description").addSubcommands(
-//                                new SubcommandData("subcommand", "subcommand test")
-//                                        .addOption(OptionType.INTEGER, "integer", "woot")
-//                        )
-//                ))
-//                .queue();
-
         Timer activityTimer = new Timer();
         activityTimer.scheduleAtFixedRate(new TimerTask() {
             @Override

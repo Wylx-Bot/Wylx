@@ -54,29 +54,5 @@ public class SlashCommandProcessing extends ListenerAdapter {
 
             command.doStuff(event);
         });
-//        if (event.getName().equals("secret")) {
-//            event.reply("You have acquired the secret!").setEphemeral(true).queue();
-//        } else if (event.getName().equals("bonk")) {
-//            event.reply(event.getOption("user", OptionMapping::getAsUser).getAsMention() + " has been bonked").queue();
-//        } else if (event.getName().equals("modal")) {
-//            TextInput subject = TextInput.create("subject", "Subject", TextInputStyle.SHORT)
-//                    .setPlaceholder("Subject of this ticket")
-//                    .setMinLength(10)
-//                    .setMaxLength(100) // or setRequiredRange(10, 100)
-//                    .build();
-//
-//            TextInput body = TextInput.create("body", "Body", TextInputStyle.PARAGRAPH)
-//                    .setPlaceholder("Your concerns go here")
-//                    .setMinLength(30)
-//                    .setMaxLength(1000)
-//                    .build();
-//            event.replyModal(Modal.create("123", "Title")
-//                    .addActionRow(subject).addActionRow(body).build()).queue();
-//        } else if (event.getName().equals("roles") && event.getSubcommandName().equals("createmenu")) {
-//            event.reply("Creating menu in " + event.getOption("channel", OptionMapping::getAsChannel).getAsMention()).queue();
-//        } else {
-//                event.reply(event.getName()).queue();
-//        }
-
     }
 }
