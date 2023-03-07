@@ -4,12 +4,11 @@ import com.wylxbot.wylx.actuallywylx.WylxCommand;
 import net.dv8tion.jda.api.interactions.commands.*;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.collections4.TrieUtils;
+import org.apache.commons.collections4.trie.PatriciaTrie;
 
-import java.awt.*;
 import java.util.*;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class Spell extends WylxCommand {
 
@@ -25,6 +24,14 @@ public class Spell extends WylxCommand {
            "Eldritch Blast"
     };
 
+    PatriciaTrie<String> trie = new PatriciaTrie<>();
+
+    public Spell() {
+        for (String s : spells) {
+            trie.put(s.toLowerCase(), s);
+        }
+    }
+
     @Override
     public SlashCommandData getSlashCommand() {
         return Commands.slash("spell", "Get spell description!")
@@ -36,24 +43,14 @@ public class Spell extends WylxCommand {
         interaction.reply(interaction.getOption("spell", OptionMapping::getAsString)).queue();
     }
 
-    private static Integer LIST_MAX_ERRORS = Integer.MAX_VALUE;
-
-    private record Result(int distance, String name) {};
-
     @Override
     public void autoComplete(CommandAutoCompleteInteraction autocomplete) {
-        PriorityQueue<Result> results = new PriorityQueue<>(1, Comparator.comparingInt((Result a) -> a.distance));
-
-        for(String key : spells){
-            int distance = StringUtils.getLevenshteinDistance(key, autocomplete.getFocusedOption().getValue());
-            results.add(new Result(distance, key));
-        }
-
         List<Command.Choice> resultList = new ArrayList<>();
+        var res = trie.prefixMap(autocomplete.getFocusedOption().getValue().toLowerCase());
 
-        for (int i = 0; i < 5; i++) {
-            String name = results.remove().name;
-            resultList.add(new Command.Choice(name, name));
+        for (String entry : res.values()) {
+            resultList.add(new Command.Choice(entry, entry));
+            if (resultList.size() >= 25) break;
         }
 
         autocomplete.replyChoices(resultList).queue();
