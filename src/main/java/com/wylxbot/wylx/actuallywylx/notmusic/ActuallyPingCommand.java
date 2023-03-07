@@ -19,7 +19,9 @@ public class ActuallyPingCommand extends WylxCommand {
         jda.getRestPing().queue(time -> {
             String msg = String.format("Pong! REST response time was %d ms. Websocket ping is %s ms\n",
                     time, jda.getGatewayPing());
-            interaction.getHook().sendMessage(msg).queue();
+            interaction.getHook().editOriginal(msg).queue();
+            interaction.getHook().sendMessage("[Beep Boop](<https://youtu.be/aQUlA8Hcv4s?t=18>)").queue();
+            interaction.getHook().sendMessage("Spam").setEphemeral(true).queue();
         });
     }
 }
