@@ -5,12 +5,18 @@ import com.wylxbot.wylx.Core.Processing.ReactionProcessing;
 import com.wylxbot.wylx.Core.Processing.VoiceChannelProcessing;
 import com.wylxbot.wylx.Core.WylxEnvConfig;
 import com.wylxbot.wylx.Database.DatabaseManager;
+import com.wylxbot.wylx.actuallywylx.SlashCommandProcessing;
 import io.github.cdimascio.dotenv.Dotenv;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
+import net.dv8tion.jda.api.interactions.commands.Command;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
+import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
+import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData;
 import net.dv8tion.jda.api.managers.AudioManager;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 
@@ -63,6 +69,31 @@ public class Wylx {
                         new VoiceChannelProcessing(),
                         new ReactionProcessing()
                 ).build();
+
+        SlashCommandProcessing slash = new SlashCommandProcessing(jda);
+        jda.addEventListener(slash);
+
+//        jda.updateCommands().queue();
+//        jda.updateCommands()
+//                .addCommands(Commands.slash("ping", "Get the response time!"))
+//                .addCommands(Commands.slash("bonk", "Bonk someone")
+//                        .addOption(OptionType.USER, "user", "User to bonk", true))
+//                .addCommands(Commands.slash("secret", "Super Secret command"))
+//                .addCommands(Commands.slash("roles", "Create and modify role menus!").addSubcommands(
+//                        new SubcommandData("createmenu", "wooot")
+//                                .addOption(OptionType.CHANNEL, "channel", "woot", true),
+//                        new SubcommandData("addrole", "woot")
+//                                .addOption(OptionType.ROLE, "role", "role to add", true)
+//                                .addOption(OptionType.STRING, "menu_id", "role menu", true)
+//                ))
+//                .addCommands(Commands.slash("modal", "test modal"))
+//                .addCommands(Commands.slash("subgroups", "test command").addSubcommandGroups(
+//                        new SubcommandGroupData("group", "group description").addSubcommands(
+//                                new SubcommandData("subcommand", "subcommand test")
+//                                        .addOption(OptionType.INTEGER, "integer", "woot")
+//                        )
+//                ))
+//                .queue();
 
         Timer activityTimer = new Timer();
         activityTimer.scheduleAtFixedRate(new TimerTask() {
