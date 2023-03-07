@@ -1,6 +1,7 @@
 package com.wylxbot.wylx.actuallywylx;
 
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
@@ -54,5 +55,16 @@ public class SlashCommandProcessing extends ListenerAdapter {
 
             command.doStuff(event);
         });
+    }
+
+    @Override
+    public void onCommandAutoCompleteInteraction(CommandAutoCompleteInteractionEvent event) {
+        WylxCommand command = commandMap.get(event.getName());
+
+        if (command == null) {
+            return;
+        }
+
+        command.autoComplete(event);
     }
 }

@@ -1,10 +1,7 @@
 package com.wylxbot.wylx.actuallywylx;
 
 import com.wylxbot.wylx.actuallywylx.music.*;
-import com.wylxbot.wylx.actuallywylx.notmusic.ActuallyPingCommand;
-import com.wylxbot.wylx.actuallywylx.notmusic.LaTexCommand;
-import com.wylxbot.wylx.actuallywylx.notmusic.ModalCommand;
-import com.wylxbot.wylx.actuallywylx.notmusic.WaitComand;
+import com.wylxbot.wylx.actuallywylx.notmusic.*;
 
 import java.util.List;
 
@@ -21,7 +18,8 @@ public class CommandsContainer {
             new ActuallyPingCommand(),
             new WaitComand(),
             new ModalCommand(),
-            new LaTexCommand()
+            new LaTexCommand(),
+            new Spell()
         )),
     };
 }
