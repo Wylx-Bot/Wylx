@@ -12,7 +12,8 @@ public class CommandsContainer {
             new ActuallyBonkCommand(),
             new SuperSecretCommand(),
             new RolesSuperCommand(),
-            new FightCommand()
+            new FightCommand(),
+            new Help()
         )),
         new CommandGroup("Not Music", "Don't have Wylx play music for you :(", List.of(
             new ActuallyPingCommand(),

@@ -3,6 +3,7 @@ package com.wylxbot.wylx.actuallywylx;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import org.jetbrains.annotations.NotNull;
@@ -66,5 +67,16 @@ public class SlashCommandProcessing extends ListenerAdapter {
         }
 
         command.autoComplete(event);
+    }
+
+    @Override
+    public void onStringSelectInteraction(StringSelectInteractionEvent event) {
+        WylxCommand command = commandMap.get(event.getComponentId());
+
+        if (command == null) {
+            return;
+        }
+
+        command.stringMenu(event);
     }
 }
