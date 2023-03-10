@@ -34,7 +34,7 @@ public class Help extends WylxCommand {
 
         for (int i = 0; i < groups.length; i++) {
             CommandGroup g = groups[i];
-            builder.append(g.name()).append(" (Definitely Disabled)\n");
+            builder.append(g.name()).append(" - ").append(g.desc()).append(" (Definitely Disabled)\n");
             select.addOption(g.name(), Integer.toString(i), g.desc());
         }
 
@@ -51,12 +51,12 @@ public class Help extends WylxCommand {
     @Override
     public void stringMenu(StringSelectInteractionEvent event) {
         CommandGroup[] groups = CommandsContainer.Commands;
-        
+
         if (event.getValues().get(0).equals("about")) {
             StringBuilder builder = new StringBuilder();
 
             for (CommandGroup g : groups) {
-                builder.append(g.name()).append(" (Definitely Disabled)\n");
+                builder.append(g.name()).append(" - ").append(g.desc()).append(" (Definitely Disabled)\n");
             }
 
             MessageEmbed embed = new EmbedBuilder()
