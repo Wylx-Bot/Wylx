@@ -23,7 +23,8 @@ public class RepeatCommand extends ThreadedCommand {
         try{
             x = Integer.parseInt(args[1]);
         } catch(NumberFormatException nfe) {
-            event.getMessage().reply("Unable to turn " + args[1] + " to a number\nUsage $repeat <int x> <str msg>").queue();
+            event.getMessage().reply("Unable to turn " + args[1] + " to a number.\n").queue();
+            event.getChannel().sendMessage(getDescription(ctx.prefix())).queue();
             return;
         }
 
