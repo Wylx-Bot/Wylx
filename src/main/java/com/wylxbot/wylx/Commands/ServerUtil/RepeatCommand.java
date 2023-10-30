@@ -17,7 +17,7 @@ public class RepeatCommand extends ThreadedCommand {
         String[] args = ctx.args();
         int x;
         if(args.length < 3){
-            event.getMessage().reply("Usage $repeat <int x> <str msg>").queue();
+            event.getChannel().sendMessage(getDescription(ctx.prefix())).queue();
             return;
         }
         try{
