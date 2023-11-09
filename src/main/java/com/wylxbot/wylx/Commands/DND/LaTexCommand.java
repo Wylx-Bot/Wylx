@@ -23,7 +23,12 @@ public class LaTexCommand extends ThreadedCommand {
 
     @Override
     public void runCommandThread(CommandContext ctx) {
-        String latex = ctx.parsedMsg().substring(ctx.parsedMsg().indexOf(' ') + 1);
+        String latex;
+        if(ctx.parsedMsg().contains(" ")) {
+            latex = ctx.parsedMsg().substring(ctx.parsedMsg().indexOf(' ') + 1);
+        } else {
+            latex = "\\LaTeX";
+        }
         TeXFormula formula;
 
         // Catch any error in the user input and return that to the user
