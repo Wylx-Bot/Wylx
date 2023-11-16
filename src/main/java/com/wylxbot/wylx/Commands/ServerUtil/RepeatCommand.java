@@ -23,8 +23,7 @@ public class RepeatCommand extends ThreadedCommand {
         try{
             x = Integer.parseInt(args[1]);
         } catch(NumberFormatException nfe) {
-            event.getMessage().reply("Unable to turn " + args[1] + " to a number.\n").queue();
-            event.getChannel().sendMessage(getDescription(ctx.prefix())).queue();
+            event.getChannel().sendMessage("Unable to turn " + args[1] + " to a number.\n" + getDescription(ctx.prefix())).queue();
             return;
         }
 
