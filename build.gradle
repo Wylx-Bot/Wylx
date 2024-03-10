@@ -24,7 +24,7 @@ dependencies {
     implementation("io.github.cdimascio:dotenv-kotlin:6.4.1")
     implementation("net.dv8tion:JDA:5.0.0-beta.13")
     implementation("ch.qos.logback:logback-classic:1.4.5")
-    implementation("com.github.walkyst:lavaplayer-fork:48352f7c31e3fa989d8818417c9d9efa953f240d")
+    implementation('dev.arbjerg:lavaplayer:2.1.1') // https://github.com/lavalink-devs/lavaplayer
     implementation("org.mongodb:mongodb-driver-sync:4.8.2")
     implementation ("org.scilab.forge:jlatexmath:1.0.7")
 }
