@@ -53,7 +53,7 @@ public class PlayCommand extends ServerCommand {
         boolean isSearch;
 
         if (args.length < 2) {
-            displayUsage(event.getChannel());
+            event.getChannel().sendMessage(getDescription(ctx.prefix())).queue();
             return;
         }
 
@@ -85,12 +85,12 @@ public class PlayCommand extends ServerCommand {
             if (args.length == 3) {
                 MusicSeek seek = MusicUtils.getDurationFromArg(args[2]);
                 if (seek == null) {
-                    displayUsage(event.getChannel());
+                    event.getChannel().sendMessage(getDescription(ctx.prefix())).queue();
                     return;
                 }
                 dur = seek.dur();
             } else if (args.length > 3) {
-                displayUsage(event.getChannel());
+                event.getChannel().sendMessage(getDescription(ctx.prefix())).queue();
                 return;
             }
         }
@@ -179,12 +179,5 @@ public class PlayCommand extends ServerCommand {
                     .queue();
         }, List.of(ActionRow.of(components),
                 ActionRow.of(cancelRow)), toSend, null);
-    }
-
-    private void displayUsage(MessageChannelUnion channel) {
-        channel.sendMessage("""
-                Usage:
-                $play <link> <Optional: seconds to skip OR HH:MM:SS>
-                $play <search terms>""").queue();
     }
 }
