@@ -17,13 +17,13 @@ public class RepeatCommand extends ThreadedCommand {
         String[] args = ctx.args();
         int x;
         if(args.length < 3){
-            event.getMessage().reply("Usage $repeat <int x> <str msg>").queue();
+            event.getChannel().sendMessage(getDescription(ctx.prefix())).queue();
             return;
         }
         try{
             x = Integer.parseInt(args[1]);
         } catch(NumberFormatException nfe) {
-            event.getMessage().reply("Unable to turn " + args[1] + " to a number\nUsage $repeat <int x> <str msg>").queue();
+            event.getChannel().sendMessage("Unable to turn " + args[1] + " to a number.\n" + getDescription(ctx.prefix())).queue();
             return;
         }
 
