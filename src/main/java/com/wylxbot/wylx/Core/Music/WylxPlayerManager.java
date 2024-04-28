@@ -4,6 +4,10 @@ import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
+import dev.lavalink.youtube.YoutubeAudioSourceManager;
+import dev.lavalink.youtube.clients.AndroidWithThumbnail;
+import dev.lavalink.youtube.clients.MusicWithThumbnail;
+import dev.lavalink.youtube.clients.WebWithThumbnail;
 
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -13,6 +17,18 @@ public class WylxPlayerManager {
 
     private WylxPlayerManager() {
         playerManager = new DefaultAudioPlayerManager();
+
+        // Use Youtube Source manager from youtube-source repo instead of built-in
+        YoutubeAudioSourceManager ytSrcMgr = new YoutubeAudioSourceManager(
+                /*allowSearch:*/ true,
+                new MusicWithThumbnail(),
+                new WebWithThumbnail(),
+                new AndroidWithThumbnail()
+        );
+
+        playerManager.registerSourceManager(ytSrcMgr);
+
+        // Add rest of the build-in audio sources
         AudioSourceManagers.registerRemoteSources(playerManager);
         AudioSourceManagers.registerLocalSource(playerManager);
 
