@@ -22,14 +22,16 @@ public class WylxPlayerManager {
         YoutubeAudioSourceManager ytSrcMgr = new YoutubeAudioSourceManager(
                 /*allowSearch:*/ true,
                 new MusicWithThumbnail(),
-                new WebWithThumbnail(),
-                new AndroidWithThumbnail()
+                new WebWithThumbnail()
         );
 
         playerManager.registerSourceManager(ytSrcMgr);
 
         // Add rest of the build-in audio sources
-        AudioSourceManagers.registerRemoteSources(playerManager);
+        AudioSourceManagers.registerRemoteSources(
+                playerManager,
+                com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioSourceManager.class
+        );
         AudioSourceManagers.registerLocalSource(playerManager);
 
         managers = new ConcurrentHashMap<>();
