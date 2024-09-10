@@ -43,3 +43,12 @@ java {
 application {
     mainClassName="com.wylxbot.wylx.Wylx"
 }
+
+// Remove version from output jar name
+tasks.jar {
+    archiveFileName.set("${project.name}.jar")
+}
+
+tasks.distZip {
+    archiveFileName.set("${project.name}.zip")
+}
