@@ -42,11 +42,11 @@ Clone this repository to the directory you want to run Wylx from.
 Set up environment variables. Wylx will look for the following environment variables, these can either be set in the environment Wylx runs in or placed in a `.env` file at the top level of your cloned Wylx repository.
 | Variable Name | Default Value | Description |
 | -------- | ------- | ------- |
-| RELEASE | `false` | Tells Wylx if it is a development or release instance. Controls if Wylx will use the release or beta token and prefix |
-| MONGODB_URL | `mongodb://localhost:27017` | The URL to access the MongoDB instance at, should include the username and password if one is required for the database |
-| DISCORD_TOKEN | `None` | The bot token as provided by discord. |
-| BETA_DISCORD_TOKEN | `None` | The bot token as provided by discord to be used the RELEASE variable is set to false |
-| BETA_PREFIX | `None` | Overrides the default and configured prefixes for commands when the RELEASE variable is set to false with this string |
+| `RELEASE` | `false` | Tells Wylx if it is a development or release instance. Controls if Wylx will use the release or beta token and prefix |
+| `MONGODB_URL` | `mongodb://localhost:27017` | The URL to access the MongoDB instance at, should include the username and password if one is required for the database |
+| `DISCORD_TOKEN` | `None` | The bot token as provided by discord. |
+| `BETA_DISCORD_TOKEN` | `None` | The bot token as provided by discord to be used the RELEASE variable is set to false |
+| `BETA_PREFIX` | `None` | Overrides the default and configured prefixes for commands when the RELEASE variable is set to false with this string |
 
 **Step 4:**
 Build and run Wylx. Run the following command from the top level of the cloned Wylx repository. This may take longer on the first run as the dependencies need to be downloaded.
