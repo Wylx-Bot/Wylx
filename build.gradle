@@ -34,6 +34,12 @@ dependencies {
     implementation ("org.scilab.forge:jlatexmath:1.0.7")
 }
 
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
 application {
     mainClassName="com.wylxbot.wylx.Wylx"
 }
