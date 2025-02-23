@@ -2,7 +2,7 @@ package com.wylxbot.wylx.Commands.BotUtil;
 
 import com.wylxbot.wylx.Core.Events.Commands.CommandContext;
 import com.wylxbot.wylx.Core.Events.Commands.ThreadedCommand;
-import com.wylxbot.wylx.Core.Util.EnvUtils;
+import com.wylxbot.wylx.Core.WylxEnvConfig;
 import com.wylxbot.wylx.Wylx;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.utils.FileUpload;
@@ -30,9 +30,15 @@ public class UpdateCommand extends ThreadedCommand {
     @Override
     public void runCommandThread(CommandContext ctx) {
         MessageReceivedEvent event = ctx.event();
+        WylxEnvConfig cfg = Wylx.getWylxConfig();
         String[] args = ctx.args();
 
-        if (args.length == 2 && Wylx.getInstance().getWylxConfig().release) {
+        if (cfg.runningInContainer) {
+            event.getChannel().sendMessage("Unable to update in docker container!").queue();
+            return;
+        }
+
+        if (args.length == 2 && cfg.release) {
             event.getChannel().sendMessage("Unable to use different branch on RELEASE").queue();
             return;
         }

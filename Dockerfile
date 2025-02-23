@@ -3,7 +3,7 @@ ARG BUILD_DIR=/tmp/wylx
 ARG GIT_COMMIT="Unknown"
 
 # Build Container
-FROM gradle:jdk17-alpine AS BUILD
+FROM gradle:jdk17-alpine AS alpine-build
 
 ARG BUILD_DIR
 ARG GIT_COMMIT
@@ -22,6 +22,6 @@ ARG BUILD_DIR
 ARG APP_DIR
 WORKDIR $APP_DIR
 
-COPY --from=BUILD $BUILD_DIR/unzip $APP_DIR/
+COPY --from=alpine-build $BUILD_DIR/unzip $APP_DIR/
 
-ENTRYPOINT ./WylxBot/bin/WylxBot
+ENTRYPOINT [ "./WylxBot/bin/WylxBot" ]
