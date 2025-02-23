@@ -18,6 +18,9 @@ import javax.security.auth.login.LoginException;
 import java.util.*;
 
 public class Wylx {
+    private static final WylxEnvConfig ENV_CONFIG = new WylxEnvConfig(
+            Dotenv.configure().ignoreIfMissing().load()
+    );
     private static final Wylx INSTANCE = new Wylx();
     private static final int ACTIVITY_PERIOD = 60000; // 60 seconds
     private final List<Activity> activities = new ArrayList<>(Arrays.asList(
@@ -30,7 +33,6 @@ public class Wylx {
     private JDA jda;
     private DatabaseManager db;
     private int activityIndex = 0;
-    private final WylxEnvConfig wylxConfig;
 
     public static Wylx getInstance() {
         return INSTANCE;
@@ -40,26 +42,23 @@ public class Wylx {
 
     private Wylx() {
         String token;
-        Dotenv env = Dotenv.configure()
-                .ignoreIfMissing()
-                .load();
 
-        wylxConfig = new WylxEnvConfig(env);
-        if (wylxConfig.release) {
-            token = wylxConfig.releaseDiscordToken;
+        if (ENV_CONFIG.release) {
+            token = ENV_CONFIG.releaseDiscordToken;
         } else {
-            token = wylxConfig.betaDiscordToken;
+            token = ENV_CONFIG.betaDiscordToken;
             activities.add(Activity.playing("with Wylx!"));
         }
 
-        db = new DatabaseManager(wylxConfig);
+        db = new DatabaseManager(ENV_CONFIG);
 
         jda = JDABuilder.createDefault(token)
                 .enableIntents(GatewayIntent.MESSAGE_CONTENT)
-                .addEventListeners(new MessageProcessing(),
+                .addEventListeners(
+                        new MessageProcessing(),
                         new VoiceChannelProcessing(),
-                        new ReactionProcessing())
-                .build();
+                        new ReactionProcessing()
+                ).build();
 
         Timer activityTimer = new Timer();
         activityTimer.scheduleAtFixedRate(new TimerTask() {
@@ -83,8 +82,8 @@ public class Wylx {
         return jda.getSelfUser().getId();
     }
 
-    public WylxEnvConfig getWylxConfig() {
-        return wylxConfig;
+    public static WylxEnvConfig getWylxConfig() {
+        return ENV_CONFIG;
     }
 
     public DatabaseManager getDb() {

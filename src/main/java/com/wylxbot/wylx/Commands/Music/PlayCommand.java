@@ -70,7 +70,7 @@ public class PlayCommand extends ServerCommand {
         Duration dur = Duration.ofSeconds(0);
 
         if (isSearch) {
-            token = "ytsearch:" + event.getMessage().getContentRaw().substring(args[0].length() + 1);
+            token = "ytmsearch:" + event.getMessage().getContentRaw().substring(args[0].length() + 1);
         } else {
             // Replace < and > which avoids embeds on Discord
             token = args[1].replaceAll("(^<)|(>$)", "");
