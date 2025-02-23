@@ -1,7 +1,3 @@
 #!/usr/bin/env bash
 
-while
-  echo "Starting Wylx..."
-  ./build/install/WylxBot/bin/WylxBot
-  [ $? -eq 200 ]
-do :; done
+GIT_COMMIT=$(git describe --dirty --always --exclude '*') docker compose up
