@@ -8,6 +8,7 @@ public class WylxEnvConfig {
     public final String releaseDiscordToken;
     public final String betaDiscordToken;
     public final String betaPrefix;
+    public final String oauthRefreshToken;
 
     public WylxEnvConfig(Dotenv env) {
         this.release = Boolean.parseBoolean(env.get("RELEASE", "false"));
@@ -15,5 +16,6 @@ public class WylxEnvConfig {
         this.releaseDiscordToken = env.get("DISCORD_TOKEN");
         this.betaDiscordToken = env.get("BETA_DISCORD_TOKEN");
         this.betaPrefix = env.get("BETA_PREFIX");
+        this.oauthRefreshToken = env.get("YT_SRC_OAUTH_REFRESH_TOKEN");
     }
 }

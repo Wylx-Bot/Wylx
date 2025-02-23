@@ -4,6 +4,7 @@ import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
+import com.wylxbot.wylx.Wylx;
 import dev.lavalink.youtube.YoutubeAudioSourceManager;
 import dev.lavalink.youtube.clients.*;
 
@@ -25,6 +26,11 @@ public class WylxPlayerManager {
                 new WebEmbeddedWithThumbnail(),
                 new WebWithThumbnail()
         );
+
+        // Youtube source can be given a refresh token to prevent needing to go through the oAuth flow again.
+        // If null is passed, then the user is required to follow the oAuth link found in the logs to login.
+        var cfg = Wylx.getWylxConfig();
+        ytSrcMgr.useOauth2(cfg.oauthRefreshToken, false);
 
         playerManager.registerSourceManager(ytSrcMgr);
 
