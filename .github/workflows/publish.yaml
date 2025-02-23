@@ -22,7 +22,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Get Short SHA
+      - name: Prepare build inputs
         id: get_sha
         run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
 
@@ -33,6 +33,16 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Generate metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: |
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=sha
+            type=raw,value=latest,enable=${{ is_default_branch }}
+
       - name: Build and push Docker image
         id: push
         uses: docker/build-push-action@v6
@@ -40,9 +50,7 @@ jobs:
           context: .
           push: true
           build-args: GIT_COMMIT=${{ steps.get_sha.outputs.sha_short }}
-          tags: |
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.get_sha.outputs.sha_short }}
+          tags: ${{ steps.meta.outputs.tags }}
 
       - name: Generate artifact attestation
         uses: actions/attest-build-provenance@v2
