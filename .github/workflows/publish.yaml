@@ -4,7 +4,7 @@ on:
   push:
     branches: ['main']
   workflow_dispatch:
-  pull_request: 
+  pull_request:
 
 env:
   REGISTRY: ghcr.io
@@ -41,8 +41,8 @@ jobs:
           push: true
           build-args: GIT_COMMIT=${{ steps.get_sha.outputs.sha_short }}
           tags:
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/latest
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/${{ steps.get_sha.outputs.sha_short }}
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.get_sha.outputs.sha_short }}
 
       - name: Generate artifact attestation
         uses: actions/attest-build-provenance@v2
