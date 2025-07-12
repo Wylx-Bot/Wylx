@@ -5,7 +5,8 @@ public enum Timezone {
     PST("PST", "Pacific Standard Time", 0),
     MST("MST", "Mountain Standard Time", 1),
     CST("CST", "Central Standard Time", 2),
-    EST("EST", "Eastern Standard Time", 3);
+    EST("EST", "Eastern Standard Time", 3),
+    BST("BST", "British Summer Time", 8);
 
     public final String abrv;
     public final String name;
