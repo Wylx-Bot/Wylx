@@ -3,8 +3,6 @@ services:
     image: mongo
     ports:
       - 27017:27017
-    networks:
-      - wylx-net
     volumes:
       - wylx-mongo-vol:/data/db
   wylx-bot:
@@ -12,23 +10,18 @@ services:
       context: .
       args:
         GIT_COMMIT: ${GIT_COMMIT}
-    networks:
-      - wylx-net
     depends_on:
       - wylx-db
     restart: always
+
     # Use .env file for tokens
-    env_file: ".env"
     environment:
+      TOKEN: ${TOKEN}
+      BETA_DISCORD_TOKEN: ${BETA_DISCORD_TOKEN}
+      YT_SRC_OAUTH_REFRESH_TOKEN: ${YT_SRC_OAUTH_REFRESH_TOKEN}
       RELEASE: false
       BETA_PREFIX: "$"
       MONGODB_URL: "mongodb://wylx-db:27017"
 
 volumes:
   wylx-mongo-vol:
-    name: "wylx-mongo-vol"
-    external: true
-
-networks:
-  wylx-net:
-    driver: bridge
