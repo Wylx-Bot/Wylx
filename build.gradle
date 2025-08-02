@@ -29,7 +29,7 @@ dependencies {
     implementation("net.dv8tion:JDA:5.3.0")
     implementation("ch.qos.logback:logback-classic:1.5.16")
     implementation("dev.arbjerg:lavaplayer:2.2.4") // https://github.com/lavalink-devs/lavaplayer
-    implementation("dev.lavalink.youtube:v2:1.13.3")
+    implementation("dev.lavalink.youtube:v2:1.13.4")
     implementation("org.mongodb:mongodb-driver-sync:5.3.1")
     implementation ("org.scilab.forge:jlatexmath:1.0.7")
 }
