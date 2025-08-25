@@ -1,0 +1,1 @@
+$env:GIT_COMMIT=$(git describe --dirty --always --exclude '*'); docker compose up

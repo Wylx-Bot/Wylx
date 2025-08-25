@@ -4,21 +4,19 @@ import com.wylxbot.wylx.Core.Events.Commands.CommandContext;
 import com.wylxbot.wylx.Core.Events.Commands.ServerCommand;
 import com.wylxbot.wylx.Core.Util.ProgressBar;
 import com.wylxbot.wylx.Core.Util.WylxStats;
+import com.wylxbot.wylx.Core.WylxEnvConfig;
 import com.wylxbot.wylx.Database.DbElements.DiscordGlobal;
 import com.wylxbot.wylx.Database.DbElements.GlobalIdentifiers;
 import com.wylxbot.wylx.Wylx;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.lang.management.ManagementFactory;
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 
 public class StatusCommand extends ServerCommand {
-    private final String commitID = getCommitID();
-
     private static final long BYTES_PER_MEGABYTE = 1024 * 1024;
     private static final long MILLI_PER_SECOND = 1000;
     private static final long MILLI_PER_MINUTES = MILLI_PER_SECOND * 60;
@@ -27,27 +25,7 @@ public class StatusCommand extends ServerCommand {
 
     public StatusCommand() {
         super("status", CommandPermission.EVERYONE, "Provides information on the host machine of the bot", "system", "stats");
-    }
 
-    private String getCommitID() {
-        Runtime rt = Runtime.getRuntime();
-        String[] commands = {"git", "rev-parse", "--short", "HEAD"};
-        try {
-            Process proc = rt.exec(commands);
-
-            if (proc.waitFor() != 0) {
-                return "Unknown";
-            }
-
-            BufferedReader stdInput = new BufferedReader(new
-                    InputStreamReader(proc.getInputStream()));
-
-            String commit = stdInput.readLine().trim();
-            stdInput.close();
-            return commit;
-        } catch (Exception e) {
-            return "Unknown";
-        }
     }
 
     private long milliToDays(long val) {
@@ -65,17 +43,22 @@ public class StatusCommand extends ServerCommand {
     @Override
     public void runCommand(CommandContext ctx) {
         MessageReceivedEvent event = ctx.event();
+        WylxEnvConfig cfg = Wylx.getWylxConfig();
         DiscordGlobal globalDB = Wylx.getInstance().getDb().getGlobal();
         EmbedBuilder embed = new EmbedBuilder();
         embed.setColor(event.getGuild().getSelfMember().getColor());
         embed.setTitle("Wylx Status");
 
         // Build elements for system section
-        String systemName = "";
-        try {
-            systemName = String.format("System: %s", InetAddress.getLocalHost().getHostName());
-        } catch (Exception e) {
-            e.printStackTrace();
+        String systemName = "System: ";
+        if (cfg.runningInContainer) {
+            systemName += "Docker";
+        } else {
+            try {
+                systemName += InetAddress.getLocalHost().getHostName();
+            } catch (UnknownHostException e) {
+                systemName += "Unknown";
+            }
         }
 
         Runtime rt = Runtime.getRuntime();
@@ -86,7 +69,8 @@ public class StatusCommand extends ServerCommand {
 
         String systemBuilder =
                 String.format("OS: %s\n", System.getProperty("os.name")) +
-                String.format("Commit: %s\n", commitID) +
+                String.format("Commit: %s\n", cfg.commitId) +
+                String.format("Build Date: %s\n", cfg.buildDate) +
                 String.format("Threads: %d\n", rt.availableProcessors()) +
                 String.format("Bot Uptime: %d Days, %d Hours, and %d minutes\n",
                          milliToDays(uptime), milliToHours(uptime), milliToMinutes(uptime)) +
