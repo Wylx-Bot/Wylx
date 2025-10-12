@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'org.wylx'
-version = System.getenv("GIT_COMMIT") ?: "git describe --dirty --always --exclude '*'".execute().text.trim()
+version = "git describe --dirty --always --exclude '*'".execute().text.trim() ?: "unknown"
 
 repositories {
     mavenCentral()
