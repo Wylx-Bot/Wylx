@@ -4,9 +4,6 @@ ARG BUILD_DIR=/tmp/wylx
 # Build Container
 FROM gradle:jdk17-alpine AS alpine-build
 
-RUN apk update
-RUN apk add git
-
 USER gradle:gradle
 
 ARG BUILD_DIR

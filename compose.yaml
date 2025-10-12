@@ -8,15 +8,13 @@ services:
   wylx-bot:
     build:
       context: .
-      args:
-        GIT_COMMIT: ${GIT_COMMIT}
     depends_on:
       - wylx-db
     restart: always
 
     # Use .env file for tokens
     environment:
-      TOKEN: ${TOKEN}
+      DISCORD_TOKEN: ${DISCORD_TOKEN}
       BETA_DISCORD_TOKEN: ${BETA_DISCORD_TOKEN}
       YT_SRC_OAUTH_REFRESH_TOKEN: ${YT_SRC_OAUTH_REFRESH_TOKEN}
       RELEASE: false
