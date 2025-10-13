@@ -4,22 +4,22 @@ plugins {
     id 'java-library'
 }
 
-group 'org.wylx'
-version '1.0-SNAPSHOT'
+group = 'org.wylx'
+version = '1.0-SNAPSHOT'
 
 repositories {
     mavenCentral()
     maven {
-        name 'm2-dv8tion'
-        url 'https://m2.dv8tion.net/releases'
+        name = 'm2-dv8tion'
+        url = 'https://m2.dv8tion.net/releases'
     }
     maven {
-        name 'jitpack'
-        url 'https://jitpack.io'
+        name = 'jitpack'
+        url = 'https://jitpack.io'
     }
     maven {
-        name 'lavalink'
-        url 'https://maven.lavalink.dev/releases'
+        name = 'lavalink'
+        url = 'https://maven.lavalink.dev/releases'
     }
 }
 
@@ -41,5 +41,5 @@ java {
 }
 
 application {
-    mainClassName="com.wylxbot.wylx.Wylx"
+    mainClass="com.wylxbot.wylx.Wylx"
 }
