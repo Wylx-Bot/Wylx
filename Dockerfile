@@ -22,6 +22,8 @@ ARG BUILD_DIR
 ARG APP_DIR
 WORKDIR $APP_DIR
 
+RUN apk add --no-cache libgcc
+
 RUN addgroup -S wylx
 RUN adduser -S wylx -G wylx
 USER wylx:wylx

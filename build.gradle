@@ -10,10 +10,6 @@ version = "git describe --dirty --always --exclude '*'".execute().text.trim() ?:
 repositories {
     mavenCentral()
     maven {
-        name = 'm2-dv8tion'
-        url = 'https://m2.dv8tion.net/releases'
-    }
-    maven {
         name = 'jitpack'
         url = 'https://jitpack.io'
     }
@@ -31,7 +27,11 @@ dependencies {
     implementation("dev.arbjerg:lavaplayer:2.2.4") // https://github.com/lavalink-devs/lavaplayer
     implementation("dev.lavalink.youtube:v2:1.16.0")
     implementation("org.mongodb:mongodb-driver-sync:5.3.1")
-    implementation ("org.scilab.forge:jlatexmath:1.0.7")
+    implementation("org.scilab.forge:jlatexmath:1.0.7")
+    implementation("club.minnced:udpqueue-native-linux-x86-64:0.2.9")
+    // Alpine uses musl instead of libc
+    implementation("club.minnced:udpqueue-native-linux-musl-x86-64:0.2.9")
+    implementation("club.minnced:udpqueue-native-win-x86-64:0.2.9")
 }
 
 java {
