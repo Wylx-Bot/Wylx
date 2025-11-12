@@ -1,5 +1,6 @@
 package com.wylxbot.wylx;
 
+import com.sedmelluq.discord.lavaplayer.jdaudp.NativeAudioSendFactory;
 import com.wylxbot.wylx.Core.Processing.MessageProcessing;
 import com.wylxbot.wylx.Core.Processing.ReactionProcessing;
 import com.wylxbot.wylx.Core.Processing.VoiceChannelProcessing;
@@ -58,7 +59,8 @@ public class Wylx {
                         new MessageProcessing(),
                         new VoiceChannelProcessing(),
                         new ReactionProcessing()
-                ).build();
+                ).setAudioSendFactory(new NativeAudioSendFactory())
+                .build();
 
         Timer activityTimer = new Timer();
         activityTimer.scheduleAtFixedRate(new TimerTask() {
