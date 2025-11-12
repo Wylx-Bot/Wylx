@@ -16,7 +16,9 @@ public class WylxEnvConfig {
     public final String releaseDiscordToken;
     public final String betaDiscordToken;
     public final String betaPrefix;
-    public final String oauthRefreshToken;
+    public final String ytOauthRefreshToken;
+    public final String ytCipherServerUrl;
+    public final String ytCipherServerPassword;
     // Build/Runtime info
     public final boolean runningInContainer = isRunningInsideDocker();
     public final String buildDate;
@@ -32,7 +34,9 @@ public class WylxEnvConfig {
         this.releaseDiscordToken = env.get("DISCORD_TOKEN");
         this.betaDiscordToken = env.get("BETA_DISCORD_TOKEN");
         this.betaPrefix = env.get("BETA_PREFIX");
-        this.oauthRefreshToken = env.get("YT_SRC_OAUTH_REFRESH_TOKEN");
+        this.ytOauthRefreshToken = env.get("YT_SRC_OAUTH_REFRESH_TOKEN");
+        this.ytCipherServerUrl = env.get("YT_SRC_CIPHER_URL");
+        this.ytCipherServerPassword = env.get("YT_SRC_CIPHER_PASSWORD");
     }
 
     private static Properties getBuildInfo() {

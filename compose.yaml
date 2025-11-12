@@ -8,6 +8,17 @@ services:
       - 27017:27017
     volumes:
       - wylx-mongo-vol:/data/db
+    restart: unless-stopped
+
+  # Javascript/Cipher server for YT-Source
+  yt-cipher:
+    image: ghcr.io/kikkia/yt-cipher:master
+    ports:
+      - 8001:8001
+    env_file: ".env"
+    environment:
+      API_TOKEN: ${YT_SRC_CIPHER_PASSWORD}
+    restart: unless-stopped
 
   # Wylx Bot
   wylx-bot:
