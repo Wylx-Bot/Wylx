@@ -8,10 +8,7 @@ USER gradle:gradle
 
 ARG BUILD_DIR
 WORKDIR $BUILD_DIR
-COPY --chown=gradle:gradle gradlew build.gradle $BUILD_DIR/
-COPY --chown=gradle:gradle src $BUILD_DIR/src
-COPY --chown=gradle:gradle gradle $BUILD_DIR/gradle
-COPY --chown=gradle:gradle .git $BUILD_DIR/.git
+COPY --chown=gradle:gradle . $BUILD_DIR
 RUN ./gradlew build --no-daemon
 
 RUN unzip $BUILD_DIR/build/distributions/wylx.zip -d $BUILD_DIR/unzip
