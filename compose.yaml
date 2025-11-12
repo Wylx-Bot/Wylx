@@ -1,0 +1,29 @@
+# Example docker compose file that can also be used for development
+
+services:
+  # Mongo Database
+  wylx-db:
+    image: mongo
+    ports:
+      - 27017:27017
+    volumes:
+      - wylx-mongo-vol:/data/db
+
+  # Wylx Bot
+  wylx-bot:
+    # Builds container from local files.
+    # Can be replaced with the below:
+    # image: ghcr.io/wlyx-bot/wlyx:latest
+    build:
+      context: .
+    depends_on:
+      - wylx-db
+    restart: unless-stopped
+
+    # See example.env for all environment variables
+    env_file: ".env"
+
+# Database volume
+# Can optionally be made external or a bind mount for external management
+volumes:
+  wylx-mongo-vol:

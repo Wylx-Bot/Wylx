@@ -11,7 +11,6 @@ public class BotUtilPackage extends EventPackage {
                         new PingCommand(),
                         new RestartCommand(),
                         new StatusCommand(),
-                        new UpdateCommand(),
                         new Help(),
                         new InviteCommand(),
                         new ServerInviteCommand()

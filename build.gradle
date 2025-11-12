@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'org.wylx'
-version = '1.0-SNAPSHOT'
+version = "git describe --dirty --always --exclude '*'".execute().text.trim() ?: "unknown"
 
 repositories {
     mavenCentral()
@@ -42,4 +42,33 @@ java {
 
 application {
     mainClass="com.wylxbot.wylx.Wylx"
+}
+
+// Remove version from output jar name
+tasks.jar {
+    archiveFileName = "${project.name}.jar"
+}
+
+tasks.distZip {
+    archiveFileName = "${project.name}.zip"
+}
+
+// Create version.properties with git hash
+tasks.register('createProperties') {
+    dependsOn processResources
+    doLast {
+        layout.buildDirectory
+                .file("resources/main/version.properties")
+                .get().asFile
+                .withWriter {w ->
+            Properties p = new Properties()
+            p['version'] = version.toString()
+            p['build-date'] = new Date().format("EEE MMM dd HH':'mm':'ss zzz yyyy")
+            p.store w, null
+        }
+    }
+}
+
+classes {
+    dependsOn createProperties
 }
