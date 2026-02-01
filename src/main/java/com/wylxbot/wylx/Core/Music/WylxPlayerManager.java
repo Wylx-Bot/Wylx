@@ -34,7 +34,6 @@ public class WylxPlayerManager {
                 options,
                 new AndroidMusicWithThumbnail(),
                 new MusicWithThumbnail(),
-                new TvHtml5EmbeddedWithThumbnail(),
                 new WebEmbeddedWithThumbnail(),
                 new WebWithThumbnail()
         );
