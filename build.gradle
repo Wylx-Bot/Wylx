@@ -25,7 +25,7 @@ dependencies {
     implementation("net.dv8tion:JDA:5.3.0")
     implementation("ch.qos.logback:logback-classic:1.5.16")
     implementation("dev.arbjerg:lavaplayer:2.2.4") // https://github.com/lavalink-devs/lavaplayer
-    implementation("dev.lavalink.youtube:v2:1.16.0")
+    implementation("dev.lavalink.youtube:v2:1.17.0")
     implementation("org.mongodb:mongodb-driver-sync:5.3.1")
     implementation("org.scilab.forge:jlatexmath:1.0.7")
     implementation("club.minnced:udpqueue-native-linux-x86-64:0.2.9")
