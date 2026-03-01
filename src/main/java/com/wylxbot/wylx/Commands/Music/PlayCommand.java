@@ -9,16 +9,16 @@ import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
+import net.dv8tion.jda.api.components.Component;
+import net.dv8tion.jda.api.components.actionrow.ActionRow;
+import net.dv8tion.jda.api.components.actionrow.ActionRowChildComponent;
+import net.dv8tion.jda.api.components.buttons.Button;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.entities.emoji.UnicodeEmoji;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.interactions.InteractionHook;
-import net.dv8tion.jda.api.interactions.components.ActionRow;
-import net.dv8tion.jda.api.interactions.components.ItemComponent;
-import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.requests.restaction.MessageCreateAction;
 
 import java.time.Duration;
@@ -135,8 +135,8 @@ public class PlayCommand extends ServerCommand {
     private void selectSearchResult(AudioPlaylist playlist, MessageReceivedEvent event, GuildMusicManager musicManager) {
         int resNum = Math.min(playlist.getTracks().size(), MAX_SEARCH_TRACKS);
         StringBuilder builder = new StringBuilder();
-        List<ItemComponent> components = new ArrayList<>();
-        List<ItemComponent> cancelRow = new ArrayList<>();
+        List<ActionRowChildComponent> components = new ArrayList<>();
+        List<ActionRowChildComponent> cancelRow = new ArrayList<>();
 
         builder.append(String.format("%d results. Please select the closest option or :x: to exit\n\n", resNum));
 
