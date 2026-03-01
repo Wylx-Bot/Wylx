@@ -6,12 +6,12 @@ import com.wylxbot.wylx.Core.Music.GuildMusicManager;
 import com.wylxbot.wylx.Core.Music.MusicUtils;
 import com.wylxbot.wylx.Core.Util.Helper;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
+import net.dv8tion.jda.api.components.actionrow.ActionRow;
+import net.dv8tion.jda.api.components.buttons.Button;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.interactions.InteractionHook;
-import net.dv8tion.jda.api.interactions.components.ActionRow;
-import net.dv8tion.jda.api.interactions.components.buttons.Button;
 
 import java.time.Duration;
 import java.util.Collection;

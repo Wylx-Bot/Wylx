@@ -22,21 +22,21 @@ repositories {
 dependencies {
     implementation("org.apache.commons:commons-text:1.10.0")
     implementation("io.github.cdimascio:dotenv-kotlin:6.5.1")
-    implementation("net.dv8tion:JDA:5.3.0")
+    implementation("net.dv8tion:JDA:6.3.1")
     implementation("ch.qos.logback:logback-classic:1.5.16")
-    implementation("dev.arbjerg:lavaplayer:2.2.4") // https://github.com/lavalink-devs/lavaplayer
-    implementation("dev.lavalink.youtube:v2:1.17.0")
+    implementation("dev.arbjerg:lavaplayer:2.2.6") // https://github.com/lavalink-devs/lavaplayer
+    implementation("dev.lavalink.youtube:v2:1.18.0")
     implementation("org.mongodb:mongodb-driver-sync:5.3.1")
     implementation("org.scilab.forge:jlatexmath:1.0.7")
-    implementation("club.minnced:udpqueue-native-linux-x86-64:0.2.9")
-    // Alpine uses musl instead of libc
-    implementation("club.minnced:udpqueue-native-linux-musl-x86-64:0.2.9")
-    implementation("club.minnced:udpqueue-native-win-x86-64:0.2.9")
+    // jdave
+    implementation("club.minnced:jdave-api:0.1.7")
+    implementation("club.minnced:jdave-native-linux-x86-64:0.1.7")
+    implementation("club.minnced:jdave-native-win-x86-64:0.1.7")
 }
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(17)
+        languageVersion = JavaLanguageVersion.of(25)
     }
 }
 
