@@ -32,10 +32,8 @@ public class WylxPlayerManager {
         // Use Youtube Source manager from youtube-source repo instead of built-in
         YoutubeAudioSourceManager ytSrcMgr = new YoutubeAudioSourceManager(
                 options,
-                new AndroidMusicWithThumbnail(),
-                new MusicWithThumbnail(),
-                new WebEmbeddedWithThumbnail(),
-                new WebWithThumbnail()
+                new Tv(),
+                new TvHtml5SimplyWithThumbnail()
         );
 
         // Youtube source can be given a refresh token to prevent needing to go through the oAuth flow again.
