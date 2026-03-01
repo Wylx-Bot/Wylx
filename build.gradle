@@ -28,10 +28,10 @@ dependencies {
     implementation("dev.lavalink.youtube:v2:1.18.0")
     implementation("org.mongodb:mongodb-driver-sync:5.3.1")
     implementation("org.scilab.forge:jlatexmath:1.0.7")
-    implementation("club.minnced:udpqueue-native-linux-x86-64:0.2.9")
-    // Alpine uses musl instead of libc
-    implementation("club.minnced:udpqueue-native-linux-musl-x86-64:0.2.9")
-    implementation("club.minnced:udpqueue-native-win-x86-64:0.2.9")
+    // jdave
+    implementation("club.minnced:jdave-api:0.1.7")
+    implementation("club.minnced:jdave-native-linux-x86-64:0.1.7")
+    implementation("club.minnced:jdave-native-win-x86-64:0.1.7")
 }
 
 java {

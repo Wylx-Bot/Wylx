@@ -1,6 +1,6 @@
 package com.wylxbot.wylx;
 
-import com.sedmelluq.discord.lavaplayer.jdaudp.NativeAudioSendFactory;
+import club.minnced.discord.jdave.interop.JDaveSessionFactory;
 import com.wylxbot.wylx.Core.Processing.MessageProcessing;
 import com.wylxbot.wylx.Core.Processing.ReactionProcessing;
 import com.wylxbot.wylx.Core.Processing.VoiceChannelProcessing;
@@ -9,6 +9,7 @@ import com.wylxbot.wylx.Database.DatabaseManager;
 import io.github.cdimascio.dotenv.Dotenv;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
+import net.dv8tion.jda.api.audio.AudioModuleConfig;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
@@ -59,8 +60,10 @@ public class Wylx {
                         new MessageProcessing(),
                         new VoiceChannelProcessing(),
                         new ReactionProcessing()
-                ).setAudioSendFactory(new NativeAudioSendFactory())
-                .build();
+                ).setAudioModuleConfig(
+                        new AudioModuleConfig()
+                                .withDaveSessionFactory(new JDaveSessionFactory())
+                ).build();
 
         Timer activityTimer = new Timer();
         activityTimer.scheduleAtFixedRate(new TimerTask() {
